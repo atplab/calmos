@@ -3299,21 +3299,22 @@ function dmDraw(){const e=$("#dmg");if(!e||DM.scr!=="game")return;const g=DM.g;i
 
 /* ---------- animations du damier ---------- */
 const dmIdx=m=>{const a=String(m).match(/[a-h][1-8]/g)||[];return a.map(x=>(8-+x[1])*8+x.charCodeAt(0)-97)};
-let dmPrev=null;
+let dmPrev=null,dmA=null;
 const dmDraw0=dmDraw;
 dmDraw=function(){const g=DM.g;let pv=dmPrev,nw=null;try{if(g){const D=dmD(g);nw={id:g.id,n:g.mv.length,b:Array.from(D.S.b)}}}catch(e){}
  dmDraw0.apply(this,arguments);dmPrev=nw;
- try{if(!nw||!pv||pv.id!==nw.id||nw.n!==pv.n+1)return;if(document.body.classList.contains("calm")||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ try{if(!nw)return;const now=performance.now();if(pv&&pv.id===nw.id&&nw.n===pv.n+1)dmA={id:nw.id,n:nw.n,pv,t0:now};else if(!(dmA&&dmA.id===nw.id&&dmA.n===nw.n))return;
+  const el=now-dmA.t0;if(el>1800||document.body.classList.contains("calm")||matchMedia("(prefers-reduced-motion: reduce)").matches)return;pv=dmA.pv;
   const path=dmIdx(g.mv[g.mv.length-1]);if(path.length<2)return;const bd=$("#dmg .chb");if(!bd)return;const cell=t=>bd.querySelector(`.chs[data-v="${t}"]`),to=path[path.length-1],cd=cell(to),pe=cd&&cd.querySelector("svg");if(!pe)return;
-  const st0=path.length-1,D1=130,rd=cd.getBoundingClientRect(),kf=[];
-  path.forEach((t,k)=>{const c=cell(t);if(!c)return;const r=c.getBoundingClientRect();kf.push({transform:`translate(${r.left-rd.left}px,${r.top-rd.top}px)`,offset:k/st0,easing:"ease-in-out"})});
+  const st0=path.length-1,D1=170,rd=cd.getBoundingClientRect(),kf=[];
+  path.forEach((t,k)=>{const c=cell(t);if(!c)return;const r=c.getBoundingClientRect();kf.push({transform:`translate(${r.left-rd.left}px,${r.top-rd.top}px) scale(${k&&k<st0?1.12:1})`,offset:k/st0,easing:"ease-in-out"})});
   pe.style.position="relative";pe.style.zIndex="6";
   const promo=pv.b[path[0]]&&Math.abs(pv.b[path[0]])===1&&Math.abs(nw.b[to])===2,cap=[];
   for(let t=0;t<64;t++)if(pv.b[t]&&!nw.b[t]&&t!==path[0])cap.push(t);
-  const an=pe.animate(kf,{duration:D1*st0+40,fill:"none"});
-  an.onfinish=()=>{pe.style.zIndex="";promo?pe.animate([{transform:"scale(1)"},{transform:"scale(1.45) rotate(-12deg)",offset:.4},{transform:"scale(.92)",offset:.7},{transform:"scale(1)"}],{duration:520,easing:"ease-out"}):pe.animate([{transform:"scale(1)"},{transform:"scale(1.12)"},{transform:"scale(1)"}],{duration:150})};
-  cap.forEach((t,k)=>{const c=cell(t);if(!c)return;const h=document.createElement("div");h.className="dmgh";h.innerHTML=dmPc(pv.b[t]);c.appendChild(h);h.animate([{transform:"scale(1)",opacity:1},{transform:"scale(1)",opacity:1,offset:.35},{transform:"scale(1.5) rotate(25deg)",opacity:0}],{duration:D1*(k+1)+420,easing:"ease-in"}).onfinish=()=>h.remove()});
-  if(promo){const h=document.createElement("div");h.className="dmsp";h.textContent="✨";cd.appendChild(h);h.animate([{transform:"translateY(0) scale(.4)",opacity:0},{opacity:1,offset:.3},{transform:"translateY(-60%) scale(1.5)",opacity:0}],{duration:D1*st0+700,delay:0}).onfinish=()=>h.remove()}
+  const an=pe.animate(kf,{duration:D1*st0+60,fill:"none",delay:-el});
+  an.onfinish=()=>{pe.style.zIndex="";promo?pe.animate([{transform:"scale(1)"},{transform:"scale(1.5) rotate(-14deg)",offset:.4},{transform:"scale(.92)",offset:.7},{transform:"scale(1)"}],{duration:560,easing:"ease-out"}):pe.animate([{transform:"scale(1)"},{transform:"scale(1.15,.88)",offset:.4},{transform:"scale(1)"}],{duration:200})};
+  cap.forEach((t,k)=>{const c=cell(t);if(!c)return;const h=document.createElement("div");h.className="dmgh";h.innerHTML=dmPc(pv.b[t]);c.appendChild(h);h.animate([{transform:"scale(1)",opacity:1},{transform:"scale(1)",opacity:1,offset:.4},{transform:"scale(1.5) rotate(25deg)",opacity:0}],{duration:D1*(k+1)+420,easing:"ease-in",delay:-el}).onfinish=()=>h.remove()});
+  if(promo){const h=document.createElement("div");h.className="dmsp";h.textContent="✨";cd.appendChild(h);h.animate([{transform:"translateY(0) scale(.4)",opacity:0},{opacity:1,offset:.3},{transform:"translateY(-60%) scale(1.5)",opacity:0}],{duration:D1*st0+700,delay:-el}).onfinish=()=>h.remove()}
  }catch(e){}};
 const dmCf=k=>{if(DM.cf===k){clearTimeout(DM.cft);DM.cf="";return true}DM.cf=k;clearTimeout(DM.cft);DM.cft=setTimeout(()=>{DM.cf="";dmDraw()},3500);dmDraw();return false};
 const DMA={dmq:v=>dmClick(+v),dmfl:()=>{const g=DM.g;if(!g)return;const t=DM.fl!==null?DM.fl:g.k!=="loc"&&g.me<0;DM.fl=!t;dmDraw()},
