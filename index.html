@@ -1412,8 +1412,8 @@ if(document.querySelector(".qz-ch")&&typeof act!=="undefined"&&act.qa){var kk=e.
 <script>(function(){
 "use strict";
 const J=JSON.stringify,PE=["🤿","🐠","🦀","🐙","🐢","🦈"],A31="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const GN={carcache:"Carcaché",chess:"Échecs",scrabble:"Motuiles",hoho:"Hoho",airhockey:"Air hockey",galac:"Galacfish"};
-const RMX={carcache:6,chess:2,scrabble:2,hoho:2,airhockey:2,galac:2};
+const GN={carcache:"Carcaché",chess:"Échecs",scrabble:"Motuiles",draughts:"Dames",hoho:"Hoho",airhockey:"Air hockey",galac:"Galacfish"};
+const RMX={carcache:6,draughts:2,chess:2,scrabble:2,hoho:2,airhockey:2,galac:2};
 const CCE=["🐚","🦐","🐠","🐡","🦀","🐙","🦑","🐢","🦈","🐬","🐳","🐋","🦞"];
 const CCL=[["Récif","🦐",3,[["Crevette","🦐",0]],8],["Anémone","🐠",3,[["Poisson-clown","🐠",1]],10],["Lagon","🐢",5,[["Tortue","🐢",1]],14],["Algues","🦑",5,[["Calamar","🦑",1],["Crevette","🦐",0]],18],["Grotte","🐙",5,[["Poulpe","🐙",2]],22],["Épave","🦈",9,[["Requin","🦈",2]],30],["Fosse","🐡",9,[["Poisson-lune","🐡",2],["Calamar","🦑",2],["Requin","🦈",1]],40],["Abysses","🐋",9,[["Baleine","🐋",3]],60]];
 const LVN=["Débutant","Moyen","Fort","Expert"];
@@ -1620,7 +1620,7 @@ if(r.g==="carcache")return ccOnline(r);
 RM.unsub&&RM.unsub();RM.unsub=null;RM.scr="";const o=r.p.find(p=>p.u!==env.uid);if(!o)return;
 SO.P[o.u]=SO.P[o.u]||{name:o.n};if(!SO.col&&SO.st!=="conn")try{socInit()}catch(e){}
 gToast("Partie lancée depuis le salon "+RM.code);
-if(r.h===env.uid){if(r.g==="chess"){CH.cfg.col=r.o.col||0;CH.cfg.tc=r.o.tc||0;st.set("ch:cfg",CH.cfg);act.open("chess");setTimeout(()=>act.chInv(o.u),120)}else act.socPlay(r.g+":"+o.u)}else{act.open(r.g);if(r.g==="scrabble")setTimeout(()=>act.scrOpen(o.u),400)}}
+if(r.h===env.uid){if(r.g==="chess"){CH.cfg.col=r.o.col||0;CH.cfg.tc=r.o.tc||0;st.set("ch:cfg",CH.cfg);act.open("chess");setTimeout(()=>act.chInv(o.u),120)}else act.socPlay(r.g+":"+o.u)}else{act.open(r.g);if(r.g==="scrabble")setTimeout(()=>act.scrOpen(o.u),400);if(r.g==="draughts")setTimeout(()=>act.dmOpen(o.u),500)}}
 function rmShell(h){cur="salon";nv("games");theme(RM.r&&RM.r.g);const n=$("#nav");n&&(n.hidden=!0);app.innerHTML=h;window.scrollTo(0,0)}
 const RSL=[[50,16],[18,42],[82,42],[30,68],[70,68],[50,88]];
 function rmRules(r,host,pub){if(r.g!=="chess"||pub)return"";const o=r.o,col=o.col||0,tc=o.tc||0;
@@ -1666,7 +1666,7 @@ d.innerHTML=`<div class="glass ccbox"><h2>Code multijoueur</h2><p class="note">E
 document.body.appendChild(d);const inp=d.querySelector("#rmin"),er=d.querySelector("#rmerr");setTimeout(()=>inp.focus(),50);
 const go=async()=>{er.textContent="Connexion…";const m=await rmJoinCode(inp.value);if(m)er.textContent=m;else d.remove()};
 d.querySelector("#rmgo").onclick=go;d.querySelector("#rmno").onclick=()=>d.remove();inp.onkeydown=e=>{if(e.key==="Enter")go()};inp.oninput=()=>{inp.value=inp.value.toUpperCase()}}
-function rmInject(){const g=RM.gOpen;if(!GN[g]||g==="carcache"||g==="hoho"||(cur!==g&&g!=="galac"))return;const H=new Set(),SEL="[data-a=chInv],[data-a=chOpen],[data-a=ahAsk],[data-a=scNew],[data-a=scrOpen],[data-a=unMake],[data-a=gfRcCh]";
+function rmInject(){const g=RM.gOpen;if(!GN[g]||g==="carcache"||g==="hoho"||(cur!==g&&g!=="galac"))return;const H=new Set(),SEL="[data-a=dmInv],[data-a=dmOpen],[data-a=chInv],[data-a=chOpen],[data-a=ahAsk],[data-a=scNew],[data-a=scrOpen],[data-a=unMake],[data-a=gfRcCh]";
 app.querySelectorAll("section").forEach(sc=>{if(sc.classList.contains("story"))return;const h=sc.querySelector("h2");(sc.classList.contains("soc-i")||h&&/ami|multi|défi/i.test(h.textContent)||sc.querySelector(SEL)||/\bamis?\b/i.test(sc.textContent)&&sc.textContent.length<900)&&H.add(sc)});
 document.querySelectorAll("[data-a=gfRcCh]").forEach(b=>{const c=b.closest("#gflp")||b.closest("section,.fr-l")||(b.parentElement&&b.parentElement.parentElement);c&&H.add(c)});
 H.forEach(sc=>{if(sc.querySelector(".rmrow")||sc.closest("#rmfs"))return;const d=document.createElement("div");d.className="rmrow";d.innerHTML=`<button class="btn alt" data-a="rmNew" data-v="${g}">🔑 Créer un salon</button><button class="btn alt" data-a="rmCode">🔑 Entrer un code</button>`;if(g==="hoho"){const hh=sc.querySelector("h2");hh?hh.after(d):sc.insertBefore(d,sc.firstChild)}else sc.appendChild(d)})}
