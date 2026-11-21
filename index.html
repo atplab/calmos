@@ -1982,7 +1982,7 @@ try{const i=GD.findIndex(g=>g.id==="solitaire");GD.splice(i<0?GD.length:i,0,CG);
 const GM=[["hoho","HoHo"],["carcache","Carcaché"],["solitaire","Solitaire"]];
 const sel=()=>{const v=st.get("cg:sel","hoho");return GM.some(g=>g[0]===v)?v:"hoho"};
 const HB={hoho:()=>unHub(),carcache:()=>ccHub(),solitaire:()=>soHub()};
-const sw=()=>{if(!window.CGM)return;const t=document.querySelector(".vzf .vztp");if(!t||document.querySelector(".cgsw"))return;const c=cur;t.insertAdjacentHTML("afterend",`<div class="cgsw" role="tablist">${GM.map(([k,n])=>`<button role="tab" data-a="cgSel" data-v="${k}" aria-selected="${k===c}">${n}</button>`).join("")}</div>`);const ti=t.querySelector(".vzti b");ti&&(ti.textContent="Jeux de cartes")};
+const sw=()=>{if(!window.CGM)return;const t=document.querySelector(".vzf.hub .vztp");if(!t||document.querySelector(".cgsw"))return;const c=cur;t.insertAdjacentHTML("afterend",`<div class="cgsw" role="tablist">${GM.map(([k,n])=>`<button role="tab" data-a="cgSel" data-v="${k}" aria-selected="${k===c}">${n}</button>`).join("")}</div>`);const ti=t.querySelector(".vzti b");ti&&(ti.textContent="Jeux de cartes")};
 const W=n=>{const f=window[n];if(typeof f!=="function")return;window[n]=function(){window.CGM=1;const r=f.apply(this,arguments);try{sw()}catch(e){}return r}};
 const SU={s:'<path d="M12 3C8 8 4 10.5 4 14a4 4 0 0 0 7 2.5L10 21h4l-1-4.5a4 4 0 0 0 7-2.5c0-3.5-4-6-8-11z"/>',h:'<path d="M12 21C5 16 2 12.5 2 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 10 2.8C22 12.5 19 16 12 21z"/>',d:'<path d="M12 2l8 10-8 10-8-10z"/>',c:'<circle cx="12" cy="7" r="4"/><circle cx="7" cy="13" r="4"/><circle cx="17" cy="13" r="4"/><path d="M11 13h2l1 8h-4z"/>'};
 const pc=(r,s)=>`<span class="plc${s==="h"||s==="d"?" rd":""}"><b>${r}</b><svg class="ps" viewBox="0 0 24 24">${SU[s]}</svg><svg class="pb" viewBox="0 0 24 24">${SU[s]}</svg></span>`;
@@ -2001,7 +2001,7 @@ else if(k==="stats"){t="Records";h=`<div class="vzstt"><div><b>${d.length}</b><s
 else if(k==="go"){t="Aller au niveau";h='<div class="golv"><label>Niveau <input id="golv" type="number" min="1" inputmode="numeric" placeholder="ex. 1203"></label><button class="rc-go" data-a="soGo">Jouer</button></div>'}
 const e=document.createElement("div");e.id="vzsh";e.className="vzsh";e.innerHTML=`<div class="vzsp" role="dialog" aria-label="${t}"><div class="vzsx"><h2>${t}</h2><button data-a="soShX" aria-label="Fermer">✕</button></div>${h}</div>`;e.addEventListener("click",x=>{x.target===e&&e.remove()});document.body.appendChild(e)};
 if(typeof soHub==="function"){soHub=soH2}
-W("ccHub");W("unHub");W("soHub");
+W("ccHub");W("unHub");W("soHub");try{new MutationObserver(()=>{try{sw()}catch(e){}}).observe(app,{childList:true})}catch(e){}
 setTimeout(()=>{Object.assign(act,{soSh:soSheet,soShX:()=>{const d=$("#vzsh");d&&d.remove()},cgSel:v=>{if(!HB[v]||v===cur)return;st.set("cg:sel",v);const d=$("#vzsh");d&&d.remove();try{sfx(520,.08)}catch(e){}HB[v]()}});
 const _g=act.soGo;_g&&(act.soGo=v=>{const d=$("#vzsh");_g(v);d&&!document.getElementById("golv")&&d.remove()});
 const _o=act.open;act.open=function(e){if(e==="cartes"){window.CGM=1;return HB[sel()]()}if(e!=="hoho"&&e!=="carcache"&&e!=="solitaire")window.CGM=0;return _o.apply(this,arguments)}},60);
