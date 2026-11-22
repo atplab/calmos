@@ -7,7 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:www": "node scripts/build-www.js",
+    "android": "node scripts/build-www.js && cap sync android && cap open android"
   },
   "repository": {
     "type": "git",
