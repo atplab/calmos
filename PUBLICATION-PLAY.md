@@ -16,3 +16,5 @@
 - **Connexion Google** : dans `native/calmos-native.js`, remplacer `WEB_CLIENT_ID` par le client OAuth « Web » du projet Firebase. Dans Google Cloud > Identifiants, créer aussi un client OAuth **Android** (paquet `com.nextonset.calmos` + empreinte SHA-1 de la clé de **signature Play**, visible dans la console Play > Intégrité de l'app).
 - **Achats** : dans la console Play, créer 5 produits **consommables** `bulles_p1` … `bulles_p5` (mêmes paquets/prix que la boutique web). Lier le projet Google Cloud (Play Console > Configuration > Accès à l'API) et donner à `calmonus@appspot.gserviceaccount.com` l'accès aux finances/commandes. Puis `cd functions && npm i && firebase deploy --only functions` (nouvelle fonction `verifyPlayPurchase`).
 - Tester avec un compte testeur de licence (achats de test sans débit).
+
+- URL de suppression de compte (Play Console) : https://atplab.github.io/calmos/suppression-compte/
