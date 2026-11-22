@@ -8,7 +8,7 @@ const {google}=require('googleapis');
 const crypto=require('crypto');
 admin.initializeApp();
 const STRIPE_KEY=defineSecret('STRIPE_SECRET_KEY'),STRIPE_WH=defineSecret('STRIPE_WEBHOOK_SECRET');
-const SITE='https://atplab.github.io/calmonos/';
+const SITE='https://atplab.github.io/calmos/';
 const ORIGINS=['https://atplab.github.io'];
 const PACKS={p1:{f:100,c:99},p2:{f:350,c:299},p3:{f:700,c:499},p4:{f:2000,c:999},p5:{f:4500,c:1999}};
 
@@ -26,7 +26,7 @@ exports.createCheckout=onRequest({secrets:[STRIPE_KEY],cors:ORIGINS,region:'us-c
       client_reference_id:uid,
       metadata:{uid,pack:k,flakes:String(P.f)},
       payment_intent_data:{metadata:{uid,pack:k,flakes:String(P.f)}},
-      line_items:[{quantity:1,price_data:{currency:'cad',unit_amount:P.c,product_data:{name:P.f+' flocons',description:'Calmos',tax_code:'txcd_10201000'}}}],
+      line_items:[{quantity:1,price_data:{currency:'cad',unit_amount:P.c,product_data:{name:P.f+' bulles',description:'Calmos',tax_code:'txcd_10201000'}}}],
       success_url:SITE+'?achat=ok',
       cancel_url:SITE+'?achat=annule'
     },{idempotencyKey:uid+':'+k+':'+Math.floor(Date.now()/10000)});
