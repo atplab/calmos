@@ -4,6 +4,8 @@ const {onRequest}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
 const admin=require('firebase-admin');
 const Stripe=require('stripe');
+const {google}=require('googleapis');
+const crypto=require('crypto');
 admin.initializeApp();
 const STRIPE_KEY=defineSecret('STRIPE_SECRET_KEY'),STRIPE_WH=defineSecret('STRIPE_WEBHOOK_SECRET');
 const SITE='https://atplab.github.io/calmonos/';
@@ -52,4 +54,30 @@ exports.stripeWebhook=onRequest({secrets:[STRIPE_KEY,STRIPE_WH],region:'us-centr
     if(ev.type==='checkout.session.completed'||ev.type==='checkout.session.async_payment_succeeded')await credit(ev.data.object);
     res.json({ok:true});
   }catch(e){console.error(e);res.status(500).send('x')}
+});
+
+/* 3. Google Play Billing : l'app envoie le jeton d'achat ; on le vérifie auprès de Google puis on crédite (une seule fois par jeton).
+   Produits Play (consommables) : bulles_p1 … bulles_p5, mêmes paquets que ci-dessus. */
+const PLAY_PKG='com.nextonset.calmos';
+exports.verifyPlayPurchase=onRequest({cors:true,region:'us-central1'},async(req,res)=>{
+  if(req.method!=='POST')return res.status(405).send('');
+  try{
+    const tok=(req.get('Authorization')||'').replace(/^Bearer /,'');
+    const {uid}=await admin.auth().verifyIdToken(tok);
+    const k=String((req.body&&req.body.pack)||''),P=PACKS[k],token=String((req.body&&req.body.token)||'');
+    if(!P||token.length<20)return res.status(400).json({error:'pack'});
+    const auth=new google.auth.GoogleAuth({scopes:['https://www.googleapis.com/auth/androidpublisher']});
+    const r=await google.androidpublisher({version:'v3',auth}).purchases.products.get({packageName:PLAY_PKG,productId:'bulles_'+k,token});
+    if(r.data.purchaseState!==0)return res.status(402).json({error:'unpaid'});
+    const h=crypto.createHash('sha256').update(token).digest('hex'),db=admin.firestore();
+    const T=db.doc('playTokens/'+h),R=db.doc('buys/'+uid),L=db.doc('buys/'+uid+'/s/play_'+h.slice(0,32));
+    await db.runTransaction(async t=>{
+      const o=await t.get(T);
+      if(o.exists){if(o.data().uid!==uid)throw Object.assign(new Error('dup'),{http:409});return}
+      t.set(T,{uid,pack:k,at:admin.firestore.FieldValue.serverTimestamp()});
+      t.set(L,{f:P.f,src:'play',at:admin.firestore.FieldValue.serverTimestamp()});
+      t.set(R,{t:admin.firestore.FieldValue.increment(P.f)},{merge:true});
+    });
+    res.json({ok:true});
+  }catch(e){console.error(e);res.status(e&&e.http||(e&&e.code&&String(e.code).startsWith('auth/')?401:500)).json({error:'x'})}
 });
