@@ -1,0 +1,7 @@
+{
+  "appId": "com.nextonset.calmos",
+  "appName": "Calmos",
+  "webDir": "www",
+  "backgroundColor": "#0e0f34",
+  "android": { "allowMixedContent": false }
+}
