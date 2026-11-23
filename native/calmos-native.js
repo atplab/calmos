@@ -87,13 +87,13 @@
   getStore().catch(function () {}); // démarre tôt pour relivrer les achats en attente
 
   /* ---- Mises à jour du contenu sans passer par le Play Store (Capgo, mode manuel) ----
-     Le zip et latest.json sont publiés sur GitHub Pages par `npm run update`. Appliqué au prochain lancement. */
+     Le zip et latest.json sont publiés sur GitHub Pages par `npm run update` (dépôt atplab/calmos-updates). Appliqué au prochain lancement. */
   var U = PL.CapacitorUpdater;
   if (U) {
     U.notifyAppReady().catch(function () {});
     setTimeout(async function () {
       try {
-        var m = await (await fetch('https://atplab.github.io/calmos/update/latest.json', { cache: 'no-store' })).json();
+        var m = await (await fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' })).json();
         var nat = (await U.getBuiltinVersion()).version, cur = await U.current();
         if (!m.version || m.native !== nat || (cur && cur.bundle && cur.bundle.version === m.version)) return;
         var b = await U.download({ url: m.url, version: m.version });

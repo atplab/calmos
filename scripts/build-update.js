@@ -6,5 +6,10 @@ const native = /versionName "([^"]+)"/.exec(fs.readFileSync(path.join(root, 'and
 const ver = native + '-' + new Date().toISOString().replace(/\D/g, '').slice(0, 12);
 fs.rmSync(up, { recursive: true, force: true }); fs.mkdirSync(up);
 const z = new AdmZip(); z.addLocalFolder(path.join(root, 'www')); z.writeZip(path.join(up, 'bundle-' + ver + '.zip'));
-fs.writeFileSync(path.join(up, 'latest.json'), JSON.stringify({ version: ver, native, url: 'https://atplab.github.io/calmos/update/bundle-' + ver + '.zip' }));
+fs.writeFileSync(path.join(up, 'latest.json'), JSON.stringify({ version: ver, native, url: 'https://atplab.github.io/calmos-updates/bundle-' + ver + '.zip' }));
 console.log('Mise à jour prête :', ver);
+// Publie dans le dépôt séparé atplab/calmos-updates (un seul commit, remplacé à chaque fois : l'historique ne grossit pas)
+const sh = c => cp.execSync(c, { cwd: up, stdio: 'inherit' });
+sh('git init -q -b main'); sh('git add -A'); sh('git -c user.name=calmos -c user.email=nextonset@pm.me commit -qm ' + JSON.stringify('update ' + ver));
+sh('git push -f https://github.com/atplab/calmos-updates.git main');
+console.log('Publié. Disponible dans ~1 minute sur https://atplab.github.io/calmos-updates/latest.json');
