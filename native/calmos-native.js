@@ -91,16 +91,22 @@
   var U = PL.CapacitorUpdater;
   if (U) {
     U.notifyAppReady().catch(function () {});
+    var ota = function (t) { window.__ota = t; };
     setTimeout(async function () {
       try {
+        ota('vérif…');
         var m = await (await fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' })).json();
         var nat = (await U.getBuiltinVersion()).version, cur = await U.current();
-        if (!m.version || m.native !== nat || (cur && cur.bundle && cur.bundle.version === m.version)) return;
+        if (!m.version) return ota('fichier illisible');
+        if (m.native !== nat) return ota('app ' + nat + ' ≠ ' + m.native);
+        if (cur && cur.bundle && cur.bundle.version === m.version) return ota('à jour');
+        ota('téléchargement…');
         var b = await U.download({ url: m.url, version: m.version });
         await U.next({ id: b.id });
+        ota('prête, relance l’app');
         var l = await U.list(), keep = [b.id, cur && cur.bundle && cur.bundle.id];
         for (var i = 0; i < l.bundles.length; i++) if (keep.indexOf(l.bundles[i].id) < 0) await U.delete({ id: l.bundles[i].id }).catch(function () {});
-      } catch (e) {}
+      } catch (e) { ota('échec : ' + String(e && (e.message || e)).slice(0, 60)); }
     }, 5000);
   }
 })();
