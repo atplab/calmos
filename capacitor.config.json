@@ -3,5 +3,12 @@
   "appName": "Calmos",
   "webDir": "www",
   "backgroundColor": "#0e0f34",
-  "android": { "allowMixedContent": false }
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "CapacitorUpdater": {
+      "autoUpdate": false
+    }
+  }
 }
