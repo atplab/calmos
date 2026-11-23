@@ -97,7 +97,8 @@
       var go = function () {
         if (ov || !document.body) return;
         var st = document.createElement('style');
-        st.textContent = '#cmo{position:fixed;inset:0;z-index:2147483647;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(180deg,#1a2a7a 0%,#0e0f34 70%);color:#fff;font:600 17px system-ui,sans-serif;text-align:center;transition:opacity .5s}'
+        st.textContent = '#cmo{animation:cmin .6s ease-out;position:fixed;inset:0;z-index:2147483647;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(180deg,#1a2a7a 0%,#0e0f34 70%);color:#fff;font:600 17px system-ui,sans-serif;text-align:center;transition:opacity .5s}'
+          + '@keyframes cmin{from{opacity:0}to{opacity:1}}'
           + '#cmo svg.z{width:92px;height:112px;margin-top:10px;animation:cmz 3.6s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(143,233,255,.55))}'
           + '@keyframes cmz{0%,100%{transform:translateY(7px) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}'
           + '#cmo .b{position:absolute;bottom:-30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.1);animation:cmb linear infinite}'
