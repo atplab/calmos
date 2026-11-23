@@ -98,6 +98,8 @@
         if (!m.version || m.native !== nat || (cur && cur.bundle && cur.bundle.version === m.version)) return;
         var b = await U.download({ url: m.url, version: m.version });
         await U.next({ id: b.id });
+        var l = await U.list(), keep = [b.id, cur && cur.bundle && cur.bundle.id];
+        for (var i = 0; i < l.bundles.length; i++) if (keep.indexOf(l.bundles[i].id) < 0) await U.delete({ id: l.bundles[i].id }).catch(function () {});
       } catch (e) {}
     }, 5000);
   }
