@@ -87,26 +87,103 @@
   getStore().catch(function () {}); // démarre tôt pour relivrer les achats en attente
 
   /* ---- Mises à jour du contenu sans passer par le Play Store (Capgo, mode manuel) ----
-     Le zip et latest.json sont publiés sur GitHub Pages par `npm run update` (dépôt atplab/calmos-updates). Appliqué au prochain lancement. */
+     Le zip et latest.json sont publiés sur GitHub Pages par `npm run update` (dépôt atplab/calmos-updates). Vérifié et appliqué dès l'ouverture (écran de chargement), avant d'utiliser l'app. */
   var U = PL.CapacitorUpdater;
   if (U) {
     U.notifyAppReady().catch(function () {});
     var ota = function (t) { window.__ota = t; };
-    setTimeout(async function () {
+    var ov = null;
+    var showOv = function () {
+      var go = function () {
+        if (ov || !document.body) return;
+        var st = document.createElement('style');
+        st.textContent = '#cmo{position:fixed;inset:0;z-index:2147483647;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:linear-gradient(180deg,#1a2a7a 0%,#0e0f34 70%);color:#fff;font:600 17px system-ui,sans-serif;text-align:center;transition:opacity .5s}'
+          + '#cmo svg.z{width:92px;height:112px;margin-top:10px;animation:cmz 3.6s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(143,233,255,.55))}'
+          + '@keyframes cmz{0%,100%{transform:translateY(7px) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}'
+          + '#cmo .b{position:absolute;bottom:-30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.1);animation:cmb linear infinite}'
+          + '@keyframes cmb{0%{transform:translateY(0) translateX(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-115vh) translateX(18px);opacity:0}}'
+          + '#cmo .g{position:absolute;bottom:-80px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.75),rgba(255,255,255,.12) 55%,rgba(143,233,255,.18));box-shadow:0 0 12px rgba(143,233,255,.35);animation:cmb linear forwards;touch-action:manipulation}'
+          + '#cmo .g.p{animation:cmx .28s ease-out forwards;pointer-events:none}@keyframes cmx{to{transform:scale(1.7);opacity:0}}'
+          + '#cmo .k{position:absolute;top:calc(env(safe-area-inset-top,0px) + 18px);left:0;right:0;font-size:15px;opacity:.9}#cmo .k small{display:block;font-weight:400;opacity:.65;font-size:12.5px;margin-top:3px}'
+          + '#cmo .s{position:absolute;width:3px;height:3px;border-radius:50%;background:#ffe9a0;animation:cmt 3s ease-in-out infinite}'
+          + '@keyframes cmt{0%,100%{opacity:.15}50%{opacity:.95}}'
+          + '#cmo .t{opacity:.85;animation:cmp 2.6s ease-in-out infinite}@keyframes cmp{0%,100%{opacity:.45}50%{opacity:.95}}'
+          + '#cmo .w{position:absolute;left:-10%;right:-10%;bottom:-8px;height:70px;border-radius:50% 50% 0 0;background:rgba(143,233,255,.1);animation:cmw 6s ease-in-out infinite alternate}'
+          + '@keyframes cmw{from{transform:translateX(-4%)}to{transform:translateX(4%)}}'
+          + '@media(prefers-reduced-motion:reduce){#cmo *{animation-duration:12s!important}}';
+        document.head.appendChild(st);
+        ov = document.createElement('div');
+        ov.id = 'cmo';
+        var h = '<div class="w"></div>', i;
+        for (i = 0; i < 9; i++) h += '<i class="s" style="left:' + ((i * 37 + 8) % 92) + '%;top:' + ((i * 23 + 6) % 45) + '%;animation-delay:-' + (i * 0.7).toFixed(1) + 's"></i>';
+        h += '<svg viewBox="-28 -66 56 68" class="z" aria-hidden="true"><defs><radialGradient id="cmzb" cx=".36" cy=".26" r=".98"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#ece6ff"/><stop offset="1" stop-color="#b9acec"/></radialGradient><radialGradient id="cmzs" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff6c2"/><stop offset="1" stop-color="#ffc83d"/></radialGradient><radialGradient id="cmzg"><stop offset="0" stop-color="#fff3c0" stop-opacity=".85"/><stop offset="1" stop-color="#fff3c0" stop-opacity="0"/></radialGradient></defs><ellipse cx="0" cy="-1" rx="12" ry="2.2" fill="rgba(0,0,0,.2)"/><path d="M1 -38Q6 -46 4 -52" stroke="#a79bdc" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="4" cy="-55" r="9" fill="url(#cmzg)"/><polygon points="4.0,-60.8 5.6,-57.3 9.5,-56.8 6.7,-54.1 7.4,-50.3 4.0,-52.2 0.6,-50.3 1.3,-54.1 -1.5,-56.8 2.4,-57.3" fill="url(#cmzs)" stroke="#ffc83d" stroke-width="1.6" stroke-linejoin="round"/><path d="M0 -39C10 -39 15.5 -29 15.5 -19C15.5 -8 9 -2 0 -2C-9 -2 -15.5 -8 -15.5 -19C-15.5 -29 -10 -39 0 -39Z" fill="url(#cmzb)"/><ellipse cx="-6.4" cy="-30" rx="3.2" ry="5.4" fill="#fff" opacity=".6" transform="rotate(18 -6.4 -30)"/><ellipse cx="-5.8" cy="-23" rx="2.1" ry="2.9" fill="#4a4290"/><ellipse cx="5.8" cy="-23" rx="2.1" ry="2.9" fill="#4a4290"/><circle cx="-5.1" cy="-24.2" r=".85" fill="#fff"/><circle cx="6.5" cy="-24.2" r=".85" fill="#fff"/><path d="M-2.8 -16.4q2.8 2.6 5.6 0" stroke="#7a6cc0" stroke-width="1.5" fill="none" stroke-linecap="round"/><g fill="#efb63e"><circle cx="-11.8" cy="-18.4" r="1.1"/><circle cx="-9.6" cy="-16" r="1.1"/><circle cx="-12.6" cy="-15.2" r=".9"/><circle cx="11.8" cy="-18.4" r="1.1"/><circle cx="9.6" cy="-16" r="1.1"/><circle cx="12.6" cy="-15.2" r=".9"/></g><circle cx="-14.8" cy="-10" r="4.6" fill="#e6defc" stroke="#c7bbf0" stroke-width="1"/><circle cx="14.8" cy="-10" r="4.6" fill="#e6defc" stroke="#c7bbf0" stroke-width="1"/></svg>';
+        h += '<div class="k"><span id="cmn">🫧 0</span><small>Éclate les bulles en attendant</small></div>';
+        h += '<div class="t">Vérification des mises à jour…</div>';
+        ov.innerHTML = h;
+        document.body.appendChild(ov);
+        var n = 0, live = 0;
+        ov.addEventListener('pointerdown', function (e) {
+          var t = e.target; if (!t.classList || !t.classList.contains('g') || t.classList.contains('p')) return;
+          t.classList.add('p'); live--; n++;
+          var c = document.getElementById('cmn'); if (c) c.textContent = '🫧 ' + n;
+          setTimeout(function () { try { t.remove(); } catch (x) {} }, 300);
+        });
+        var spawn = function () {
+          if (!ov || live >= 7) return;
+          var d = document.createElement('i'), sz = 44 + Math.floor(Math.random() * 26);
+          d.className = 'g'; live++;
+          d.style.cssText = 'left:' + (4 + Math.random() * 78) + '%;width:' + sz + 'px;height:' + sz + 'px;animation-duration:' + (5.5 + Math.random() * 3) + 's';
+          d.addEventListener('animationend', function (e) { if (e.animationName === 'cmb' && !d.classList.contains('p')) { live--; d.remove(); } });
+          ov.appendChild(d);
+        };
+        ov.__gt = setInterval(spawn, 650); spawn(); spawn();
+      };
+      if (document.body) go(); else document.addEventListener('DOMContentLoaded', go);
+    };
+    var hideOv = function () { try { var o = ov; clearInterval(o && o.__gt); if (o) { o.style.opacity = '0'; setTimeout(function () { try { o.remove(); } catch (e) {} }, 500); } } catch (e) {} ov = null; };
+    var tmo = function (p, ms) { return Promise.race([p, new Promise(function (_, rj) { setTimeout(function () { rj(new Error('délai dépassé')); }, ms); })]); };
+    /* Vérification manuelle (bouton dans les Réglages) : cb(texte) reçoit l'état ; l'app se recharge si une mise à jour est installée. */
+    window.CalmosUpdate = {
+      check: async function (cb) {
+        var say = function (t) { try { cb && cb(t); } catch (e) {} };
+        try {
+          say('Vérification…');
+          var m = await tmo(fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' }).then(function (r) { return r.json(); }), 8000);
+          var nat = (await U.getBuiltinVersion()).version, cur = await U.current();
+          if (!m.version) return say('Fichier de mise à jour illisible.');
+          if (m.native !== nat) return say('Cette mise à jour demande une nouvelle version de l’application (Play Store).');
+          if (cur && cur.bundle && cur.bundle.version === m.version) return say('Tu as déjà la dernière version ✓');
+          say('Téléchargement…');
+          var b = await tmo(U.download({ url: m.url, version: m.version, checksum: m.checksum }), 60000);
+          await U.next({ id: b.id });
+          say('Installation… l’app va redémarrer.');
+          var l = await U.list(), keep = [b.id, cur && cur.bundle && cur.bundle.id];
+          for (var i = 0; i < l.bundles.length; i++) if (keep.indexOf(l.bundles[i].id) < 0) await U.delete({ id: l.bundles[i].id }).catch(function () {});
+          await U.set({ id: b.id });
+        } catch (e) { say('Impossible de vérifier pour l’instant. Réessaie avec une meilleure connexion.'); }
+      }
+    };
+    showOv();
+    (async function () {
+      var reloading = false;
       try {
         ota('vérif…');
-        var m = await (await fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' })).json();
+        var m = await tmo(fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' }).then(function (r) { return r.json(); }), 4000);
         var nat = (await U.getBuiltinVersion()).version, cur = await U.current();
         if (!m.version) return ota('fichier illisible');
         if (m.native !== nat) return ota('app ' + nat + ' ≠ ' + m.native);
         if (cur && cur.bundle && cur.bundle.version === m.version) return ota('à jour');
         ota('téléchargement…');
-        var b = await U.download({ url: m.url, version: m.version, checksum: m.checksum });
+        if (ov) ov.lastChild.textContent = 'Zeni prépare la nouveauté…';
+        var b = await tmo(U.download({ url: m.url, version: m.version, checksum: m.checksum }), 15000);
         await U.next({ id: b.id });
-        ota('prête, relance l’app');
+        ota('installation…');
         var l = await U.list(), keep = [b.id, cur && cur.bundle && cur.bundle.id];
         for (var i = 0; i < l.bundles.length; i++) if (keep.indexOf(l.bundles[i].id) < 0) await U.delete({ id: l.bundles[i].id }).catch(function () {});
+        reloading = true;
+        await U.set({ id: b.id }); // recharge l'app avec la nouvelle version, avant qu'on ne l'utilise
       } catch (e) { ota('échec : ' + String(e && (e.message || e)).slice(0, 60)); }
-    }, 5000);
+      finally { if (!reloading) hideOv(); else setTimeout(hideOv, 8000); }
+    })();
   }
 })();
