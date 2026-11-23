@@ -101,7 +101,7 @@
         if (m.native !== nat) return ota('app ' + nat + ' ≠ ' + m.native);
         if (cur && cur.bundle && cur.bundle.version === m.version) return ota('à jour');
         ota('téléchargement…');
-        var b = await U.download({ url: m.url, version: m.version });
+        var b = await U.download({ url: m.url, version: m.version, checksum: m.checksum });
         await U.next({ id: b.id });
         ota('prête, relance l’app');
         var l = await U.list(), keep = [b.id, cur && cur.bundle && cur.bundle.id];
