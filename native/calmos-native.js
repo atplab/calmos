@@ -112,6 +112,8 @@
           + '#cmo .t{opacity:.85;animation:cmp 2.6s ease-in-out infinite}@keyframes cmp{0%,100%{opacity:.45}50%{opacity:.95}}'
           + '#cmo .w{position:absolute;left:-10%;right:-10%;bottom:-8px;height:70px;border-radius:50% 50% 0 0;background:rgba(143,233,255,.1);animation:cmw 6s ease-in-out infinite alternate}'
           + '@keyframes cmw{from{transform:translateX(-4%)}to{transform:translateX(4%)}}'
+          + '#cmo .pb{width:min(240px,70%);height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}#cmo .pb i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#8fe9ff,#c8b6ff);transition:width .25s}#cmo .pb.ind i{width:35%;animation:cmi 1.2s ease-in-out infinite alternate}@keyframes cmi{from{transform:translateX(-10%)}to{transform:translateX(190%)}}'
+          + '#cmo .x.hot{width:auto;padding:0 18px;border-radius:22px;background:#ff5a6e;font-size:15px;box-shadow:0 0 0 3px rgba(255,255,255,.65),0 0 18px rgba(255,90,110,.85)}'
           + '@media(prefers-reduced-motion:reduce){#cmo *{animation-duration:12s!important}}';
         document.head.appendChild(st);
         ov = document.createElement('div');
@@ -121,12 +123,12 @@
         h += '<svg viewBox="-28 -66 56 68" class="z" aria-hidden="true"><defs><radialGradient id="cmzb" cx=".36" cy=".26" r=".98"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#ece6ff"/><stop offset="1" stop-color="#b9acec"/></radialGradient><radialGradient id="cmzs" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#fff6c2"/><stop offset="1" stop-color="#ffc83d"/></radialGradient><radialGradient id="cmzg"><stop offset="0" stop-color="#fff3c0" stop-opacity=".85"/><stop offset="1" stop-color="#fff3c0" stop-opacity="0"/></radialGradient></defs><ellipse cx="0" cy="-1" rx="12" ry="2.2" fill="rgba(0,0,0,.2)"/><path d="M1 -38Q6 -46 4 -52" stroke="#a79bdc" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="4" cy="-55" r="9" fill="url(#cmzg)"/><polygon points="4.0,-60.8 5.6,-57.3 9.5,-56.8 6.7,-54.1 7.4,-50.3 4.0,-52.2 0.6,-50.3 1.3,-54.1 -1.5,-56.8 2.4,-57.3" fill="url(#cmzs)" stroke="#ffc83d" stroke-width="1.6" stroke-linejoin="round"/><path d="M0 -39C10 -39 15.5 -29 15.5 -19C15.5 -8 9 -2 0 -2C-9 -2 -15.5 -8 -15.5 -19C-15.5 -29 -10 -39 0 -39Z" fill="url(#cmzb)"/><ellipse cx="-6.4" cy="-30" rx="3.2" ry="5.4" fill="#fff" opacity=".6" transform="rotate(18 -6.4 -30)"/><ellipse cx="-5.8" cy="-23" rx="2.1" ry="2.9" fill="#4a4290"/><ellipse cx="5.8" cy="-23" rx="2.1" ry="2.9" fill="#4a4290"/><circle cx="-5.1" cy="-24.2" r=".85" fill="#fff"/><circle cx="6.5" cy="-24.2" r=".85" fill="#fff"/><path d="M-2.8 -16.4q2.8 2.6 5.6 0" stroke="#7a6cc0" stroke-width="1.5" fill="none" stroke-linecap="round"/><g fill="#efb63e"><circle cx="-11.8" cy="-18.4" r="1.1"/><circle cx="-9.6" cy="-16" r="1.1"/><circle cx="-12.6" cy="-15.2" r=".9"/><circle cx="11.8" cy="-18.4" r="1.1"/><circle cx="9.6" cy="-16" r="1.1"/><circle cx="12.6" cy="-15.2" r=".9"/></g><circle cx="-14.8" cy="-10" r="4.6" fill="#e6defc" stroke="#c7bbf0" stroke-width="1"/><circle cx="14.8" cy="-10" r="4.6" fill="#e6defc" stroke="#c7bbf0" stroke-width="1"/></svg>';
         h += '<button type="button" class="x" aria-label="Fermer">✕</button>';
         h += '<div class="k"><span id="cmn">🫧 0</span><small>Éclate les bulles en attendant</small></div>';
-        h += '<div class="t">Vérification des mises à jour…</div>';
+        h += '<div class="t">Vérification des mises à jour…</div><div class="pb ind"><i></i></div>';
         ov.innerHTML = h;
         document.body.appendChild(ov);
         var n = 0, live = 0;
         ov.addEventListener('pointerdown', function (e) {
-          var t = e.target; if (t.classList && t.classList.contains('x')) { closed = true; hideOv(); return; }
+          var t = e.target; if (t.classList && t.classList.contains('x')) { closed = true; hideOv(); cancelFn && cancelFn(); return; }
           if (!t.classList || !t.classList.contains('g') || t.classList.contains('p')) return;
           t.classList.add('p'); live--; n++;
           var c = document.getElementById('cmn'); if (c) c.textContent = '🫧 ' + n;
@@ -145,6 +147,28 @@
       if (document.body) go(); else document.addEventListener('DOMContentLoaded', go);
     };
     var hideOv = function () { try { var o = ov; clearInterval(o && o.__gt); if (o) { o.style.opacity = '0'; setTimeout(function () { try { o.remove(); } catch (e) {} }, 500); } } catch (e) {} ov = null; };
+    var hot = function () { try { var x = ov && ov.querySelector('.x'); if (x && !x.classList.contains('hot')) { x.classList.add('hot'); x.textContent = '✕ Annuler'; } } catch (e) {} };
+    var prog = function (p, txt) { try { if (!ov) return; hot(); var b = ov.querySelector('.pb'), t = ov.querySelector('.t'); if (!b) return; b.classList.remove('ind'); b.firstChild.style.width = Math.max(0, Math.min(100, p)) + '%'; if (t) t.textContent = txt || ('Téléchargement des données… ' + Math.round(p) + ' %'); } catch (e) {} };
+    try { U.addListener('download', function (e) { prog((e && e.percent) || 0); }); } catch (e) {}
+    var cell = function () { try { return !!(navigator.connection && navigator.connection.type === 'cellular'); } catch (e) { return false; } };
+    var ask = function (sz) {
+      return new Promise(function (res) {
+        try {
+          var t = ov.querySelector('.t'), pb = ov.querySelector('.pb'), old = t.textContent;
+          t.textContent = 'Mise à jour de ' + Math.round(sz / 1048576) + ' Mo. Tu utilises tes données mobiles : la télécharger maintenant ?';
+          t.style.animation = 'none'; t.style.opacity = '1'; t.style.padding = '0 26px'; t.style.lineHeight = '1.4'; pb.style.display = 'none';
+          var d = document.createElement('div'), bs = 'border:0;border-radius:14px;padding:12px 18px;font:600 15px system-ui,sans-serif;color:#fff;';
+          d.style.cssText = 'display:flex;gap:10px;position:relative;z-index:3';
+          d.innerHTML = '<button type="button" data-k="y" style="' + bs + 'background:#5a6bd8">Télécharger</button><button type="button" data-k="n" style="' + bs + 'background:rgba(255,255,255,.18)">Plus tard</button>';
+          ov.appendChild(d); hot(); cancelFn = function () { res(false); };
+          d.addEventListener('click', function (e) {
+            var b = e.target.closest && e.target.closest('button'); if (!b) return;
+            d.remove(); t.textContent = old; t.style.animation = ''; t.style.opacity = ''; t.style.padding = ''; pb.style.display = '';
+            res(b.getAttribute('data-k') === 'y');
+          });
+        } catch (e) { res(true); }
+      });
+    };
     var tmo = function (p, ms) { return Promise.race([p, new Promise(function (_, rj) { setTimeout(function () { rj(new Error('délai dépassé')); }, ms); })]); };
     /* Vérification manuelle (bouton dans les Réglages) : cb(texte) reçoit l'état ; l'app se recharge si une mise à jour est installée. */
     window.CalmosUpdate = {
@@ -167,7 +191,7 @@
         } catch (e) { say('Impossible de vérifier pour l’instant. Réessaie avec une meilleure connexion.'); }
       }
     };
-    var closed = false, ovT = setTimeout(showOv, 600), capT = setTimeout(function () { closed = true; hideOv(); }, (function () { try { return localStorage.getItem('ota:ran') ? 20000 : 60000; } catch (e) { return 20000; } })()); // plafond : 60 s au 1er démarrage, sinon 20 s // l'écran n'apparaît que si la vérification traîne
+    var cancelFn = null, closed = false, ovT = setTimeout(showOv, 600), capT = setTimeout(function () { closed = true; hideOv(); }, (function () { try { return localStorage.getItem('ota:ran') ? 20000 : 60000; } catch (e) { return 20000; } })()); // plafond : 60 s au 1er démarrage, sinon 20 s // l'écran n'apparaît que si la vérification traîne
     (async function () {
       var reloading = false;
       try {
@@ -181,9 +205,18 @@
         var LK = 'ota:last', lt = null;
         try { lt = JSON.parse(localStorage.getItem(LK) || 'null'); } catch (e) {}
         if (lt && lt.v === m.version && Date.now() - lt.t < 6e5) return ota('déjà installée ou tentée récemment'); // anti-boucle de rechargement
+        if (m.size > 13 * 1048576 && cell()) {
+          clearTimeout(ovT); clearTimeout(capT); closed = false; showOv();
+          var yes = ov && await ask(m.size); cancelFn = null;
+          if (!yes) { hideOv(); return ota('refusée (données mobiles)'); }
+          capT = setTimeout(function () { closed = true; hideOv(); }, 60000);
+        }
         ota('téléchargement…');
-        clearTimeout(ovT); if (!closed) { showOv(); if (ov) ov.lastChild.textContent = 'Zeni prépare la nouveauté…'; }
-        var b = await tmo(U.download({ url: m.url, version: m.version, checksum: m.checksum }), 15000);
+        clearTimeout(ovT); if (!closed) { showOv(); if (ov) prog(0, 'Zeni prépare la nouveauté… 0 %'); }
+        var cp = new Promise(function (r) { cancelFn = function () { r('x'); }; });
+        var b = await tmo(Promise.race([U.download({ url: m.url, version: m.version, checksum: m.checksum }), cp]), 60000);
+        cancelFn = null; if (b === 'x') return ota('annulée par l’utilisateur');
+        prog(100, 'Installation…');
         await tmo(U.next({ id: b.id }), 5000);
         ota('installation…');
         var l = await tmo(U.list(), 5000), keep = [b.id, cur && cur.bundle && cur.bundle.id];
