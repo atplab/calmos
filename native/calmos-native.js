@@ -11,6 +11,16 @@
   var WEB_CLIENT_ID = 'REMPLACER.apps.googleusercontent.com'; // client OAuth "Web" du projet Firebase
 
   /* ---- Pubs récompensées (AdMob) ---- */
+  /* ---- Bouton / geste retour Android : revenir en arrière, double appui pour quitter ---- */
+  var AP = PL.App;
+  if (AP && AP.addListener) {
+    AP.addListener('backButton', function () {
+      var ok = false;
+      try { ok = !!(window.__calmosBack && window.__calmosBack()); } catch (e) {}
+      if (!ok && AP.exitApp) AP.exitApp();
+    });
+  }
+
   var A = PL.AdMob;
   if (A) {
     var privacy = { adsEnabled: true, minor: false }, ready = null;
