@@ -172,7 +172,8 @@
       var reloading = false;
       try {
         ota('vérif…');
-        var m = await tmo(fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' }).then(function (r) { return r.json(); }), 2500);
+        var first = false; try { first = !localStorage.getItem('ota:ran'); localStorage.setItem('ota:ran', '1'); } catch (e) {} // 1er démarrage : 8 s, ensuite 4 s
+        var m = await tmo(fetch('https://atplab.github.io/calmos-updates/latest.json', { cache: 'no-store' }).then(function (r) { return r.json(); }), first ? 8000 : 4000);
         var nat = (await tmo(U.getBuiltinVersion(), 5000)).version, cur = await tmo(U.current(), 5000);
         if (!m.version) return ota('fichier illisible');
         if (m.native !== nat) return ota('app ' + nat + ' ≠ ' + m.native);
