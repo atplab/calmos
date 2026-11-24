@@ -167,7 +167,7 @@
         } catch (e) { say('Impossible de vérifier pour l’instant. Réessaie avec une meilleure connexion.'); }
       }
     };
-    var closed = false, ovT = setTimeout(showOv, 600), capT = setTimeout(function () { closed = true; hideOv(); }, 20000); // plafond : jamais plus de 20 s d'attente // l'écran n'apparaît que si la vérification traîne
+    var closed = false, ovT = setTimeout(showOv, 600), capT = setTimeout(function () { closed = true; hideOv(); }, (function () { try { return localStorage.getItem('ota:ran') ? 20000 : 60000; } catch (e) { return 20000; } })()); // plafond : 60 s au 1er démarrage, sinon 20 s // l'écran n'apparaît que si la vérification traîne
     (async function () {
       var reloading = false;
       try {
