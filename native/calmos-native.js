@@ -7,7 +7,7 @@
   var PL = C.Plugins || {};
 
   /* ---- À REMPLACER avant la publication (voir PUBLICATION-PLAY.md) ---- */
-  var REWARDED_ID = 'ca-app-pub-3940256099942544/5224354917'; // ID de TEST AdMob
+  var REWARDED_ID = 'ca-app-pub-7972680590765194/4950753274';
   var WEB_CLIENT_ID = 'REMPLACER.apps.googleusercontent.com'; // client OAuth "Web" du projet Firebase
 
   /* ---- Pubs récompensées (AdMob) ---- */
