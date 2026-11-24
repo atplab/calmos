@@ -26,6 +26,16 @@
     };
     window.CalmosAds = {
       setPrivacyMode: function (p) { privacy = Object.assign(privacy, p || {}); },
+      privacyOptions: async function () {
+        try {
+          var info = await A.requestConsentInfo();
+          if (info && info.privacyOptionsRequirementStatus === 'REQUIRED') { await A.showPrivacyOptionsForm(); return true; }
+        } catch (e) {}
+        return false;
+      },
+      privacyRequired: async function () {
+        try { var info = await A.requestConsentInfo(); return !!(info && info.privacyOptionsRequirementStatus === 'REQUIRED'); } catch (e) { return false; }
+      },
       showRewarded: async function () {
         if (privacy.adsEnabled === false) return false;
         await init();
