@@ -81,3 +81,54 @@ exports.verifyPlayPurchase=onRequest({cors:true,region:'us-central1'},async(req,
     res.json({ok:true});
   }catch(e){console.error(e);res.status(e&&e.http||(e&&e.code&&String(e.code).startsWith('auth/')?401:500)).json({error:'x'})}
 });
+
+
+/* 4. Notifications push (FCM). L'app écrit pt/<uid> = {j:{t:jeton,p:{on,rm,turn,msg,fr}}} ; ces déclencheurs envoient seulement
+   les types que le joueur a activés. Les documents de l'app sont {j:"<json>"} (on accepte aussi un objet direct). */
+const {onDocumentWritten}=require('firebase-functions/v2/firestore');
+const PJ=snap=>{try{const x=snap&&snap.exists&&snap.data();if(!x)return null;return typeof x.j==='string'?JSON.parse(x.j):x}catch(e){return null}};
+async function pName(uid){try{const p=PJ(await admin.firestore().doc('profiles/'+uid).get());return(p&&p.name)||'Un ami'}catch(e){return'Un ami'}}
+async function push(uid,type,title,body,data){
+  try{
+    const d=PJ(await admin.firestore().doc('pt/'+uid).get());
+    if(!d||!d.t||!d.p||!d.p.on||!d.p[type])return;
+    await admin.messaging().send({token:d.t,notification:{title,body:String(body).slice(0,120)},data:Object.assign({k:type},data||{}),android:{priority:'high'}});
+  }catch(e){console.error('push',type,e&&e.code||e)}
+}
+const REG={region:'us-central1'};
+/* messages et invitations de salon : cv/<uid1>_<uid2>_<auteur> */
+exports.pushCv=onDocumentWritten(Object.assign({document:'cv/{id}'},REG),async ev=>{
+  const [a,b,au]=ev.params.id.split('_');if(!au)return;
+  const to=a===au?b:a,B=(PJ(ev.data.before)||{}).m||[],A=(PJ(ev.data.after)||{}).m||[];
+  const t0=B.length?+B[B.length-1].t||0:0,nw=A.filter(x=>x&&+x.t>t0);if(!nw.length||Date.now()-nw[nw.length-1].t>6e4)return;
+  const l=nw[nw.length-1],nm=await pName(au);
+  if(l.k==='inv')return push(to,'rm',nm,'t’invite dans un salon',{v:au});
+  push(to,'msg',nm,l.k==='stk'?'Sticker':String(l.x||'Nouveau message'),{v:au});
+});
+/* Parties en ligne : même collection sc. <u1>_<u2> = Motuiles (t = tour), _c = échecs, _d = dames (n coups : pair → p[0], impair → p[1]),
+   _u = Hoho (2 à 4 joueurs ; S[t].u = joueur dont c'est le tour). */
+exports.pushSc=onDocumentWritten(Object.assign({document:'sc/{gid}'},REG),async ev=>{
+  const B=PJ(ev.data.before),A=PJ(ev.data.after);
+  if(!A||!Array.isArray(A.p)||(B&&B.id===A.id&&B.n===A.n&&B.t===A.t&&B.st===A.st))return;
+  const suf=(ev.params.gid.split('_')[2]||'');
+  let me,op,name='Motuiles';
+  if(suf==='u'){
+    if(A.st!=='play'||!Array.isArray(A.S)||!A.S[A.t])return;
+    me=A.S[A.t].u;op=A.h;name='HoHo';
+    if(B&&B.st==='play'&&B.S&&B.S[B.t]&&B.S[B.t].u===me&&B.id===A.id)return;
+  }else if(suf==='c'||suf==='d'){
+    if(A.k!=='chess'&&A.k!=='draughts'||A.r||A.p.length!==2)return;
+    me=A.p[(A.n||0)%2];op=A.p[1-(A.n||0)%2];name=suf==='c'?'Échecs':'Dames';
+  }else{
+    if(A.e||A.p.length!==2)return;
+    me=A.p[A.t];op=A.p[1-A.t];
+  }
+  if(!me||!op||me===op)return;
+  push(me,'turn',name,'À toi de jouer contre '+await pName(op),{v:op});
+});
+/* amis et cadeaux : inbox/<destinataire> = {<expéditeur>:1} */
+exports.pushInbox=onDocumentWritten(Object.assign({document:'inbox/{rcpt}'},REG),async ev=>{
+  const B=(ev.data.before.exists&&ev.data.before.data())||{},A=(ev.data.after.exists&&ev.data.after.data())||{};
+  const nw=Object.keys(A).filter(k=>!B[k]);if(!nw.length)return;
+  push(ev.params.rcpt,'fr','Calmos',(await pName(nw[0]))+' pense à toi',{});
+});

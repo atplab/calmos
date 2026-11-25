@@ -250,3 +250,31 @@
     })();
   }
 })();
+
+/* ---- Notifications push (FCM) : actives seulement si le plugin @capacitor/push-notifications est dans l'AAB ---- */
+(function () {
+  var C = window.Capacitor, P = C && C.Plugins && C.Plugins.PushNotifications;
+  if (!C || !C.isNativePlatform || !C.isNativePlatform() || !P) return;
+  var ready = false;
+  function listen() {
+    if (ready) return; ready = true;
+    P.addListener('registration', function (t) {
+      try { localStorage.setItem('nt:tok', JSON.stringify(t.value)); } catch (e) {}
+      document.dispatchEvent(new CustomEvent('calmos-push-token'));
+    });
+    P.addListener('pushNotificationActionPerformed', function (e) {
+      try { window.__calmosPushOpen && window.__calmosPushOpen((e && e.notification && e.notification.data) || {}); } catch (x) {}
+    });
+  }
+  window.__calmosPush = {
+    ok: true,
+    ask: async function () {
+      listen();
+      var r = await P.checkPermissions();
+      if (r.receive === 'prompt' || r.receive === 'prompt-with-rationale') r = await P.requestPermissions();
+      if (r.receive !== 'granted') return false;
+      await P.register();
+      return true;
+    }
+  };
+})();
