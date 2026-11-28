@@ -16,17 +16,32 @@ for (f of fichiers) {
   if (a >= 0) break;
 }
 if (a < 0) throw 'début introuvable';
-b = L.findIndex((l, i) => i > a && new RegExp(rf).test(l));
+b = rf === '$' ? L.length : L.findIndex((l, i) => i > a && new RegExp(rf).test(l));
 if (b < 0) throw 'suivant introuvable dans ' + f;
 fs.mkdirSync(path.dirname(R(cible)), { recursive: true });
 fs.writeFileSync(R(cible), (tete ? '// ' + tete + '\n' : '') + L.slice(a, b).join('\n').replace(/\n+$/, '') + '\n');
 const avant = L.slice(0, a).join('\n').replace(/\n+$/, '') + '\n', apres = L.slice(b).join('\n');
-// Renumérotation : f devient [f, cible, f+1], les suivants sont décalés de 1.
-const n = +f.match(/(\d+)\.js$/)[1], max = Math.max(...fichiers.map((x) => +x.match(/(\d+)\.js$/)[1]));
-for (let i = max; i > n; i--) fs.renameSync(R(`reste/principal-${i}.js`), R(`reste/principal-${i + 1}.js`));
-fs.writeFileSync(R(f), avant);
-fs.writeFileSync(R(`reste/principal-${n + 1}.js`), apres);
-for (let i = max; i > n; i--) src = src.replace(`/*@inclure reste/principal-${i}.js*/`, `/*@inclure reste/principal-${i + 1}.js*/`);
-src = src.replace(`/*@inclure ${f}*/`, `/*@inclure ${f}*/\n/*@inclure ${cible}*/\n/*@inclure reste/principal-${n + 1}.js*/`);
+// f devient [avant, cible, après] (morceaux vides omis), puis tous les principal-N.js sont renumérotés 1, 2, …
+const morceaux = [avant, null, apres].filter((x) => x === null || x.trim());
+const liste = [];
+for (const x of fichiers) {
+  if (x !== f) { liste.push({ f: x }); continue; }
+  for (const m of morceaux) liste.push(m === null ? { c: cible } : { txt: m });
+}
+const tmp = [];
+let max = 0;
+liste.forEach((e, i) => {
+  if (e.c) return;
+  const nf = `reste/principal-${++max}.js`;
+  if (e.f) fs.renameSync(R(e.f), R(nf + '.x'));
+  else fs.writeFileSync(R(nf + '.x'), e.txt);
+  e.nf = nf;
+});
+fichiers.includes(f) && fs.existsSync(R(f)) && fs.unlinkSync(R(f));
+liste.forEach((e) => e.nf && fs.renameSync(R(e.nf + '.x'), R(e.nf)));
+// Marqueurs : chaque ancien fichier passe par un repère temporaire, puis prend son nouveau nom (f : ses morceaux).
+for (const x of fichiers) src = src.replace(`/*@inclure ${x}*/`, `\u0000${x}\u0000`);
+for (const x of fichiers)
+  src = src.replace(`\u0000${x}\u0000`, liste.filter((e) => (x === f ? !e.f : e.f === x)).map((e) => `/*@inclure ${e.c || e.nf}*/`).join('\n'));
 fs.writeFileSync(R('index.src.html'), src);
-console.log(`${cible} : lignes ${a + 1}–${b} de ${f} ; ${max + 1} fichiers principal`);
+console.log(`${cible} : lignes ${a + 1}–${b} de ${f} ; ${max} fichiers principal`);
