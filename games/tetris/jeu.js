@@ -1,0 +1,965 @@
+// Tetris / Teconta (id « tetris ») : pièces TTP/TTC/TTZ/TTR, niveaux TTS/TTO/ttLv, écran pTeconta.
+const TTP = {
+  I: [
+    [0, 1],
+    [1, 1],
+    [2, 1],
+    [3, 1],
+  ],
+  O: [
+    [1, 0],
+    [2, 0],
+    [1, 1],
+    [2, 1],
+  ],
+  T: [
+    [1, 0],
+    [0, 1],
+    [1, 1],
+    [2, 1],
+  ],
+  S: [
+    [1, 0],
+    [2, 0],
+    [0, 1],
+    [1, 1],
+  ],
+  Z: [
+    [0, 0],
+    [1, 0],
+    [1, 1],
+    [2, 1],
+  ],
+  J: [
+    [0, 0],
+    [0, 1],
+    [1, 1],
+    [2, 1],
+  ],
+  L: [
+    [2, 0],
+    [0, 1],
+    [1, 1],
+    [2, 1],
+  ],
+  V: [
+    [0, 0],
+    [0, 1],
+    [1, 1],
+  ],
+  D: [
+    [0, 1],
+    [1, 1],
+    [2, 1],
+  ],
+};
+const TTC = {
+  I: "#e8b48f",
+  O: "#a99bd6",
+  T: "#e59fb4",
+  S: "#8cc5cf",
+  Z: "#e6cf8a",
+  J: "#97c9a6",
+  L: "#8fa9e0",
+  V: "#bfe6ef",
+  D: "#f0b8d8",
+  G: "#9aa6b8",
+  C: "#f6d7ff",
+};
+const TTZ = { I: 4, O: 4, T: 3, S: 3, Z: 3, J: 3, L: 3, V: 2, D: 3 };
+const TTR = {};
+for (const e in TTP) {
+  TTR[e] = [TTP[e]];
+  for (let t = 1; t < 4; t++)
+    TTR[e].push("O" === e ? TTP[e] : TTR[e][t - 1].map(([t, a]) => [TTZ[e] - 1 - a, t]));
+}
+const TTS = [
+  { cr: 3, gb: 4 },
+  { w: 8, goal: 10 },
+  { pc: 30 },
+  { bag: "ILJO", goal: 10 },
+  { zen: 1, goal: 15 },
+  { rise: 10, goal: 10 },
+  { mc: 3 },
+  { pc: 40, w: 8 },
+  { cr: 4, gb: 5 },
+  { w: 7, goal: 12 },
+  { bag: "TSZ", goal: 8 },
+  { pc: 35, rise: 8 },
+  { zen: 1, goal: 20, gb: 4 },
+  { rise: 8, goal: 12 },
+  { mc: 4 },
+  { pc: 45, bag: "TSZ" },
+  { cr: 5, gb: 6 },
+  { w: 8, bag: "IO", goal: 12 },
+  { zen: 1, cr: 4, gb: 5 },
+  { pc: 50, w: 7 },
+  { rise: 9, w: 8, goal: 12 },
+  { mc: 5 },
+  { cr: 6, gb: 7 },
+  { pc: 60 },
+  { bag: "ILJ", goal: 14 },
+  { zen: 1, goal: 25 },
+];
+const TTN = 66;
+const TTO = (() => {
+  const e = new Set(TTS.map((e, t) => Math.floor((66 * (t + 0.9)) / TTS.length)));
+  let t = 0,
+    a = 0;
+  return [...Array(66).keys()].map((s) => (e.has(s) ? ["s", a++] : ["n", t++]));
+})();
+const ttLv = (e) => {
+  const t = e % 66,
+    a = Math.floor(e / 66),
+    [s, n] = TTO[t],
+    o = "s" === s ? Math.round((40 * t) / 66) : n,
+    i = {
+      goal: Math.min(30, 10 + 2 * Math.floor(o / 4)),
+      ms: Math.max(170, 880 - 17 * o - 60 * a),
+      gb: "n" === s && o % 5 == 4 ? Math.min(8, 3 + Math.floor(o / 8)) : 0,
+    };
+  return "s" === s ? Object.assign(i, TTS[n]) : i;
+};
+function pTeconta(e) {
+  const t = "tetris" === INFG,
+    a = t ? { goal: 1e9, ms: 800, gb: 0 } : ttLv(lv),
+    s = a.w || 9,
+    n = 20,
+    o = rng(40503 * (lv + 5) + 9),
+    i = a.pc ? "p" : a.cr ? "c" : a.mc ? "m" : "l",
+    r = a.pc || a.cr || a.mc || a.goal,
+    l = { p: "pièces posées", c: "cristaux", m: "coups multiples", l: "lignes" }[i];
+  let c,
+    d = 0,
+    f = 0,
+    u = 0,
+    h = 0,
+    p = null,
+    m = [],
+    b = null,
+    g = !1,
+    E = 0,
+    y = 0,
+    v = 0,
+    A = 0,
+    S = 0,
+    x = !1,
+    M = !1,
+    L = !1,
+    T = !1,
+    k = null,
+    w = -1,
+    R = 0,
+    C = 0,
+    O = 0,
+    I = 0,
+    N = null,
+    P = [],
+    U = [],
+    q = null,
+    D = null,
+    H = 0,
+    G = 24,
+    F = Math.min(2, devicePixelRatio || 1);
+  snap = t ? null : () => ({});
+  const B = () => {
+      const e = a.bag ? [...a.bag, ...a.bag] : Object.keys(TTP);
+      for (let t = e.length - 1; t > 0; t--) {
+        const a = (Math.random() * (t + 1)) | 0;
+        [e[t], e[a]] = [e[a], e[t]];
+      }
+      return e;
+    },
+    z = () => {
+      c = [...Array(n)].map(() => Array(s).fill(null));
+      for (let e = 0; e < a.gb; e++) {
+        const t = 19 - e,
+          a = (o() * s) | 0;
+        for (let e = 0; e < s; e++) e !== a && o() < 0.86 && (c[t][e] = "G");
+      }
+      if (a.cr) {
+        const e = [...Array(a.gb).keys()].sort(() => o() - 0.5);
+        for (let t = 0; t < a.cr; t++) {
+          const a = 19 - e[t % e.length],
+            n = [...Array(s).keys()].filter((e) => "G" === c[a][e]);
+          n.length && (c[a][n[(o() * n.length) | 0]] = "C");
+        }
+      }
+      ((m = [...B(), ...B()]),
+        (b = null),
+        (g = !1),
+        (E = 0),
+        (d = 0),
+        (f = 0),
+        (u = 0),
+        (h = 0),
+        (y = 0),
+        (w = -1),
+        (P = []),
+        (U = []),
+        (k = null),
+        (q = null),
+        (D = null),
+        (L = !1),
+        ae());
+    };
+  frame(
+    `<div class="tth"><button class="ttbx" data-a="ttHold" aria-label="Garder la pièce"><small>Garde</small><canvas id="tthc"></canvas></button>\n  <div class="ttmid"><div class="ttl"><span id="ttln">0</span>${t ? "" : " / " + r} ${l}</div><div class="ttbar"><i id="ttbr"></i></div><div class="tts"><span id="ttsc">0</span> pts</div></div>\n  <div class="ttbx ttnx"><small>Suivante</small><canvas id="ttnc"></canvas></div></div>\n  <div class="ttrow"><div class="ttc ttcl"><button data-k="l" aria-label="Gauche"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><button data-k="t" aria-label="Tourner"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><button data-k="g" aria-label="Garder ou échanger la pièce"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3M17 17H6l3 3"/></svg></button></div><div class="ttw" id="ttw"><canvas id="ttcv" class="ttcv"></canvas><div class="ttpop" id="ttpop"></div><div class="ttov" id="ttov" hidden></div>\n   <button class="ttpz" data-a="ttPause" aria-label="Pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button></div>\n  <div class="ttc ttcr"><button data-k="r" aria-label="Droite"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button><button data-k="d" aria-label="Descendre"><svg viewBox="0 0 24 24"><path d="M12 5v13M6 12l6 6 6-6"/></svg></button><button data-k="h" aria-label="Faire tomber"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button></div></div>`,
+    1,
+  );
+  const V = $("#ttcv"),
+    j = V.getContext("2d"),
+    Z = $("#ttw"),
+    Y = $("#tthc"),
+    W = $("#ttnc"),
+    K = () => st.get("tt:ctl", ""),
+    Q = () => {
+      (() => {
+        const e = $(".ttrow");
+        e && e.classList.toggle("nob", "g" === K());
+      })();
+      const e =
+          Math.min(($(".ttrow") || Z.parentElement).clientWidth || 320, 520) -
+          ("g" === K() ? 4 : 2 * (Math.min(50, Math.max(40, 0.105 * innerWidth)) + 6) + 6),
+        t = $(".ttrow"),
+        a = t ? t.getBoundingClientRect().top : 168,
+        o = t
+          ? [...t.parentElement.children]
+              .filter((e) => 4 & t.compareDocumentPosition(e))
+              .reduce((e, t) => e + (t.offsetHeight || 0) + 6, 0)
+          : 0,
+        i = Math.max(200, innerHeight - a - o - 22);
+      ((G = Math.max(14, Math.floor(Math.min(e / s, i / n)))),
+        (V.width = s * G * F),
+        (V.height = n * G * F),
+        (V.style.width = s * G + "px"),
+        (V.style.height = n * G + "px"));
+      const r = Math.max(8, Math.round(0.42 * G));
+      ((Y.width = 4 * r * F),
+        (Y.height = 2.4 * r * F),
+        (Y.style.width = 4 * r + "px"),
+        (Y.style.height = 2.4 * r + "px"),
+        (W.width = 4 * r * F),
+        (W.height = 2.4 * r * F),
+        (W.style.width = 4 * r + "px"),
+        (W.style.height = 2.4 * r + "px"),
+        (X = {}),
+        Te());
+    };
+  let X = {};
+  const J = (e, t) => {
+      const a = e + t;
+      if (X[a]) return X[a];
+      const s = document.createElement("canvas"),
+        n = Math.ceil(t * F);
+      s.width = s.height = n;
+      const o = s.getContext("2d"),
+        i = TTC[e],
+        r = 0.07 * n,
+        l = 0.3 * n;
+      (o.beginPath(), o.roundRect(r, r, n - 2 * r, n - 2 * r, l));
+      const c = o.createLinearGradient(0, 0, 0, n);
+      if (
+        (c.addColorStop(0, "rgba(255,255,255,.34)"),
+        c.addColorStop(1, "rgba(255,255,255,0)"),
+        (o.fillStyle = i),
+        o.fill(),
+        (o.fillStyle = c),
+        o.fill(),
+        (o.strokeStyle = "rgba(255,255,255,.38)"),
+        (o.lineWidth = 0.04 * n),
+        o.stroke(),
+        "C" === e)
+      ) {
+        const e = n / 2;
+        ((o.fillStyle = "#fff"), (o.shadowColor = "#ffe38a"), (o.shadowBlur = 0.25 * n), o.beginPath());
+        for (let t = 0; t < 8; t++) {
+          const a = (t * Math.PI) / 4,
+            s = t % 2 ? 0.1 * n : 0.3 * n;
+          o.lineTo(e + Math.cos(a) * s, e + Math.sin(a) * s);
+        }
+        (o.closePath(), o.fill(), (o.shadowBlur = 0));
+      }
+      return (X[a] = s);
+    },
+    _ = (e, t, a, s) => TTR[e][3 & t].map(([e, t]) => [a + e, s + t]),
+    ee = (e, t, a, o) => _(e, t, a, o).every(([e, t]) => e >= 0 && e < s && t < n && (t < 0 || !c[t][e])),
+    te = (e) => {
+      let t = e.y;
+      for (; ee(e.k, e.r, e.x, t + 1);) t++;
+      return t;
+    };
+  function ae() {
+    m.length < 8 && m.push(...B());
+    const e = m.shift();
+    ((p = { k: e, r: 0, x: Math.floor((s - TTZ[e]) / 2), y: "I" === e ? -1 : 0 }),
+      (g = !1),
+      (D = null),
+      (R = p.x),
+      (C = p.y - 0.7),
+      (O = 0),
+      (A = 0),
+      (S = 0),
+      (v = 0),
+      Te(),
+      ee(p.k, 0, p.x, p.y) || pe());
+  }
+  const se = () => {
+      S < 15 && ((A = 0), S++);
+    },
+    ne = (e) =>
+      !(
+        !p ||
+        k ||
+        M ||
+        L ||
+        T ||
+        (ee(p.k, p.r, p.x + e, p.y)
+          ? ((p.x += e), se(), 0)
+          : (Z.classList.remove("nl", "nr"), Z.offsetWidth, Z.classList.add(e < 0 ? "nl" : "nr"), 1))
+      ),
+    oe = (e) => {
+      if (!p || k || M || L || T || "O" === p.k) return;
+      const t = (p.r + e + 4) & 3;
+      for (const [e, a] of [
+        [0, 0],
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [-2, 0],
+        [2, 0],
+        [-1, -1],
+        [1, -1],
+      ])
+        if (ee(p.k, t, p.x + e, p.y + a))
+          return ((p.r = t), (p.x += e), (p.y += a), (I = performance.now()), se(), void sfx(520, 0.03));
+    },
+    ie = () =>
+      !(!p || k || M || L || T || !ee(p.k, p.r, p.x, p.y + 1) || (p.y++, (v = 0), (y += x ? 1 : 0), 0)),
+    re = () => {
+      if (!p || k || M || L || T) return;
+      const e = p.y,
+        t = te(p);
+      ((y += 2 * (t - e)),
+        (N = { cs: _(p.k, p.r, p.x, e), d: t - e, k: p.k, t: performance.now() }),
+        (p.y = t),
+        (C = t),
+        ce(!0));
+    },
+    le = () => {
+      if (!p || g || k || M || L || T) return;
+      const e = p.k;
+      (b
+        ? ((p = { k: b, r: 0, x: Math.floor((s - TTZ[b]) / 2), y: "I" === b ? -1 : 0 }),
+          (R = p.x),
+          (C = p.y - 0.7),
+          (O = 0),
+          (A = 0),
+          (S = 0))
+        : ae(),
+        (b = e),
+        (g = !0),
+        (D = null),
+        Te(),
+        sfx(440, 0.04));
+    };
+  function ce(e) {
+    const t = performance.now();
+    let a = !1;
+    if (
+      (_(p.k, p.r, p.x, p.y).forEach(([e, s]) => {
+        s < 0 ? (a = !0) : ((c[s][e] = p.k), U.push([e, s, t]));
+      }),
+      e
+        ? (Z.classList.remove("bump"), Z.offsetWidth, Z.classList.add("bump"), sfx(170, 0.07), vib(6))
+        : sfx(230, 0.04),
+      (p = null),
+      (D = null),
+      h++,
+      d++,
+      a)
+    )
+      return pe();
+    const o = [];
+    for (let e = 0; e < n; e++) c[e].every(Boolean) && o.push(e);
+    if (o.length) {
+      ((k = { rows: o, t: t }), w++);
+      const e = o.length;
+      ((y += [0, 120, 280, 460, 700][e] * (1 + Math.floor(lv / 10)) + 50 * Math.max(0, w)),
+        sfx(480 + 90 * e, 0.22),
+        vib(10 + 6 * e),
+        o.forEach((e) => {
+          for (let t = 0; t < s; t++)
+            for (let a = 0; a < 2; a++)
+              P.push({
+                x: t + 0.5,
+                y: e + 0.5,
+                vx: 9 * (Math.random() - 0.5),
+                vy: 7 * -Math.random() - 1,
+                l: 1,
+                c: TTC[c[e][t]],
+                s: 0.12 + 0.16 * Math.random(),
+              });
+        }));
+      const a = o.reduce((e, t) => e + c[t].filter((e) => "C" === e).length, 0);
+      (a &&
+        o.forEach((e) =>
+          c[e].forEach((t, a) => {
+            if ("C" === t)
+              for (let t = 0; t < 14; t++)
+                P.push({
+                  x: a + 0.5,
+                  y: e + 0.5,
+                  vx: 12 * (Math.random() - 0.5),
+                  vy: 10 * -Math.random() - 2,
+                  l: 1.4,
+                  c: t % 2 ? "#ffe38a" : "#ffffff",
+                  s: 0.08 + 0.12 * Math.random(),
+                });
+          }),
+        ),
+        ue(
+          a
+            ? a > 1
+              ? a + " cristaux libérés !"
+              : "Cristal libéré !"
+            : 4 === e
+              ? "Quatre lignes !"
+              : 3 === e
+                ? "Triple !"
+                : 2 === e
+                  ? "Double !"
+                  : w > 0
+                    ? "Enchaînement ×" + (w + 1)
+                    : "",
+          a ? 4 : e,
+        ));
+    } else {
+      if (((w = -1), he(), fe() >= r)) return be();
+      de();
+    }
+    he();
+  }
+  function de() {
+    if (a.rise && h >= a.rise) {
+      if (((h = 0), c[0].some(Boolean))) return pe();
+      c.shift();
+      const e = (Math.random() * s) | 0;
+      (c.push([...Array(s)].map((t, a) => (a === e ? null : "G"))),
+        (q = { o: Array(n).fill(-1), t: performance.now() }),
+        sfx(150, 0.12),
+        vib(8));
+    }
+    ae();
+  }
+  function fe() {
+    return "p" === i ? d : "c" === i ? f : "m" === i ? u : E;
+  }
+  const ue = (e, t) => {
+      if (!e) return;
+      const a = $("#ttpop");
+      ((a.textContent = e),
+        (a.className = "ttpop"),
+        a.offsetWidth,
+        (a.className = "ttpop on" + (t >= 4 ? " big" : "")));
+    },
+    he = () => {
+      const e = fe();
+      (t && (a.ms = Math.max(110, 800 - 50 * Math.floor(e / 10))),
+        ($("#ttln").textContent = Math.min(e, r)),
+        ($("#ttsc").textContent = y),
+        ($("#ttbr").style.width = (t ? (e % 10) * 10 : Math.min(100, (100 * e) / r)) + "%"));
+    },
+    pe = () => {
+      ((L = !0), (p = null), sfx(200, 0.3));
+      const e = $("#ttov");
+      if (((e.hidden = !1), t)) {
+        const t = infSave("tetris", y);
+        return (
+          (e.innerHTML = `<div><b>La pile touche le ciel</b><p>${E} ligne${E > 1 ? "s" : ""} · ${y} pts${t ? " · nouveau record !" : " · record : " + infBest("tetris") + " pts"}</p><button class="btn" data-a="ttRe">Rejouer</button></div>`),
+          void requestAnimationFrame(() => e.classList.add("on"))
+        );
+      }
+      ((e.innerHTML = `<div><b>La pile touche le ciel</b><p>${fe()} ${l} sur ${r}.</p><button class="btn" data-a="ttCont">Continuer · 1 🫧</button><button class="btn alt" data-a="ttRe">Recommencer</button></div>`),
+        requestAnimationFrame(() => e.classList.add("on")));
+    },
+    me = () => {
+      const e = $("#ttov");
+      (e.classList.remove("on"), (e.hidden = !0));
+    },
+    be = () => {
+      ((M = !0), (p = null));
+      const e = performance.now();
+      for (let t = 0; t < n; t++)
+        for (let a = 0; a < s; a++)
+          c[t][a] &&
+            (U.push([a, t, e + 25 * (n - t)]),
+            Math.random() < 0.5 &&
+              P.push({
+                x: a + 0.5,
+                y: t + 0.5,
+                vx: 6 * (Math.random() - 0.5),
+                vy: 8 * -Math.random() - 2,
+                l: 1.3,
+                c: "#ffffff",
+                s: 0.1 + 0.12 * Math.random(),
+              }));
+      (ue("Bravo !", 4), setTimeout(win, 1600));
+    };
+  ((act.ttHold = le),
+    (act.ttPause = () => {
+      if (M || L) return;
+      T = !T;
+      const e = $("#ttov");
+      T
+        ? ((e.hidden = !1),
+          (e.innerHTML = `<div><b>Pause</b><p>Les flocons attendent.</p><button class="btn" data-a="ttPause">Reprendre</button><button class="btn alt" data-a="ttCtl" data-v="${"g" === K() ? "b" : "g"}">${"g" === K() ? "Jouer avec les boutons" : "Jouer au doigt seulement"}</button></div>`),
+          requestAnimationFrame(() => e.classList.add("on")))
+        : me();
+    }),
+    (act.ttCont = () => {
+      if (L && spend(1)) {
+        for (let e = 0; e < 10; e++) c[e].fill(null);
+        (me(), (L = !1));
+        for (let e = 0; e < 40; e++)
+          P.push({
+            x: Math.random() * s,
+            y: 10 * Math.random(),
+            vx: 4 * (Math.random() - 0.5),
+            vy: 5 * -Math.random(),
+            l: 1,
+            c: "#ffffff",
+            s: 0.1 + 0.1 * Math.random(),
+          });
+        ae();
+      }
+    }),
+    (act.ttRe = () => {
+      (me(), z(), he());
+    }),
+    (act.hint = () => {
+      if (!p || k || M || L || T) return;
+      let e = null;
+      for (let t = 0; t < 4; t++)
+        for (let a = -2; a < s; a++) {
+          if (!ee(p.k, t, a, p.y) && !ee(p.k, t, a, 0)) continue;
+          let o = ee(p.k, t, a, p.y) ? p.y : 0;
+          if (!ee(p.k, t, a, o)) continue;
+          for (; ee(p.k, t, a, o + 1);) o++;
+          const i = c.map((e) => e.slice());
+          let r = !0;
+          if (
+            (_(p.k, t, a, o).forEach(([e, t]) => {
+              t < 0 ? (r = !1) : (i[t][e] = 1);
+            }),
+            !r)
+          )
+            continue;
+          const l = i.filter((e) => !e.every(Boolean)),
+            d = n - l.length;
+          for (; l.length < n;) l.unshift(Array(s).fill(null));
+          let f = 0,
+            u = 0,
+            h = 0,
+            m = [];
+          for (let e = 0; e < s; e++) {
+            let t = 0,
+              a = !1;
+            for (let s = 0; s < n; s++) l[s][e] ? a || ((t = n - s), (a = !0)) : a && u++;
+            (m.push(t), (f += t));
+          }
+          for (let e = 0; e < s - 1; e++) h += Math.abs(m[e] - m[e + 1]);
+          const b = 0.76 * d - 0.51 * f - 0.36 * u * 1.6 - 0.18 * h;
+          (!e || b > e.sc) && (e = { sc: b, ro: t, x: a, y: o });
+        }
+      e &&
+        spend(1) &&
+        ((D = { k: p.k, r: e.ro, x: e.x, y: e.y, t: performance.now() }),
+        msg("La place dorée est la plus douce pour cette pièce."));
+    }));
+  const ge = {};
+  document.querySelectorAll(".ttc button").forEach((e) => {
+    const t = e.dataset.k,
+      a = () => {
+        "l" === t
+          ? ne(-1)
+          : "r" === t
+            ? ne(1)
+            : "t" === t
+              ? oe(1)
+              : "d" === t
+                ? ((x = !0), ie())
+                : "h" === t
+                  ? re()
+                  : "g" === t && le();
+      };
+    e.addEventListener("pointerdown", (s) => {
+      (s.preventDefault(),
+        e.classList.add("on"),
+        a(),
+        "lrd".includes(t) &&
+          (clearTimeout(ge[t]),
+          (ge[t] = setTimeout(function e() {
+            (a(), (ge[t] = setTimeout(e, "d" === t ? 45 : 55)));
+          }, 170))));
+    });
+    const s = () => {
+      (e.classList.remove("on"), clearTimeout(ge[t]), "d" === t && (x = !1));
+    };
+    ["pointerup", "pointerleave", "pointercancel"].forEach((t) => e.addEventListener(t, s));
+  });
+  let Ee = null;
+  const ye = (e) => {
+    if (!V.isConnected) return void arretToucher();
+    if (e.button > 0 || M || L || T || !$("#ttw")) return;
+    const t = e.target;
+    if (t.closest && t.closest("button,a,input,.top,.ttov,.nav,nav,dialog")) return;
+    (e.preventDefault(),
+      (Ee = {
+        x: e.clientX,
+        y: e.clientY,
+        t: performance.now(),
+        ax: 0,
+        ax0: 0,
+        m: !1,
+        v: !1,
+        id: e.pointerId,
+        hd: !1,
+      }));
+    const a = Ee;
+    (clearTimeout(Ee.ht),
+      (Ee.ht = setTimeout(() => {
+        Ee !== a || a.m || a.v || !V.isConnected || ((a.hd = !0), (x = !0));
+      }, 260)));
+  };
+  // Gestes sur tout l'écran via Input : toucher (capture), glisser pour déplacer, glisser vers le bas / haut, taper.
+  const arretToucher = Input.sur("toucher", (quoi, { evt: e }) => ye(e), { cible: document, capture: !0 });
+  const ve = (e) => {
+      xe() ||
+        ((e) => {
+          if (!Ee || e.pointerId !== Ee.id) return;
+          if (!V.isConnected) return void (Ee = null);
+          const t = Math.max(18, 0.9 * G),
+            a = e.clientX - Ee.x,
+            s = e.clientY - Ee.y;
+          if (
+            (!Ee.m && !Ee.v && !Ee.hd && Math.hypot(a, s) > 10 && (Ee.v = Math.abs(s) > 1.2 * Math.abs(a)),
+            Ee.v)
+          )
+            return;
+          let n = a / t - Ee.ax;
+          for (; n >= 1;) (ne(1), Ee.ax++, n--, (Ee.m = !0));
+          for (; n <= -1;) (ne(-1), Ee.ax--, n++, (Ee.m = !0));
+        })(e);
+    },
+    Ae = (e) => {
+      xe() ||
+        ((e) => {
+          if (!Ee || e.pointerId !== Ee.id) return;
+          const t = performance.now() - Ee.t,
+            a = e.clientX - Ee.x,
+            s = e.clientY - Ee.y,
+            n = Ee.v,
+            o = Ee.hd;
+          (clearTimeout(Ee.ht),
+            (Ee = null),
+            o
+              ? (x = !1)
+              : V.isConnected &&
+                (n && s > 30 ? re() : n && s < -40 ? le() : Math.hypot(a, s) < 12 && t < 350 && oe(1)));
+        })(e);
+    },
+    Se = () => {
+      (Ee && (clearTimeout(Ee.ht), Ee.hd && (x = !1)), (Ee = null), xe());
+    },
+    xe = () => {
+      if (!V.isConnected) return (arretGeste(), !0);
+    };
+  const arretGeste = Input.sur(
+    ["glisser", "survoler", "lacher"],
+    (quoi, { evt: e }) => ("lacher" !== quoi ? ve(e) : "pointercancel" === e.type ? Se() : Ae(e)),
+    { cible: document, annulation: !0 },
+  );
+  const Me = (e) => {
+      if (!V.isConnected) return void arretClavier();
+      if (T) {
+        [
+          "Enter",
+          " ",
+          "ArrowLeft",
+          "ArrowRight",
+          "ArrowUp",
+          "ArrowDown",
+          "KeyA",
+          "KeyD",
+          "KeyW",
+          "KeyS",
+        ].includes(e.code) && (e.preventDefault(), act.ttCtl("b"));
+        return;
+      }
+      const dn = () => {
+          ((x = !0), ie());
+        },
+        t =
+          {
+            ArrowLeft: () => ne(-1),
+            ArrowRight: () => ne(1),
+            ArrowUp: () => oe(1),
+            x: () => oe(1),
+            z: () => oe(-1),
+            ArrowDown: dn,
+            " ": () => re(),
+            c: le,
+            Shift: le,
+            p: act.ttPause,
+            Escape: act.ttPause,
+          }[e.key] ||
+          { KeyA: () => ne(-1), KeyD: () => ne(1), KeyW: () => oe(1), KeyS: dn, KeyC: le }[e.code];
+      t && (e.preventDefault(), t());
+    },
+    Le = (e) => {
+      ("ArrowDown" !== e.key && "KeyS" !== e.code) || (x = !1);
+    };
+  function Te() {
+    const e = Y.width / 4,
+      t = (t, a, s, n, o) => {
+        if (!a) return;
+        const i = TTR[a][0],
+          r = Math.min(...i.map((e) => e[0])),
+          l = Math.max(...i.map((e) => e[0])),
+          c = Math.min(...i.map((e) => e[1])),
+          d = Math.max(...i.map((e) => e[1])),
+          f = (l - r + 1) * e,
+          u = (d - c + 1) * e,
+          h = J(a, e / F);
+        ((t.globalAlpha = o),
+          i.forEach(([a, o]) => t.drawImage(h, s - f / 2 + (a - r) * e, n - u / 2 + (o - c) * e, e, e)),
+          (t.globalAlpha = 1));
+      };
+    let a = Y.getContext("2d");
+    (a.clearRect(0, 0, Y.width, Y.height),
+      t(a, b, Y.width / 2, Y.height / 2, g ? 0.4 : 1),
+      (a = W.getContext("2d")),
+      a.clearRect(0, 0, W.width, W.height),
+      t(a, m[0], W.width / 2, W.height / 2, 1));
+  }
+  // Clavier via Input (toutes les touches, appui et relâchement) ; Maj = « tenir » (réserve). La logique lit toujours e.key / e.code.
+  const arretClavier = Input.sur("*", (quoi, { evt: e, phase: p }) => ("relache" === p ? Le : Me)(e), {
+    sources: ["clavier"],
+    relache: !0,
+    touches: { Shift: "tenir" },
+  });
+  const ke = (e) => 1 - Math.pow(1 - Math.min(1, Math.max(0, e)), 3),
+    we = (e) => {
+      if (!V.isConnected) return;
+      requestAnimationFrame(we);
+      const t = Math.min(50, e - (H || e));
+      if (
+        ((H = e),
+        P.forEach((e) => {
+          ((e.x += (e.vx * t) / 1e3), (e.y += (e.vy * t) / 1e3), (e.vy += (14 * t) / 1e3), (e.l -= t / 900));
+        }),
+        (P = P.filter((e) => e.l > 0 && e.y < 22)),
+        k &&
+          e - k.t >= 220 &&
+          (() => {
+            const e = k.rows;
+            k = null;
+            const t = c.filter((t, a) => !e.includes(a)),
+              a = e.length,
+              o = e.reduce((e, t) => e + c[t].filter((e) => "C" === e).length, 0);
+            ((f += o), a >= 2 && u++);
+            const i = Array(n).fill(0);
+            let l = 19;
+            for (let t = 19; t >= 0; t--) e.includes(t) || ((i[l] = e.filter((e) => e > t).length), l--);
+            ((c = [...Array(a)].map(() => Array(s).fill(null)).concat(t)),
+              (q = { o: i, t: performance.now() }),
+              (E += a),
+              he(),
+              fe() >= r ? be() : de());
+          })(),
+        p && !T && !k && !L && !M)
+      ) {
+        ((O += t / 120), (v += t));
+        const e = x ? Math.min(45, a.ms) : a.ms;
+        if (ee(p.k, p.r, p.x, p.y + 1))
+          if (((A = 0), a.zen && !x)) v = 0;
+          else for (; v >= e && ((v -= e), ie()););
+        else ((v = 0), (A += t), A >= 480 && ce(!1));
+      }
+      (p &&
+        ((R += (p.x - R) * Math.min(1, t / 45)),
+        (C += (p.y - C) * Math.min(1, t / 55)),
+        Math.abs(p.x - R) < 0.01 && (R = p.x),
+        Math.abs(p.y - C) < 0.01 && (C = p.y)),
+        ((e) => {
+          const t = G * F;
+          (j.setTransform(1, 0, 0, 1, 0, 0),
+            j.clearRect(0, 0, V.width, V.height),
+            (j.fillStyle = "rgba(255,255,255,.12)"),
+            j.beginPath());
+          for (let e = 1; e < s; e++)
+            for (let a = 1; a < n; a++)
+              (j.moveTo(e * t + 0.05 * t, a * t), j.arc(e * t, a * t, 0.05 * t, 0, 7));
+          j.fill();
+          let a = null;
+          if (q) {
+            const t = (e - q.t) / 170;
+            t >= 1 ? (q = null) : (a = q.o.map((e) => e * (1 - ke(t))));
+          }
+          for (let o = 0; o < n; o++) {
+            const n = k && k.rows.includes(o),
+              i = a ? a[o] : 0;
+            for (let a = 0; a < s; a++) {
+              const s = c[o][a];
+              if (s) {
+                if (n) {
+                  const n = (e - k.t) / 220,
+                    i = 1 - ke(n),
+                    r = (a + 0.5) * t,
+                    l = (o + 0.5) * t;
+                  ((j.globalAlpha = Math.max(0, 1 - 0.6 * n)),
+                    j.drawImage(J(s, G), r - (t * i) / 2, l - (t * i) / 2, t * i, t * i),
+                    (j.globalAlpha = Math.max(0, 0.8 - n)),
+                    (j.fillStyle = "#fff"),
+                    j.fillRect(a * t, o * t, t, t),
+                    (j.globalAlpha = 1));
+                  continue;
+                }
+                j.drawImage(J(s, G), a * t, (o - i) * t, t, t);
+              }
+            }
+          }
+          if (
+            ((U = U.filter(([t, a, s]) => e - s < 260)),
+            U.forEach(([a, s, n]) => {
+              const o = e < n ? 0 : 0.55 * (1 - (e - n) / 260);
+              o <= 0 ||
+                ((j.globalAlpha = o),
+                (j.fillStyle = "#fff"),
+                j.beginPath(),
+                j.roundRect(a * t + 0.06 * t, s * t + 0.06 * t, 0.88 * t, 0.88 * t, 0.2 * t),
+                j.fill(),
+                (j.globalAlpha = 1));
+            }),
+            N)
+          ) {
+            const a = (e - N.t) / 200;
+            if (a >= 1) N = null;
+            else {
+              const e = {};
+              N.cs.forEach(([t, a]) => {
+                e[t] = Math.min(e[t] ?? 99, a);
+              });
+              for (const s in e) {
+                const n = e[s] * t,
+                  o = (e[s] + N.d) * t,
+                  i = j.createLinearGradient(0, n, 0, o);
+                (i.addColorStop(0, "rgba(255,255,255,0)"),
+                  i.addColorStop(1, TTC[N.k]),
+                  (j.globalAlpha = 0.45 * (1 - a)),
+                  (j.fillStyle = i),
+                  j.fillRect(s * t + 0.2 * t, n, 0.6 * t, Math.max(0, o - n)),
+                  (j.globalAlpha = 1));
+              }
+            }
+          }
+          if (p) {
+            const a = te(p);
+            ((j.globalAlpha = 0.22),
+              _(p.k, p.r, p.x, a).forEach(([e, a]) => {
+                a >= 0 && j.drawImage(J(p.k, G), e * t, a * t, t, t);
+              }),
+              (j.globalAlpha = 1),
+              D &&
+                D.k === p.k &&
+                ((j.strokeStyle = "#ffd34d"),
+                (j.lineWidth = 0.1 * t),
+                (j.globalAlpha = 0.6 + 0.4 * Math.sin(e / 220)),
+                _(D.k, D.r, D.x, D.y).forEach(([e, a]) => {
+                  a >= 0 &&
+                    (j.beginPath(),
+                    j.roundRect(e * t + 0.1 * t, a * t + 0.1 * t, 0.8 * t, 0.8 * t, 0.2 * t),
+                    j.stroke());
+                }),
+                (j.globalAlpha = 1)));
+            const s = (e - I) / 140,
+              n = s < 1 ? 1 + 0.1 * (1 - ke(s)) : 1,
+              o = _(p.k, p.r, 0, 0),
+              i = o.reduce((e, t) => e + t[0], 0) / 4 + 0.5,
+              r = o.reduce((e, t) => e + t[1], 0) / 4 + 0.5;
+            ((j.globalAlpha = Math.min(1, O)),
+              (j.shadowColor = TTC[p.k]),
+              (j.shadowBlur = 0.4 * t),
+              j.save(),
+              j.translate((R + i) * t, (C + r) * t),
+              j.scale(n, n),
+              o.forEach(([e, a]) => {
+                C + a > -1 && j.drawImage(J(p.k, G), (e - i) * t, (a - r) * t, t, t);
+              }),
+              j.restore(),
+              (j.shadowBlur = 0),
+              (j.globalAlpha = 1));
+          }
+          (P.forEach((e) => {
+            ((j.globalAlpha = Math.max(0, Math.min(1, e.l))),
+              (j.fillStyle = e.c),
+              j.beginPath(),
+              j.arc(e.x * t, e.y * t, e.s * t, 0, 7),
+              j.fill());
+          }),
+            (j.globalAlpha = 1));
+        })(e));
+    },
+    Re = () => {
+      V.isConnected ? Q() : removeEventListener("resize", Re);
+    };
+  if (
+    (addEventListener("resize", Re),
+    (window.__TTDBG = {
+      fill: () => {
+        const e = _(p.k, p.r, p.x, 0),
+          t = Math.max(...e.map((e) => e[1]));
+        for (let a = 0; a < s; a++) c[19][a] = e.some((e) => e[0] === a && e[1] === t) ? null : "T";
+      },
+      st: () => ({ lines: E, clr: !!k, cur: p && { ...p }, done: M }),
+    }),
+    (act.ttCtl = (e) => {
+      (st.set("tt:ctl", "g" === e ? "g" : "b"), Q(), T && ((T = !1), me()));
+    }),
+    z(),
+    Q(),
+    he(),
+    requestAnimationFrame(() => {
+      V.isConnected && Q();
+    }),
+    !K())
+  ) {
+    T = !0;
+    const e = $("#ttov");
+    ((e.hidden = !1),
+      (e.innerHTML =
+        '<div><b>Comment veux-tu jouer ?</b><p>Tu pourras changer plus tard dans la pause.</p><button class="btn" data-a="ttCtl" data-v="b">Avec les boutons</button><button class="btn alt" data-a="ttCtl" data-v="g">Au doigt seulement</button><p class="ttch">Au doigt : touche pour tourner, glisse à gauche ou à droite pour déplacer, glisse vers le bas pour lâcher, vers le haut pour garder.</p></div>'),
+      requestAnimationFrame(() => e.classList.add("on")));
+  }
+  (msg(
+    a.pc
+      ? "Défi : pose " + a.pc + " pièces sans que la pile touche le haut."
+      : a.cr
+        ? "Des cristaux dorment dans la glace : libère-les en effaçant leurs rangées."
+        : a.zen
+          ? "Neige immobile : les pièces ne tombent pas toutes seules. Prends ton temps."
+          : a.rise
+            ? "Marée de glace : une rangée monte du fond toutes les " + a.rise + " pièces."
+            : a.mc
+              ? "Efface au moins 2 lignes d’un coup, " + a.mc + " fois."
+              : a.bag
+                ? "Petit sac : seules ces pièces tombent (" + [...a.bag].join(", ") + ")."
+                : a.w
+                  ? "Grille étroite : les lignes se remplissent plus vite."
+                  : a.gb
+                    ? "Des rangées de glace attendent au fond : creuse jusqu’à elles."
+                    : "",
+  ),
+    requestAnimationFrame(we));
+}
