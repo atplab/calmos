@@ -71848,6 +71848,8 @@ function pTeconta(e) {
   ),
     requestAnimationFrame(we));
 }
+
+// Casse-briques (id « brick ») : couleurs BKC, niveaux BKN/BKT/BKS/BKH, génération bkGen / bkLv et le jeu pBrick(r).
 const BKC = ["#ff9fb2", "#ffb991", "#ffdc8f", "#b3e8a6", "#93d8f5", "#a3b6ff", "#c8adff"];
 const BKN = 50;
 const BKT = [
@@ -72602,13 +72604,15 @@ function pBrick(e) {
       s = (t) => ({ x: x, y: 522.5, vx: e * Math.sin(a + t), vy: -e * Math.cos(a + t), tr: [] });
     ((c = "multi" === t.sp ? [s(-0.22), s(0), s(0.22)] : [s(0)]), (h = "play"), sfx(620, 0.06), vib(6));
   };
+  // Contrôles via la couche Input (shared/input) : toucher / glisser / lâcher pour viser et déplacer la plateforme,
+  // flèches (bougerGauche / bougerDroite), Espace (sauter) pour lancer, P ou Échap (pause).
   let oe = null;
   const ie = (e) => {
       const t = z.getBoundingClientRect();
       return [(e.clientX - t.left) / P, (e.clientY - t.top) / P];
     },
     re = (e) => {
-      if (!z.isConnected) return void document.removeEventListener("pointerdown", re, !0);
+      if (!z.isConnected) return void arretPointeur();
       if (e.button > 0 || A || v || y) return;
       const t = e.target;
       if (t.closest && t.closest("button,a,input,.top,.ttov,.nav,nav,dialog")) return;
@@ -72617,44 +72621,42 @@ function pBrick(e) {
       ((oe = { id: e.pointerId, x: a, p: M }), "aim" === h && ((m = !0), (p = 0)));
     },
     le = (e) => {
-      if (!z.isConnected)
-        return (
-          document.removeEventListener("pointermove", le),
-          void document.removeEventListener("pointerup", ce)
-        );
-      ((e) => {
-        if (!oe || e.pointerId !== oe.id) return;
-        const [t] = ie(e),
-          s = t - oe.x;
-        "aim" === h && m
-          ? (p = 1.15 * Math.max(-1, Math.min(1, s / 130)))
-          : "play" === h && (M = Math.max(L / 2, Math.min(a - L / 2, oe.p + 1.15 * s)));
-      })(e);
+      if (!z.isConnected) return void arretPointeur();
+      if (!oe || e.pointerId !== oe.id) return;
+      const [t] = ie(e),
+        s = t - oe.x;
+      "aim" === h && m
+        ? (p = 1.15 * Math.max(-1, Math.min(1, s / 130)))
+        : "play" === h && (M = Math.max(L / 2, Math.min(a - L / 2, oe.p + 1.15 * s)));
     },
     ce = (e) => {
       z.isConnected &&
-        ((e) => {
-          oe && e.pointerId === oe.id && ((oe = null), "aim" !== h || !m || y || v || ((m = !1), ne()));
-        })(e);
-    };
-  (document.addEventListener("pointerdown", re, !0),
-    document.addEventListener("pointermove", le),
-    document.addEventListener("pointerup", ce));
+        oe &&
+        e.pointerId === oe.id &&
+        ((oe = null), "aim" !== h || !m || y || v || ((m = !1), ne()));
+    },
+    arretAppui = Input.sur("toucher", (_, i) => re(i.evt), { cible: document, capture: !0 }),
+    arretSuivi = Input.sur(["glisser", "survoler", "lacher"], (x, i) => ("lacher" === x ? ce : le)(i.evt), {
+      cible: document,
+    }),
+    arretPointeur = () => (arretAppui(), arretSuivi());
   const de = {},
-    fe = (e) => {
-      if (!z.isConnected) return (removeEventListener("keydown", fe), void removeEventListener("keyup", ue));
-      "ArrowLeft" === e.key || "ArrowRight" === e.key
+    fe = (x, i) => {
+      const e = i.evt;
+      if (!z.isConnected) return void arretClavier();
+      if ("relache" === i.phase) return void delete de[e.key];
+      "bougerGauche" === x || "bougerDroite" === x
         ? ((de[e.key] = 1),
           e.preventDefault(),
-          "aim" === h && (p = Math.max(-1.15, Math.min(1.15, p + ("ArrowLeft" === e.key ? -0.12 : 0.12)))))
-        : " " === e.key
+          "aim" === h && (p = Math.max(-1.15, Math.min(1.15, p + ("bougerGauche" === x ? -0.12 : 0.12)))))
+        : "sauter" === x
           ? (e.preventDefault(), "aim" !== h || y || v || ne())
-          : ("p" !== e.key && "Escape" !== e.key) || act.bkPause();
+          : act.bkPause();
     },
-    ue = (e) => {
-      delete de[e.key];
-    };
-  (addEventListener("keydown", fe), addEventListener("keyup", ue));
+    arretClavier = Input.sur(["bougerGauche", "bougerDroite", "sauter", "pause"], fe, {
+      touches: { p: "pause", Escape: "pause" },
+      relache: !0,
+    });
   const he = (e) => 1 - Math.pow(1 - Math.min(1, Math.max(0, e)), 3),
     pe = (e) => {
       if (!z.isConnected) return;
@@ -73075,6 +73077,7 @@ function pBrick(e) {
     msg((TH[0] ? "Thème : " + TH[0] + ". " : "") + (SG || t.tip || "")),
     requestAnimationFrame(pe));
 }
+
 var ttMu = {
   on: !1,
   L: null,
@@ -75325,6 +75328,8 @@ var ahMu = {
 function ahMus(e) {
   "object" == typeof ahMu && ahMu.set(e);
 }
+
+// Musique du Casse-briques : module bkMu (chiptune glacé) et bkMus(on) branché dans theme() / apply().
 var bkMu = {
   on: !1,
   L: null,
@@ -75561,6 +75566,7 @@ var bkMu = {
 function bkMus(e) {
   "object" == typeof bkMu && bkMu.set(e);
 }
+
 var GFW = 0;
 var gfMu = {
   on: !1,
@@ -95587,7 +95593,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1254 · gs506${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1255 · gs507${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
