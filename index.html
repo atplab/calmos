@@ -46591,6 +46591,8 @@ const scrProf = (e) => {
   const t = scrStat(e);
   return `<div class="sy-h">Motuiles</div><p class="note" style="margin:0 0 10px">${esc("new" === t.k ? "Une partie à deux, chacun son tour, quand vous voulez." : t.t)}</p><button class="btn${"me" === t.k ? "" : " alt"}" data-a="scrFrom" data-v="${esc(e)}">${"new" === t.k ? "Lancer une partie" : "me" === t.k ? "C’est ton tour !" : "Ouvrir la partie"}</button>`;
 };
+
+// Galacfish : jeu (GF…act.gf*, course rc*), contrôles via Input
 const GF = { raf: 0, run: 0 };
 const GFB = [
   {
@@ -52491,8 +52493,9 @@ function gfGame() {
       document.hidden && "play" === S.st && !RC && act.gfPause();
     },
     rs = () => fit(),
-    W$ = $("#gfw");
-  (W$.addEventListener("pointerdown", pd),
+    W$ = $("#gfw"),
+    arretsIn = [];
+  (arretsIn.push(Input.sur("toucher", (a, i) => pd(i.evt), { cible: W$ })),
     (GF.lbt = 0),
     W$.addEventListener("click", (e) => {
       if (
@@ -52505,21 +52508,22 @@ function gfGame() {
       const b = W$.querySelector(".gfl-big");
       b && ((GF.lbt = 1), b.click());
     }),
-    addEventListener("pointermove", pm),
-    addEventListener("pointerup", pu),
+    arretsIn.push(
+      Input.sur(["glisser", "survoler"], (a, i) => pm(i.evt)),
+      Input.sur("lacher", () => pu(), { annulation: !0 }),
+    ),
     addEventListener("blur", pu),
-    addEventListener("pointercancel", pu),
-    addEventListener("keydown", kd),
-    addEventListener("keyup", ku),
+    arretsIn.push(
+      Input.sur("*", (a, i) => ("relache" === i.phase ? ku(i.evt) : kd(i.evt)), {
+        sources: ["clavier"],
+        relache: !0,
+      }),
+    ),
     document.addEventListener("visibilitychange", vis),
     addEventListener("resize", rs),
     (GF.cl = () => {
       ((GF.launch = null),
-        removeEventListener("pointermove", pm),
-        removeEventListener("pointerup", pu),
-        removeEventListener("pointercancel", pu),
-        removeEventListener("keydown", kd),
-        removeEventListener("keyup", ku),
+        arretsIn.splice(1).forEach((f) => f()),
         document.removeEventListener("visibilitychange", vis),
         removeEventListener("resize", rs));
     }),
@@ -52943,6 +52947,7 @@ setTimeout(
     }),
   0,
 );
+
 function scrHub(K) {
   (scrInstall(), (cur = "scrabble"), nv("games"), theme("scrabble"), (SC.scr = "hub"), (SC.fid = ""));
   const T = ALL.find((e) => "scrabble" === e.id),
@@ -57495,6 +57500,7 @@ function unActs() {
       }, 310));
   };
 }
+// Solitaire : jeu (SOLR…soActs), contrôles via Input
 const SOLR = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 const SOS = ["♠", "♥", "♦", "♣"];
 const SON = 40;
@@ -58027,6 +58033,75 @@ function soFin() {
       } else SL.busy = !1;
     };
   (soPush(), t());
+}
+function soHub() {
+  (soActs(), (cur = "solitaire"), nv("games"), theme("solitaire"));
+  const e = st.get("sol:d", []),
+    t = (() => {
+      let t = 0;
+      for (; e.includes(t);) t++;
+      return t;
+    })(),
+    a = st.get("sol:sv", null),
+    s = st.get("sol:inf", 0);
+  ((app.innerHTML = `<div class="top stk">${bk("home")}<div class="chip">🫧 ${FLX()}</div></div><section class="glass story pt-solitaire"><i>♠</i><h2>La patience</h2><p>Le solitaire classique, au calme : range les cartes par couleur de l’as au roi. Touche une carte pour qu’elle trouve sa place toute seule. Toutes les donnes ont une solution.</p></section>\n ${a && a.g ? `<section class="glass play"><h2>Partie en cours</h2><p class="note" style="margin:0 0 12px">${"lv" === a.mode ? "Niveau " + (a.lv + 1) : "Mode infini"} · ${a.g.mv} coups</p><div class="chrow"><button class="btn" data-a="soRes">Reprendre</button><button class="btn alt" data-a="soDrop">Laisser tomber</button></div></section>` : ""}\n <section class="glass play"><h2>Mode infini</h2><p class="note" style="margin:0 0 12px">Une nouvelle donne au hasard à chaque partie. ${s ? s + " partie" + (s > 1 ? "s" : "") + " gagnée" + (s > 1 ? "s" : "") + "." : ""} +2 🫧 par victoire.</p><button class="btn chgo" data-a="soInf">Jouer</button></section>\n <section class="glass play"><h2>Niveaux</h2>${UNL() ? '<div class="golv"><label>Aller au niveau <input id="golv" type="number" min="1" inputmode="numeric" placeholder="ex. 1203"></label><button class="rc-go" data-a="soGo">Jouer</button></div>' : ""}<p class="note" style="margin:0 0 12px">${e.length ? e.length + " niveau" + (e.length > 1 ? "s" : "") + " terminé" + (e.length > 1 ? "s" : "") : "Aucun niveau terminé"} · de plus en plus coriaces</p><button class="btn chgo" data-a="soLv" data-v="${t}">Niveau ${t + 1}</button></section>`),
+    window.scrollTo(0, 0));
+}
+let soAO = !1;
+function soActs() {
+  soAO ||
+    ((soAO = !0),
+    Object.assign(act, {
+      soBk: () => {
+        (soSave(), soHub());
+      },
+      soInf: () => soNew("inf", 0),
+      soLv: (e) => soNew("lv", +e),
+      soNext: () => soNew("lv", SL.lv + 1),
+      soRes: () => {
+        const e = st.get("sol:sv", null);
+        if (!e) return soHub();
+        ((SL.g = e.g),
+          (SL.mode = e.mode),
+          (SL.lv = e.lv),
+          (SL.h = e.h || []),
+          (SL.hint = null),
+          (SL.done = !1),
+          soScreen());
+      },
+      soDrop: () => {
+        (st.set("sol:sv", null), soHub());
+      },
+      soUndo: () => {
+        SL.busy ||
+          SL.done ||
+          !SL.h.length ||
+          ((SL.g = JSON.parse(SL.h.pop())), (SL.hint = null), soSave(), soLay(), sfx(300, 0.05));
+      },
+      soRe: () => {
+        SL.busy || ("lv" === SL.mode ? soNew("lv", SL.lv) : soNew("inf", 0));
+      },
+      soHint: () => {
+        if (SL.busy || SL.done) return;
+        if (!UNL()) {
+          if (fl < 1) {
+            const e = $("#m");
+            return void (e && (e.textContent = "Il te manque une bulle pour un indice."));
+          }
+          ((fl -= 1), st.set("fl", fl));
+          const e = $(".chip:not(.hintb)");
+          e && (e.textContent = "🫧 " + FLX());
+        }
+        const e = soHintFind();
+        SL.hint = e.c >= 0 ? e : null;
+        const t = $("#m");
+        if ((t && (t.textContent = e.t), soLay(), e.c < 0 && SL.g.S.length)) {
+          const e = $(".sstk");
+          e && (e.classList.remove("shk"), e.offsetWidth, e.classList.add("shk"));
+        }
+      },
+      soFin: () => soFin(),
+    }));
 }
 
 // Billard : jeu (BI…biHub), contrôles via Input
@@ -61868,76 +61943,6 @@ function znActs() {
       znBreath();
     },
   });
-}
-
-function soHub() {
-  (soActs(), (cur = "solitaire"), nv("games"), theme("solitaire"));
-  const e = st.get("sol:d", []),
-    t = (() => {
-      let t = 0;
-      for (; e.includes(t);) t++;
-      return t;
-    })(),
-    a = st.get("sol:sv", null),
-    s = st.get("sol:inf", 0);
-  ((app.innerHTML = `<div class="top stk">${bk("home")}<div class="chip">🫧 ${FLX()}</div></div><section class="glass story pt-solitaire"><i>♠</i><h2>La patience</h2><p>Le solitaire classique, au calme : range les cartes par couleur de l’as au roi. Touche une carte pour qu’elle trouve sa place toute seule. Toutes les donnes ont une solution.</p></section>\n ${a && a.g ? `<section class="glass play"><h2>Partie en cours</h2><p class="note" style="margin:0 0 12px">${"lv" === a.mode ? "Niveau " + (a.lv + 1) : "Mode infini"} · ${a.g.mv} coups</p><div class="chrow"><button class="btn" data-a="soRes">Reprendre</button><button class="btn alt" data-a="soDrop">Laisser tomber</button></div></section>` : ""}\n <section class="glass play"><h2>Mode infini</h2><p class="note" style="margin:0 0 12px">Une nouvelle donne au hasard à chaque partie. ${s ? s + " partie" + (s > 1 ? "s" : "") + " gagnée" + (s > 1 ? "s" : "") + "." : ""} +2 🫧 par victoire.</p><button class="btn chgo" data-a="soInf">Jouer</button></section>\n <section class="glass play"><h2>Niveaux</h2>${UNL() ? '<div class="golv"><label>Aller au niveau <input id="golv" type="number" min="1" inputmode="numeric" placeholder="ex. 1203"></label><button class="rc-go" data-a="soGo">Jouer</button></div>' : ""}<p class="note" style="margin:0 0 12px">${e.length ? e.length + " niveau" + (e.length > 1 ? "s" : "") + " terminé" + (e.length > 1 ? "s" : "") : "Aucun niveau terminé"} · de plus en plus coriaces</p><button class="btn chgo" data-a="soLv" data-v="${t}">Niveau ${t + 1}</button></section>`),
-    window.scrollTo(0, 0));
-}
-let soAO = !1;
-function soActs() {
-  soAO ||
-    ((soAO = !0),
-    Object.assign(act, {
-      soBk: () => {
-        (soSave(), soHub());
-      },
-      soInf: () => soNew("inf", 0),
-      soLv: (e) => soNew("lv", +e),
-      soNext: () => soNew("lv", SL.lv + 1),
-      soRes: () => {
-        const e = st.get("sol:sv", null);
-        if (!e) return soHub();
-        ((SL.g = e.g),
-          (SL.mode = e.mode),
-          (SL.lv = e.lv),
-          (SL.h = e.h || []),
-          (SL.hint = null),
-          (SL.done = !1),
-          soScreen());
-      },
-      soDrop: () => {
-        (st.set("sol:sv", null), soHub());
-      },
-      soUndo: () => {
-        SL.busy ||
-          SL.done ||
-          !SL.h.length ||
-          ((SL.g = JSON.parse(SL.h.pop())), (SL.hint = null), soSave(), soLay(), sfx(300, 0.05));
-      },
-      soRe: () => {
-        SL.busy || ("lv" === SL.mode ? soNew("lv", SL.lv) : soNew("inf", 0));
-      },
-      soHint: () => {
-        if (SL.busy || SL.done) return;
-        if (!UNL()) {
-          if (fl < 1) {
-            const e = $("#m");
-            return void (e && (e.textContent = "Il te manque une bulle pour un indice."));
-          }
-          ((fl -= 1), st.set("fl", fl));
-          const e = $(".chip:not(.hintb)");
-          e && (e.textContent = "🫧 " + FLX());
-        }
-        const e = soHintFind();
-        SL.hint = e.c >= 0 ? e : null;
-        const t = $("#m");
-        if ((t && (t.textContent = e.t), soLay(), e.c < 0 && SL.g.S.length)) {
-          const e = $(".sstk");
-          e && (e.classList.remove("shk"), e.offsetWidth, e.classList.add("shk"));
-        }
-      },
-      soFin: () => soFin(),
-    }));
 }
 
 // Air hockey : jeu (AH…ahActs), contrôles via Input
@@ -79033,6 +79038,9 @@ function pPlan(e) {
     requestAnimationFrame(se));
 }
 
+
+
+// Cuisine : jeu (CUN…act.kz*)
 const CUN = 30;
 const kzRng = (e) => {
   let t = e >>> 0;
@@ -81239,6 +81247,10 @@ setTimeout(() =>
     },
   }),
 );
+
+
+
+// Pêche : jeu (PER…pePlay)
 const PER = [
   { k: "c", n: "Commun", c: "#c9d2e0", v: 1 },
   { k: "u", n: "Peu commun", c: "#7fe0a0", v: 2 },
@@ -81749,19 +81761,26 @@ function pePlay() {
       }
       l.hold = e;
     };
-  (a.addEventListener("pointerdown", (e) => {
-    if (e.target.closest && e.target.closest(".pedk")) return;
-    if ("idle" === l.st) {
-      const t = a.getBoundingClientRect();
-      E(...pexs(e.clientX - t.left, e.clientY - t.top, t.width, t.height));
-    } else "bite" === l.st ? v() : "reel" === l.st && S(!0);
-  }),
-    o.addEventListener("pointerdown", (e) => {
-      "reel" === l.st && (e.preventDefault(), S(!0));
-    }));
+  (Input.sur(
+    "toucher",
+    (_, { evt: e }) => {
+      if (e.target.closest && e.target.closest(".pedk")) return;
+      if ("idle" === l.st) {
+        const t = a.getBoundingClientRect();
+        E(...pexs(e.clientX - t.left, e.clientY - t.top, t.width, t.height));
+      } else "bite" === l.st ? v() : "reel" === l.st && S(!0);
+    },
+    { cible: a },
+  ),
+    Input.sur(
+      "toucher",
+      (_, { evt: e }) => {
+        "reel" === l.st && (e.preventDefault(), S(!0));
+      },
+      { cible: o },
+    ));
   const x = () => S(!1);
-  (addEventListener("pointerup", x),
-    addEventListener("pointercancel", x),
+  (Input.sur("lacher", x, { annulation: !0 }),
     Object.assign(act, {
       peAct: () => {
         t() &&
@@ -81977,6 +81996,7 @@ function pePlay() {
         t() && act.peHelp();
       }, 350));
 }
+
 const BBN = 40;
 // Enligne-bloc (id « blocs ») : pièces BBC/BBS, écran pBlocs.
 const BBC = ["#a066e0", "#f2b632", "#3ab8e8", "#f2752a", "#3a6ae0", "#e8403a", "#3ab84a", "#d058e0"];
@@ -95734,7 +95754,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1263 · gs515${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1264 · gs516${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
