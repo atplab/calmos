@@ -1,8053 +1,2091 @@
-const MZS = [
-  [7, 8],
-  [7, 9],
-  [8, 9],
-  [8, 10],
-  [9, 10],
-  [9, 11],
-  [10, 11],
-  [10, 12],
-  [10, 13],
-  [11, 13],
-  [11, 14],
-  [11, 14],
-  [11, 15],
-  [11, 15],
-  [11, 16],
-  [11, 16],
-  [11, 17],
-  [11, 17],
-  [11, 18],
-  [11, 18],
-  [11, 19],
-  [11, 19],
-  [11, 20],
-  [11, 20],
-  [11, 21],
-  [11, 21],
-  [11, 22],
-  [11, 22],
-  [11, 23],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 24],
-  [11, 25],
-  [11, 25],
-  [11, 25],
-  [11, 25],
-  [11, 25],
-  [11, 25],
-  [11, 25],
-  [11, 26],
-  [11, 26],
-  [11, 26],
-  [11, 26],
-  [11, 26],
-  [11, 26],
-  [8, 9],
-  [9, 10],
-  [9, 11],
-  [10, 11],
-  [10, 12],
-  [10, 13],
-  [11, 13],
-  [11, 14],
-  [11, 15],
-  [11, 16],
-];
-const MZB = [
-  0, 0, 0, 2, 3, 4, 5, 6, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
-  9, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7,
-];
-const MZP = [
-  1, 1, 1, 1, 1, 1, 1, 1, 0.85, 0.8, 0.75, 0.7, 0.65, 0.62, 0.6, 0.58, 0.56, 0.54, 0.52, 0.5, 0.52, 0.5, 0.5,
-  0.5, 0.48, 0.48, 0.48, 0.46, 0.46, 0.45, 0.45, 0.447, 0.444, 0.441, 0.438, 0.435, 0.432, 0.429, 0.426,
-  0.423, 0.42, 0.417, 0.414, 0.411, 0.408, 0.405, 0.402, 0.399, 0.396, 0.393, 1, 1, 0.9, 0.85, 0.8, 0.75, 0.7,
-  0.65, 0.6, 0.55,
-];
-const MZK = [
-  126, 182, 20, 433, 42, 5, 1, 252, 45, 97, 121, 1783, 1803, 1173, 3887, 846, 4812, 1411, 4090, 1430, 662,
-  184, 1124, 62, 1282, 737, 2, 346, 2712, 1540, 787, 201, 660, 2163, 2531, 1166, 1317, 2259, 989, 2259, 669,
-  656, 1493, 1159, 1213, 994, 1907, 2464, 1425, 1628, 166, 123, 285, 124, 349, 6, 324, 321, 288, 126,
-];
-const MZC = {};
-function mzBuild(e) {
-  if (MZC[e]) return MZC[e];
-  const [t, a] = MZS[e],
-    s = t * a,
-    n = rng(7919 * (e >= 50 ? e - 30 : e) + 101 + 104729 * MZK[e]),
-    o = new Uint8Array(s),
-    i = new Uint8Array(s),
-    r = new Uint8Array(s),
-    l = [0],
-    c = MZP[e];
-  for (r[0] = 1; l.length;) {
-    const e = c >= 1 || n() < c ? l.length - 1 : Math.floor(n() * l.length),
-      s = l[e],
-      d = s % t,
-      f = (s / t) | 0,
-      u = [];
-    if (
-      (f > 0 && !r[s - t] && u.push(0),
-      d < t - 1 && !r[s + 1] && u.push(1),
-      f < a - 1 && !r[s + t] && u.push(2),
-      d > 0 && !r[s - 1] && u.push(3),
-      !u.length)
-    ) {
-      l.splice(e, 1);
-      continue;
-    }
-    const h = u[Math.floor(n() * u.length)];
-    0 === h
-      ? ((i[s - t] = 1), (r[s - t] = 1), l.push(s - t))
-      : 1 === h
-        ? ((o[s] = 1), (r[s + 1] = 1), l.push(s + 1))
-        : 2 === h
-          ? ((i[s] = 1), (r[s + t] = 1), l.push(s + t))
-          : ((o[s - 1] = 1), (r[s - 1] = 1), l.push(s - 1));
-  }
-  for (let r = 0, l = 0; r < MZB[e] && l < 800; l++) {
-    const e = Math.floor(n() * s),
-      l = e % t,
-      c = (e / t) | 0;
-    n() < 0.5 ? l < t - 1 && !o[e] && ((o[e] = 1), r++) : c < a - 1 && !i[e] && ((i[e] = 1), r++);
-  }
-  const d = { W: t, H: a, R: o, D: i, s: [0, t - 1][e % 2], e: 0 },
-    f = new Int16Array(s).fill(-1);
-  f[d.s] = 0;
-  let u = [d.s],
-    h = d.s;
-  for (; u.length;) {
-    const e = [];
-    for (const t of u)
-      for (let a = 0; a < 4; a++) {
-        const s = mzN(d, t, a);
-        s >= 0 && f[s] < 0 && ((f[s] = f[t] + 1), f[s] > f[h] && (h = s), e.push(s));
-      }
-    u = e;
-  }
-  return ((d.e = h), (d.len = f[h]), (MZC[e] = d));
-}
-const mzO = (e, t, a) => {
-  const s = t % e.W,
-    n = (t / e.W) | 0;
-  return 0 === a
-    ? n > 0 && !!e.D[t - e.W]
-    : 1 === a
-      ? s < e.W - 1 && !!e.R[t]
-      : 2 === a
-        ? n < e.H - 1 && !!e.D[t]
-        : s > 0 && !!e.R[t - 1];
+const dMx = (e, t, a) => [e[0] + (t[0] - e[0]) * a, e[1] + (t[1] - e[1]) * a];
+const dWallShelf = (e, t, a, s, n, o = dWood) => {
+  const i = "R" === t ? e.box(a, 0, n, s - a, 0.6, 0.12, o) : e.box(0, a, n, 0.6, s - a, 0.12, o),
+    r =
+      "R" === t
+        ? [
+            e.P(a + 0.15, 0.05, n),
+            e.P(a + 0.15, 0.05, n - 0.35),
+            e.P(s - 0.15, 0.05, n),
+            e.P(s - 0.15, 0.05, n - 0.35),
+          ]
+        : [
+            e.P(0.05, a + 0.15, n),
+            e.P(0.05, a + 0.15, n - 0.35),
+            e.P(0.05, s - 0.15, n),
+            e.P(0.05, s - 0.15, n - 0.35),
+          ];
+  (e.ln(r[0], r[1], dSh(o, 0.6), 1.4), e.ln(r[2], r[3], dSh(o, 0.6), 1.4));
+  const l =
+    "R" === t
+      ? [e.P(a, 0, n + 0.12), e.P(s, 0, n + 0.12), e.P(s, 0.6, n + 0.12), e.P(a, 0.6, n + 0.12)]
+      : [e.P(0, a, n + 0.12), e.P(0.6, a, n + 0.12), e.P(0.6, s, n + 0.12), e.P(0, s, n + 0.12)];
+  e.zone(
+    "wshelf",
+    l,
+    dHull([
+      ...i.hull,
+      ...("R" === t ? [e.P(a, 0, n + 1.1), e.P(s, 0, n + 1.1)] : [e.P(0, a, n + 1.1), e.P(0, s, n + 1.1)]),
+    ]),
+  );
 };
-const mzN = (e, t, a) => (mzO(e, t, a) ? t + (0 === a ? -e.W : 1 === a ? 1 : 2 === a ? e.W : -1) : -1);
-function mzPath(e, t, a, s) {
-  if (t === a) return [];
-  const n = new Map([[t, -1]]);
-  let o = [t];
-  for (let i = 0; i < s && o.length; i++) {
-    const s = [];
-    for (const i of o)
-      for (let o = 0; o < 4; o++) {
-        const r = mzN(e, i, o);
-        if (r >= 0 && !n.has(r)) {
-          if ((n.set(r, i), r === a)) {
-            const e = [];
-            for (let a = r; a !== t; a = n.get(a)) e.push(a);
-            return e.reverse();
-          }
-          s.push(r);
-        }
-      }
-    o = s;
-  }
-  return null;
-}
-function pMaze(e) {
-  const t = mzBuild(lv),
-    { W: a, H: s } = t,
-    n = a * s,
-    o = !daily && isX("maze", lv),
-    i = (e) => (e % a) * 10 + 5,
-    r = (e) => 10 * ((e / a) | 0) + 5;
-  let l =
-      e &&
-      ((f = e.p),
-      Array.isArray(f) &&
-        f.length >= 1 &&
-        f.length <= n &&
-        f[0] === t.s &&
-        f.every(
-          (e, a) =>
-            Number.isInteger(e) &&
-            e >= 0 &&
-            e < n &&
-            f.indexOf(e) === a &&
-            (0 === a || [0, 1, 2, 3].some((s) => mzN(t, f[a - 1], s) === e)),
-        ))
-        ? e.p.slice()
-        : [t.s],
-    c = !1,
-    d = 0;
-  var f;
-  snap = () => ({ p: l.slice() });
-  let u = "";
-  for (let e = 0; e < s; e++)
-    for (let n = 0; n < a; n++) {
-      const o = e * a + n;
-      (n < a - 1 && !t.R[o] && (u += "M" + (10 * n + 10) + " " + 10 * e + "v10"),
-        e < s - 1 && !t.D[o] && (u += "M" + 10 * n + " " + (10 * e + 10) + "h10"));
+const dHooks = (e, t, a, s, n, o = "#8a5a36") => {
+  const i = Math.max(3, Math.round((s - a) / 0.6));
+  if ("R" === t) {
+    e.pg(e.qR(a, s, n - 0.12, n + 0.22), o, dSh(o, 0.7));
+    for (let t = 0; t < i; t++) {
+      const o = a + ((t + 0.5) * (s - a)) / i,
+        r = e.P(o, 0.05, n),
+        l = e.P(o, 0.35, n - 0.1);
+      e.ln(r, l, "#d9c08a", 2);
     }
-  const h = (e) => e.map((e) => i(e) + "," + r(e)).join(" ");
-  frame(
-    `<svg class="mz-b" id="mzb" style="--c:${a};--r:${s}" viewBox="0 0 ${10 * a} ${10 * s}" role="img" aria-label="Labyrinthe de ${a} sur ${s} cases : guide ${o ? "le cerf jusqu’au pôle Nord" : "le renard jusqu’au terrier"}"><rect class="mz-bg" x="0" y="0" width="${10 * a}" height="${10 * s}" rx="2.5"/><g transform="translate(${i(t.e)} ${r(t.e)})"><circle r="4.9" fill="rgba(255,226,160,.17)"/>${o ? '<path d="M0 4V-2.4" stroke="#fff" stroke-width=".95" stroke-linecap="round" fill="none"/><path d="M0 3.8V-2.2" stroke="#d9453d" stroke-width=".95" stroke-dasharray="1 1" fill="none"/><path d="M0-5.1L.38-4.13 1.43-4.06 .62-3.4 .88-2.39 0-2.95-.88-2.39-.62-3.4-1.43-4.06-.38-4.13Z" fill="#ffe2a0"/><path d="M-3.2 4.3Q0 2.4 3.2 4.3Z" fill="#eaf3ff"/>' : '<path d="M-3.3 3.8V-.2A3.3 3.3 0 0 1 3.3-.2V3.8Z" fill="#10152e" stroke="#ffe2a0" stroke-width=".6" stroke-linejoin="round"/>'}</g><polyline class="mz-tg" id="mzg" points=""/><polyline class="mz-tr" id="mzt" points=""/><polyline class="mz-hn" id="mzh" points=""/><path class="mz-wl" d="${u}"/><g class="mz-f" id="mzf"><circle r="4.5" fill="rgba(255,226,160,.26)"/>${o ? '<path d="M-1.7-2.2-2.9-4.2M-2.5-3.5-3.9-3.7M-2.9-4.2-3-5M1.7-2.2 2.9-4.2M2.5-3.5 3.9-3.7M2.9-4.2 3-5" fill="none" stroke="#f0d49a" stroke-width=".65" stroke-linecap="round"/><path d="M-3.2-1.6-4.7-2.6-3.1-3ZM3.2-1.6 4.7-2.6 3.1-3Z" fill="#a8693a"/><path d="M-3.2-2.1Q0-3.4 3.2-2.1Q3.6 1.4 1.5 3.7Q0 4.3-1.5 3.7Q-3.6 1.4-3.2-2.1Z" fill="#c2824a"/><ellipse cy="2.7" rx="1.7" ry="1.25" fill="#f1d9b4"/><circle cy="2.9" r=".95" fill="#e0382f"/><circle cx="-1.5" cy="-.4" r=".5" fill="#2a1d2e"/><circle cx="1.5" cy="-.4" r=".5" fill="#2a1d2e"/>' : '<path d="M-3.7-1.3-3.5-4.7-.9-2.7ZM3.7-1.3 3.5-4.7.9-2.7Z" fill="#e8873f"/><path d="M-3.9-1.6Q0-3.4 3.9-1.6Q4.3 1.6 0 3.9Q-4.3 1.6-3.9-1.6Z" fill="#f4a259"/><path d="M-2.5 1Q0 .1 2.5 1Q1.2 3.5 0 3.9Q-1.2 3.5-2.5 1Z" fill="#fff3e2"/><circle cx="-1.6" cy="-.4" r=".5" fill="#2a1d2e"/><circle cx="1.6" cy="-.4" r=".5" fill="#2a1d2e"/><circle cy="2.6" r=".55" fill="#2a1d2e"/>'}</g></svg><div class="mz-k"><button data-a="mzk" data-v="3" aria-label="Aller à gauche"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><button data-a="mzk" data-v="0" aria-label="Aller en haut"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button><button data-a="mzk" data-v="2" aria-label="Aller en bas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button><button data-a="mzk" data-v="1" aria-label="Aller à droite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div><p class="note" style="text-align:center">Glisse le doigt le long du sentier, ou touche un couloir droit pour y filer. Les flèches du clavier marchent aussi.</p>`,
-    1,
-  );
-  const p = $("#mzb"),
-    m = $("#mzf"),
-    b = $("#mzt"),
-    g = $("#mzg"),
-    E = $("#mzh"),
-    y = (e) => {
-      const t = h(l);
-      (b.setAttribute("points", t), g.setAttribute("points", t));
-      const a = l[l.length - 1];
-      ((m.style.transitionDuration = e ? "0s" : ""),
-        (m.style.transform = "translate(" + i(a) + "px," + r(a) + "px)"));
-    },
-    v = (e) => {
-      const t = l.indexOf(e);
-      t >= 0 ? (l.length = t + 1) : l.push(e);
-    },
-    A = () => {
-      ((c = !0),
-        p.classList.add("win"),
-        msg(
-          o
-            ? "Le cerf est rentré au pôle Nord, juste à temps pour Noël."
-            : "Le renard est rentré au terrier.",
-        ),
-        sfx(660, 0.5),
-        vib([20, 40, 20]));
-      const e = lv;
-      setTimeout(() => {
-        playing && "maze" === cur && lv === e && win();
-      }, 1900);
-    },
-    S = (e) =>
-      !!e.length &&
-      ((() => {
-        const e = p.getBoundingClientRect(),
-          t = e.width / (10 * a);
-        (e.top, r(l[l.length - 1]));
-      })(),
-      e.forEach(v),
-      y(),
-      keep(),
-      l[l.length - 1] === t.e ? A() : sfx(380 + 7 * Math.min(l.length, 40), 0.07),
-      !0),
-    x = (e) => {
-      const t = p.getBoundingClientRect(),
-        n = t.width / (10 * a),
-        o = (e.clientX - t.left) / n / 10,
-        i = (e.clientY - t.top) / n / 10,
-        r = Math.floor(o),
-        l = Math.floor(i);
-      return r < 0 || l < 0 || r >= a || l >= s ? -1 : l * a + r;
-    };
-  let M = null,
-    L = null,
-    T = 0;
-  const k = (e) => {
-      const a = x(e);
-      if (a < 0) return;
-      a !== M.c0 && (M.mv = !0);
-      const s = l[l.length - 1];
-      if (a === s) return;
-      const n = mzPath(t, s, a, 4);
-      n && n.length && ((M.mv = !0), S(n));
-    },
-    w = (e) => {
-      const t = p.getBoundingClientRect(),
-        s = t.width / (10 * a),
-        n = l[l.length - 1];
-      return (
-        Math.hypot(e.clientX - (t.left + i(n) * s), e.clientY - (t.top + r(n) * s)) <= Math.max(24, 9 * s)
-      );
-    };
-  ((wsG = {
-    all: !0,
-    down: (e) => {
-      if (((T = performance.now()), c)) return;
-      const t = "mouse" !== e.pointerType;
-      t && M && M.fox && M.id !== e.pointerId
-        ? L || (L = { id: e.pointerId, y: e.clientY })
-        : e.target.closest &&
-          e.target.closest(".mz-b") &&
-          (M = { id: e.pointerId, c0: x(e), mv: !1, fox: !t || w(e), x: e.clientX, y: e.clientY });
-    },
-    move: (e) => {
-      if (L && e.pointerId === L.id) return (window.scrollBy(0, L.y - e.clientY), void (L.y = e.clientY));
-      M &&
-        e.pointerId === M.id &&
-        !c &&
-        (M.fox ? k(e) : Math.hypot(e.clientX - M.x, e.clientY - M.y) > 8 && (M.mv = !0));
-    },
-    up: (e) => {
-      if (L && e.pointerId === L.id) return void (L = null);
-      if (!M || e.pointerId !== M.id) return;
-      const s = M;
-      ((M = null),
-        !s.mv &&
-          !c &&
-          s.c0 >= 0 &&
-          x(e) === s.c0 &&
-          ((e) => {
-            const s = l[l.length - 1];
-            if (e < 0 || e === s) return;
-            const n = s % a,
-              o = (s / a) | 0,
-              i = e % a,
-              r = (e / a) | 0;
-            if (n !== i && o !== r) return msg("Suis le sentier du doigt, ou touche un couloir droit.");
-            const c = o === r ? (i > n ? 1 : 3) : r > o ? 2 : 0,
-              d = [];
-            let f = s;
-            for (; f !== e;) {
-              const e = mzN(t, f, c);
-              if (e < 0) return msg("Un mur barre le chemin.");
-              (d.push(e), (f = e));
-            }
-            S(d);
-          })(s.c0));
-    },
-    cancel: (e) => {
-      (L && e.pointerId === L.id && (L = null), M && e.pointerId === M.id && (M = null));
-    },
-    ts: (e) => {
-      if (
-        !c &&
-        performance.now() - T > 80 &&
-        (!M || !M.fox) &&
-        e.target.closest &&
-        e.target.closest(".mz-b")
-      ) {
-        const t = [...e.changedTouches].find((e) => w(e));
-        t &&
-          (M = {
-            id: "t" + t.identifier,
-            tid: t.identifier,
-            c0: x(t),
-            mv: !1,
-            fox: !0,
-            x: t.clientX,
-            y: t.clientY,
-          });
-      }
-      !((M && M.fox) || L) ||
-        !e.cancelable ||
-        (e.target.closest && e.target.closest("button")) ||
-        e.preventDefault();
-    },
-    tm: (e) => {
-      if (M && void 0 !== M.tid && !c) {
-        const t = [...e.changedTouches].find((e) => e.identifier === M.tid);
-        t && k(t);
-      }
-      ((M && M.fox) || L) && e.cancelable && e.preventDefault();
-    },
-    te: (e) => {
-      M && void 0 !== M.tid && [...e.changedTouches].some((e) => e.identifier === M.tid) && (M = null);
-    },
-    key: (e) => {
-      if (c) return;
-      const a = mzN(t, l[l.length - 1], e);
-      if (a < 0) return sfx(220, 0.06);
-      S([a]);
-    },
-  }),
-    (act.mzk = (e) => wsG && wsG.key && wsG.key(+e)),
-    (act.hint = () => {
-      if (c) return;
-      const e = mzPath(t, l[l.length - 1], t.e, n);
-      e &&
-        e.length &&
-        spend(1) &&
-        (E.setAttribute("points", h([l[l.length - 1], ...e.slice(0, 6)])),
-        E.classList.remove("on"),
-        E.getBoundingClientRect(),
-        E.classList.add("on"),
-        clearTimeout(d),
-        (d = setTimeout(() => {
-          (E.classList.remove("on"), E.setAttribute("points", ""));
-        }, 3100)),
-        msg(
-          o ? "Le chemin du pôle Nord s’éclaire un instant." : "Le sentier de la lune s’éclaire un instant.",
-        ));
-    }),
-    y(!0),
-    msg(o ? "Aide le cerf à retourner au pôle Nord." : "Guide le renard jusqu’au terrier."),
-    l[l.length - 1] === t.e && A());
-}
-const WFR =
-  "les est des que pas une pour dans qui sur par plus avec mais vous elle son sont tout fait nous comme être bien ils cette faire aux même ont était été mon ses lui aussi peut deux leur moi ces quand après suis très tous sans avoir non encore alors avait entre temps ans autres dit peu autre rien dire monde fois faut toujours voir bon contre votre avant depuis donc notre sous jamais vie moins dont toi déjà quoi soit trop leurs ton toute chez gens juste oui vraiment ainsi grand pays français mes beaucoup jour quelques comment premier sera nos parce personne cela trois homme ici paris toutes cas chose doit partie car mal première bonne fin mieux pendant petit puis année cet ceux elles moment place pourquoi ville jours mois vers histoire sais années fais nouveau nouvelle part travail compte merci prendre veut état aller cours peux reste veux vos celui chaque grande femme nom prix point seul vais eux lieu lors vrai droit selon coup mettre serait pense quelque tant avais groupe maison saint tête étaient aime aurait avons enfants famille parler suite assez besoin demande genre savoir société trouve celle côté passe pouvoir question raison sens ailleurs avez certains devant dis jeu soir souvent effet général jean partir surtout équipe choses dernier enfin font nombre parle porte site eau ensemble hommes petite femmes mère passer près quel tes vois aucun loi parti pris père rapport peuvent trouver autant face fille fut gros niveau pourrait quatre semaine service seule accord article donne donner ligne problème vient cause crois dieu début exemple fils jeune mis système air aucune bas centre façon heure heures loin possible projet conseil dernière idée nuit vont étais argent tour vue êtes aura dessus film meilleur corps ensuite forme haut plutôt the arrive avaient chef fort public tard ayant main terre titre matin mise plan saison sait type afin aide belle choix long minutes retour sommes vite yeux amour base journée nord devrait etc grâce moyen ordre prend école étant but cinq manière mars pierre semble sujet truc agit enfant ministre parfois quelle rue sud super unis vidéo amis art beau compris gauche livre musique région jeunes match permet simple voilà voit chambre deuxième importe juin lorsque mai peur plein police sécurité série ancien anglais grands jouer membres parmi peine presque services époque allez doute force lire marché mot points santé seront train voix écrit affaires autour avis faites hier juillet millions nombreux parents propre rendre vivre droite environ fond mec mesure ouais pourtant abord affaire envie gars laquelle nouveaux octobre pouvez siècle sortir terme viens voiture ait avril droits frère janvier jeux roi venir action club culture existe laisse malgré milieu produit propos route états derrière doivent emploi feu mots mêmes période tel âge armée bois chance croire date dix décembre laisser manque mode novembre petits plaisir produits six vas août aurais blanc canada classe commence demain demander liste photo rôle bout esprit espère garde internet intérêt noir origine présente regarde rouge sortie auteur bonjour février justice langue met occasion offre perdu qualité risque scène sinon travaux voici appelle cadre changer grandes libre premiers semaines vieux connais facile image lien mer photos pire rester sauf source aider ami campagne coupe cour durant faisait objet partout plupart seconde valeur étude études chacun cher devient données hein hors joue lequel montre national penser poste présent publique réponse réseau salle texte veulent appel celles certain contrôle dois message position succès activité carte chercher connu création devenir euros filles fonction louis nature travers annonce arrêter bientôt chemin demi espace liberté mariage passage présence sort zone économie bureau entrée mains moyenne pied presse prise réalité social sorte utiliser accès dimanche départ générale lit marie mauvais numéro puisque regarder soient soleil taux voie acheter attendre bras charge fini haute manger marque moyens perdre pièces pratique sociale victoire vérité ben cherche domaine idées monsieur payer peuple proche publié quant reçu répondre suivre auprès code entendu faisant gagner honneur journal matière ouest permis résultat sept soirée sol sport version arriver arrivée coeur devoir double midi mission moitié page pièce pourra prêt rend union voyage énergie éviter arrête articles bord combien continue courant derniers devait entendre faits faute fera finale heureux joueur longue porter pouvait samedi second style sérieux terrain villes église créer décision défense frais hôtel instant livres majorité modèle obtenir outre paix puisse rappelle solution tandis bande commune comprend contrat faux forces groupes note suffit total tôt vol voulu éléments avenir bons critique dehors devenu discours dur explique forte fête joueurs maître petites preuve prison propose vendredi adresse attaque avance ceci court dos endroit essayer grave huit lumière médias retrouve régime arrière bonnes commerce faite films grosse montrer physique quartier rendez telle unique vente via vis appelé lettre lieux parole pieds principe prochain projets radio règles table vaut édition analyse assurer carrière chine commun couleur disent durée erreur espèce faible large lundi mauvaise membre neuf objectif pro relation rendu respect secteur soutien tomber utilisé vacances actions allait change concours couple course décidé fonds fou gestion juge mesures mètres normal poids réussi sert sociaux suivant suivi taille viennent village visite voulait voulez bref ciel clair combat comité dirait fallait mémoire ouvert revenir signe suisse tenir tient trucs album ancienne attend bah cinéma crise garder maladie mondiale médecin prends soi tiens valeurs vote vouloir écoute île animaux banque chanson ferme final maire parc parties pleine pose raisons seigneur sorti visage écrire anciens avion calme chien cool enquête envoyer images ligue limite parfait port seuls vitesse étranger cheveux dollars dossier hiver hôpital lutte marine ouvrir pression religion stade théâtre volonté vraie élèves adore camp drôle débat oublier pauvre propres regard revient rêve science souhaite touche voulais absence blanche capable cité clients coups delà habitude jacques poser publics royaume russe sciences secret tombe top usage émission auraient beaux chaîne chinois comptes concerne contact créé dame direct divers effets envers fer fil froid frères futur gaz lignes malade nouvel pareil privé procès rapide réseaux réunion tableau tendance vingt vit atteint boulot bébé choisi familles fasse finir gagné goût humain lettres lois londres madame oublié peau surface tels vendre venu victime écoles élection épisode équipes aimerais allemand appris arrêt avocat bonheur budget certaine choisir compter connaît cru dedans hollande mari musée prince province rentrer retraite revenu sac siège sources surprise vent acte bouche capacité centrale chaud contexte dessous disait faudra gueule hauteur ouvre pages recevoir rire réalisé salut secondes servir victimes vin actuel approche candidat capitale croit désolé européen faveur front mérite noms noël papier portes prévu regardez sites sociétés tribunal télé accident courage dites entrer envoyé festival jeudi nul perte riche régions sainte seraient serais termes unité belles café chat chiffres coin couleurs faudrait identité lance mets moindre parcours partage partis pont protéger préfère remettre somme sujets tirer titres vidéos violence voire élevé appeler attends beauté bleu buts champ cuisine côtés danger député foi football intérêts lycée maisons mercredi mourir objets opinion places planète retard savent situé tenu théorie verre actuelle agence artiste artistes autorité avions bus citoyens content célèbre distance détails entier extrême figure imagine lecture maman masse matchs moderne mur noire pensée privée quitter risques soldats triste vert vide âme échange élu énorme actes bizarre communes conseils contenu dommage empire espoir mardi offrir prennent réserve section sent signifie sociales allons appareil auront château crédit disant don empêcher furent jeunesse liens machine méthode naturel revue rose règle salon silence sympa traité univers venez vice vision écran acteurs auteurs bruit docteur entend formes héros mecs raconte rappeler reine roman star textes tiers voitures écouter étape ajouter avantage bataille boîte capital certes cheval client danse défendre exercice institut locaux logique milliers monter ouverte palais passant proches revoir robert réaliser savez soin statut sûrement tente types vivant zones arts baisse besoins collège domicile efforts employés examen humaine max moteur officiel ouvrage partager patron possède pourrais préparer rentre revenus réel réforme souvenir suit tenter test utile achat bordeaux bâtiment cerveau civile concept députés envoie humains japon lancer matériel montant nations nommé notes paraît parles quitte réaction réduire répond sentir sourire tourner van agir amie battre cartes coût fleurs indique jardin lac marc minute mondial obligé pensez phase rare soins sois séance séries urgence vécu accepter agent allé auto cancer chasse complet complexe concert essaie gérer impact inscrit joie lesquels local métier nez obtenu occupe prises profiter revanche sauver savais scolaire spécial totale troupes trouvent vieille accueil agents aimer aurai biens cadeau cent chefs colère conduit diverses dormir dépend eaux espèces ferait hasard jaune jolie jésus longueur minimum moments morte phrase pointe secours sommet systèmes acheté acteur ajoute arabe assure bar blague champion chute complète crime croix dure dépenses efficace essayé fiche garçon interdit issue juifs mille pain paroles pensais perd plans pouvons quelles quels repas soutenir suivante terminé échelle aimes aéroport canal chiffre comte défaut enfance estime gare glace hommage humanité logement maximum piste plage pouvoirs produire précise prêts restent station telles terres tourne volume voyez égalité élus boire chômage claire clé congrès demeure division effort langues mandat montagne médecine net noirs pape parlent portant portée prête refuse reprise répondu sale tenue amoureux animal bateau bilan blancs cabinet cap classes demandes devenue disparu donnent douleur décès emplois espagnol faim formule lait lune office ordres peinture profit rues seine véhicule apporter arrivent balle barre climat conflit euro for forêt gratuit génie honte invité islam locale menace mettent mobile occuper orange pauvres payé quantité race rares reconnu thème tours usine aient ambiance aventure blessé central contient dessin duc déclaré défaite empêche erreurs finances finit fous huile inquiète messages min médecins métro nation oeuvre penses rapports rivière robe réponses salaire soeur toucher trente vérifier écriture épreuve étoiles académie basse black brésil chaleur commande conduite denis discuter doigts détail fit fruits haine heureuse humour interne légende magasin monte organisé parfaite pensent plaît postes rang recours reprises veille verra vienne vive élément épouse aiment alliance arbre aspect attendu auquel bac bel composé ennemi euh impôt inutile modèles papa passion pourront profil proposer record richard royal savait serai souviens unités uns apparaît avoue belge canadien champs chapitre conduire coucher devrais entends essai gentil japonais jugement limites marcher monnaie murs neige peter pluie pote primaire promis riches rythme tue uni vélo échec amitié bain chances dents devons dirais doux enceinte laissez langage mange original plateau pouvant quasi remise russes réduit salariés semblent située talent tourisme traiter venait vendu venus vrais apprend archives arrêtez bravo chansons couche dispose document domaines déteste empereur fier grosses impôts italien lever mini méthodes option orient plantes policier précis présents remarque sacré scénario signes soyez spéciale tas tort tournée trou venue voies voisins voter étudiant affiche apporte arabes arbres cache caisse casse centres condamné consiste couper eut excuse exprimer fermer hausse joli journaux mairie manuel million passent passée progrès prouver puissant retirer retourne reçoit résumé tire vaste voudrais accepte attente cercle cesse charges chiens connue courte dette doigt douce douze exemples fenêtre former fournir frappe grève imaginer inde jusque mises mélange ombre pilote plat repris servi surpris terrible établir étage agréable avancer bête cible devra donnée décider décrit endroits format génial jambes live lié locales magazine marchés nulle oeil olivier patients plainte portable portrait prenez preuves rouges routes réussir rêves score sors superbe tournoi ventes viande vierge étrange attitude balles batterie chacune christ colonel commis contente copine courses devez entière essence guide impose imposer jeter joseph liés normale ouvrages poisson régler simples stage suppose usa vivent évident acquis actif allais automne bloc chocolat confirme extrait fixe foule fédéral hauts immense immeuble inverse longues léger machines maladies outils pouvais prépare pub pêche rarement recettes rentrée souci soumis sports séjour taxe vigueur voient voile zéro allant aurez banques billets calcul chevaux choc civil clés disque décret désir enlever garçons lourd mener micro mont morale niveaux officier poche prenant prénom rock réelle solide vallée égard agricole attaquer bases circuit courir débats déjeuner délai employé ennemis experts feuilles idéal individu mention mettant née offert pause portent quart remis ridicule seules soucis studio sucre sénat trafic venant voisin échanges étudier affirme angle appui attaques auras billet bière cacher chère clubs coupable culturel debout disais découvre détruire enfer gardien geste jack juger majeur meurt mène notion pardon pousse raconter relève règne récit salles sommeil tome traces tâche ultra établi alpes associé atelier charte donnant démarche foot incendie journées juges julien leader love luxe man marques moral noter parlant positif prof pré pétrole repose show siècles utilisés vague abus active aise bat citoyen convient degré dite drapeau détruit essais franc fuite gamme invités lunettes mine paradis pousser repos reprend royale sec semblait sondage standard trouvait trésor évidence alerte bourse chambres connus coûte crimes cycle dossiers douche falloir fausse fortes franco fêtes henry ira libres lèvres mail montrent offres oiseaux oreilles outil paiement parisien parlait poissons profite publiée queue quinze rejoint régional résoudre réussite souris sûre tests tir tonnes traduit témoin témoins utilisée échapper adultes armées ballon branche caméra combats contrats corse couronne curieux dialogue engagé facteurs fameux feront grec habite humaines laissant larmes libéral liquide lot lutter légère matières patient pensées prime prévenir puissent pur remplir rupture secrets ski sombre suivants suivent temple têtes vies voyons îles ange augmente bleus bouger cou critères croyez destiné directe disons dizaines engager feuille folle forts fortune horreur installé jure liées magasins manche miss montage montée morceau morceaux navire océan piscine poursuit rappel rapporte restera reviens saisons symbole tension thèse troubles trouvez ventre virus voler écrivain abri accusé adopté appels bureaux business cellules couvert culte digne dépôt fidèle graves hâte job jury lis lâche lève missions médaille ménage odeur peuples pitié plante poésie priorité probable ramener refus rendent richesse révèle sachant sensible souffle soutient totalité vise éditions actrice aides aimez arc balance blessés causes comédie croient crème degrés fins folie forum féminin garantie honnête licence manquer normes oreille prêtre pure raté regrette rennes réalisée salaires sportif toit écart actifs adulte anglaise applique assis battu chemins copie cultures dessins devaient diplôme envoi espaces espérer existent faibles fondé foyer fruit horrible humeur inconnu jouent longs magique maintien malades marrant maîtrise pars paru publier remonter romain sable sel suprême syndicat sérieuse terminer toile vues étoile évêque adjoint agissait appelée avenue axe consacré conçu cousin drame durable expert fallu future galerie indice major mines paie papiers pascal pierres pis placer plaque pop privés profond qualités refaire sauvage scènes secteurs seuil signer solo trace vins visible visiter voyages voyant épisodes accent annoncer aspects attirer bassin boutique canon carré casser chapeau col courrier créée destin dizaine déchets dépasse fout logiciel loup marge médical métiers oncle poète préciser rends réfugiés stop stress villages visant voulons élevée accéder aille alliés cadeaux cadres capables charme comporte copain coûts dingue défi facteur gagnant hautes leçon limiter liée mac majeure maria marre mit mystère méchant opposé origines paquet passes paysage pertes pistes pleurer potes prouve pôle recette remonte retrait soldat étions amende amener atteinte chanter chanteur chers destinée diable dirige dise faisons ferais fleur francs fusion gris juif lecteur marins milieux modernes motif métal météo obtient oubliez ouvriers pauvreté prévue refuser remporté retenir sache scandale suède taper terrains verts vivement équipage êtres absolue associés audience censé citer composée conflits dates design faculté faisais fiscale fondée gorge généraux ignore investir joyeux magie modifier médicale nuits open paire pleins prit promesse registre relative rempli serez servent sortant souffrir soutenu suivez tournage trompe val écrits émotions étapes accords annuel bill bob bénéfice chaînes clinique couteau dieux dérange ferai file fleuve gras hockey inscrire intégrer lecteurs liaison miroir paraître procédé préfet rené respecte support vend verte voudrait écrite émotion étonnant amateurs arrivés avocats bouge chargée choisis collègue constate couples couvre croyais dommages défend désert déçu enjeux enseigne esprits feux frapper gardes gilles gloire héritage implique jus latin limitée maillot mark marquer mettez moto oiseau onze parlez plate privées prière profonde pseudo remplacé réponds réunis sauter signal sièges sortent souffre tableaux unies villa volant ère éditeur autorisé carbone cellule chantier chapelle chinoise civils comparer devoirs dira due duo effectué entraîne flics fédérale gamin global hop horizon hésite inspiré intitulé maritime mignon passait pensait précieux rayon saisir semblant stars subir tester vertu écris évoque adopter adoption apprécie assister aveugle baisser beurre biais blessure boucle bulletin chant coach der devais diriger dîner essayez excuses fiction finance financer fine flotte forcer froide fromage guère inter issus jette laissent lion marin masque massif milan moteurs musulman navires observer opéra ose peintre pot racisme remercie récente répète sage savons session sortes tarifs tempête tennis violent épreuves abbé acier adapté allée amateur amené argument cardinal chante chaude définir fenêtres géant libertés légitime mensonge out perdue positive périodes real restes seras solaire sorties subi sénateur tapis taxes traités trouves adapter africain ailes arbitre bandes banlieue bleue bonus bouffe camion camps ceinture cents charbon chats chrétien couvrir dan donnez dons décédé déplacer déposer environs express exprime flux ivoire lumières légumes maîtres mineurs minuit motifs nourrir prendra prévoit relais relever rond ronde stations thèmes tiennent trains vaisseau voyager églises étudié admis analyses ateliers avouer basée bateaux bijoux casque chaise concerts dames devenus douceur débuts exact exécutif forment four fourni foutu inscrits libéraux livrer mariée menaces napoléon noires ondes opinions parent patience piano publiés quarante quête restant riz réformes réserves sauce scrutin stable suivie tabac terminée tissu trône uniforme variété éthique annuelle attendez baie bains basket benoît bible carton chimie crédits diminuer dégâts dépasser exercer fautes fidèles forêts golf gère incident jules légale mères norme observe occident partant parvenir passera plaindre poitrine poudre prétexte qualifié recueil ressort rive rois réagir sons stupide tape tenant tombée tromper urbain volumes acide allaient appelait appelés attaché aussitôt auxquels belges bonsoir box cités créateur diffusé donnera dose débit effectif fatigue forfait fraude fumer gratuite italiens jardins joint leçons listes marier mentir menée mince misère naturels négatif ours ouverts portait poulet recul remet restait réveille sacs serveur signaler sixième survie taxi trait traverse tribune trouble veuillez vieilles élite abandon abonnés accorde ambition anges appuie aube blanches bouton bronze calais cannes chair cherchez clan clip diamètre dénonce exister facture façons habitant numéros néo offrent parts poil prenne prie rage répéter serge séances utiles utilité vocation voisine égal accorder achats admettre affirmer assumer bail banc bosser colonne craint crier criminel césar danser devront existait exposé fesses genres girl gosse gâteau intense joindre las libérer malheur mali marne marquée mien miracle noble optique ouvertes plafond pomme procéder rendus roues rêver suspect talents trajet trouvera ultime veste viendra vols éliminer épaule évoluer actuels appuyer armé baby bancaire boss boy colle conclure conserve contacts durer décor dédié dénoncer enlève entouré escalier externe fierté fournit globale indien informer manager modes musicale options parking parlais pilotes pommes ponts poule pourrez protège quai raciste retenu retire robot romans roue récent réunions rôles sondages soudain tirage tube var visites volé votes voyait épargne aile aimait ampleur arrivera attire barbe blonde bloqué boule calmer choisit conclu conquête costume crâne descente duquel dépit excès failli fausses fontaine fuir fumée féminine genoux guitare hall hôpitaux instance internes location logo lâcher menu moyennes parfum passages phrases pires prévoir rivières réduite serre soigner soirées statue suggère usines vapeur vendeur épée aie bol centaine conte couches cris dirai doutes dragon décrire esclaves fabrique familial fermée figaro flash futurs gain gestes grandi gêne inventé issu jambe jeté lourde légal manquent ment mesurer monument nés pile placée prenait profs promet prononcé prévenu purement roche réalisés sauvé souligne séparer tarif trous unes urbaine vraies époux évaluer altitude amuser animé anonyme arrêtés assise attentes benjamin bloquer bosse brut caméras citation codes confort congé cuir câble destinés dépense déposé exige gosses herbe jazz lancée lorraine masculin mobiles modifié monstre pattes pompiers racines romaine rugby senti soupe survivre synthèse tournant vagues versions vivants acquérir aperçu autonome baron barrage brillant béton canard case cave changent chérie cirque copains courts dignité délit désigne encontre enquêtes extraits figures garantir germain indiens levée libéré louer marchand maréchal mentale meubles mienne montrant mépris panne panneaux provoque ramène rapides relatif rendue reproche rigueur robin roses réparer sauvages sols sonne spéciaux tenait tendre troupe étend agences annonces asile assaut avancée canton chimique communs connues courants crainte divorce donna déclarer délire déroule espoirs espérons facilité finis fiscal foie ignorer intégré laver majesté mémoires off oscar panique passées pique plats rangs restée roule rouler roux réussit soixante stock sévère sûreté variable vendus vif vus écologie édifice établie établit évite absolu afficher aimais arsenal bébés canapé chiant comptait demandez devint district défauts déficit désigner entrées fauteuil fragile garage gravité hélas illustre inclus junior largeur latine lord malin miel moche modeste musiques négocier organes panneau partent passez pension piège plaire plaques prévues rappelé reconnue regardes romains rumeurs réveil saura saut septième sportive supporte tante tâches valable vents élevage épaules étendue étonne amies armés aérienne branches censure cesser chaussée chemise colis colonie connerie contenus coupes dettes donnait emploie explorer exploser fixer fière fièvre grille horaires imaginez indiquer informé insulte loyer mobilité neuve noblesse nuages occupée parlons peint pleure porc portail pourras poème puits quoique résister révolte sacrée sortis souvient sportifs sèche tables taire triple vache valoir élever énormes albums algérien aliments assisté blagues boîtes brevet brun caisses console continu croyait délégué désolée emporter exprès fameuse gang inconnue indices initiale insectes liège loisirs maires manières massacre matinée maxime mineur musées nerveux neutre oeuvres opposer pantalon parcs pasteur peines perds planche plu plume poignée poster posée pouce priori refuge reposer récentes révision saints schéma sentent sincère soyons sépare tirs traits tranche trio violente voulant écho étages abbaye adieu amuse analyser antenne apprends bal blé breton brigade brise charger clos clément constat coucou disposer douter dégage espérant examens extra goûts généreux idiot insiste intime jaloux joues kilos look manteau messe mixte moulin ordonné pari plomb poches produite provient prétend rayons rebelles rendant renoncer retenue réunir saisi salarié suisses tragédie trophée énergies étendre aborder ayez bords briser bulle chaos clavier clôture coffre collecte complot conforme corde densité dispute disques douleurs débile délais emporte enjeu faillite florence gentille globe grecs guinée habitat hectares immédiat invasion lady lapin lourdes manches marquis milliard musical mythe ménages nettoyer payés perdent pic pères pétition quarts ranger réunit sir subit tensions théories tombent témoigne verras veuve échappe égale adhésion agenda aire antique arrêts boston brûler bâton bêtes cage chèque colonies correct craindre cri célèbres deuil démontré envoyés façade fermes fichier gamins goûter grandeur incluant inutiles jouant lourds matches mental média nue occupent ouvrier oxygène pacte parquet pizza poils polonais pâte regards repartir situés tend traduire tunnel verres virer écoutez absent adresser aimerai annuler apport arrivait asseoir aurons avère azur campus chouette collier comptent conclut confié corriger courbe dits dors dort défini dégager entente examiner fidélité filière fur gaffe gré hygiène hôtels initial inviter jaunes laïcité lyonnais manquait maths militant monstres méritent nombres obligés pareille parvient patrons perdus poussée proposée ressenti récolte régulier réside solides séquence terrasse testé tissus varie absurde adoptée alarme ancêtres baptiste barrière coins colonnes confier courante crises céder céréales descend engagée exerce flammes foire horaire huitième hum injuste jouait label majeurs minorité mosquée mâle nommer offrant pavillon paysages pensant plaine prêter racine refusent récents réels régiment régimes sagesse saoudite soirs solde solitude stockage surfaces suspendu tienne turc usages violents âmes échanger amiral artisans assiette audio auguste bornes cahier calculer croisé cuivre dent dessert dirigée discret définit défis effacer embrasse engagés excuser filiale fêter golfe green irai lave nerfs nette neveu notice paroisse pompe poubelle pourrai prier promo prophète préférée prêtres radical rater rejet requête réclame récupéré révéler secrète soutiens suites supprimé suédois séparés trouvée typique verser vivante écrans allure assurée autrui aviez aérien boules carrés casino chéri clef concepts constant contenir coton digital doté faciles faille faune fibre graines grecque havre home héritier hésitez hôte illégal inconnus innocent jet justifie litres marbre maturité mette mètre métrage nana noyau paille panier paysans plages pouces publiées pèse réaliste rétablir sain saurait servant urgent verbe visages visibles éteint étiez évolue affiches aimerait amusant anneau are arrivant calculs chou coco comique compare couler célébrer deviens diesel diffuser débute dédiée fichiers figurent flic group guise handicap harmonie illusion index isolé issues juive larges malaise nommée négative obtenus patrie payant porto pourri renvoie reçois rumeur sachez salade sales serment serons sexuels signée soif souffert symboles tendu torture transmis tueur verrez vides vieil vivait volet âgées éloigner adorable assume attribué boisson canons cash changera chatte choisie cordes coule courtes divine donnes dormi défendu envoyez extrêmes fiable filtre genou grandir géants hello lampe livret mariages massive mat mondes muscles onde pente phases plaintes porteur pourriez prudence respirer ruines récits saisie tenus trahison urgences usagers voyais âgée affecté allié annexe annulé apparu associée bye causer charité chasseur coller colline couloir doctrine esclave exclu filet finales fraîche goutte instants insulter insultes investi jolies libérale légion maux mettra médicaux nier pneus princes prévus races racistes rassurer relief renvoyer rocher sanction soumise terreur tragique vain échoué élue émis évasion accordée angoisse appétit arracher balade ban bars boissons bond capitaux chômeurs clichés composés comptant crie créés data demie devienne diminue dollar duel défilé dépôts détenus exclusif exil existant franchir heu idem inventer lame maximale nuls oeufs partiel podium poing positifs ras requis robots saga saviez serpent serveurs spectre stand sublime tactique tentent tenues treize triomphe variétés échecs éditeurs élevées éternel évêques accompli airs allés assises avancées aviation basses battent bottes camions chasser cherches circuits civiles costumes cuba diffusée décident dépenser envoyée estomac favoris fiers foyers futures grain humide lisez luis marathon mettait nuage organe phare planches ports rachat remplie retours revers réclamer réservée résolu réuni seize sienne soutenue sûrs ticket timide touchant traitant tribu venaient arrêtée blocs blues bonhomme bourg charmant cloche conjoint coréen créant domine durs frigo gardiens grade habitué laine mettons mobilier noix obligée ongles opposant ouvrent pan posent prenons profitez pénal pénale quatorze records regroupe remplis rendra reporter restez rural rédigé réelles réplique sections set signalé sortira vaches vaincre valent victoria visa écoutes éloigne ajoutant amant approuvé auriez axes bague barres bec bisous boutons bruits buteur camping capture caution chic contes crever curé disaient discuté divisé douzaine décennie démon désire emmener emmène ennuie entité entrent exacte fantôme fixée flamme flèche fric glisser gratuits invitée lent linge marais menées more musicien méchants nuances obliger obstacle opérer otage ouf persuadé pirates poèmes profits proie proposés pâtes pékin refait rejeté ressent saute soeurs soie sonore sphère studios syndrome séduire tablette turcs valise veiller épouser abattu adaptée alpha amont athlète attacher aîné biologie bonnet boucher bouffer boys char comprise conçue coran creux dalle déclin démarre embauche exposer fassent favori favorise formée gagnent gel infini instar intrigue loups mandats meurent montres motion pensons posséder précises rassure reconnus rires saine siens spatiale tien tiendra tombes tri vêtement âgés écosse épais éteindre admet agissant autel bourré carnet compagne consulté copies coque couvent crash cristal critère créature datant devise dérive encre envisage exécuter foncé franche galère gentils habiller habituel honoré imprimé inclut jalousie jouets jusqu men moines mondiaux moutons notions nus oubli pack palmarès pardonne plaint portion procurer prudent put report régie sien souhait statuts styles trouvais tubes vedette voudra énerve épidémie améliore animale associer autobus bouches boxe brune brûle bâtir cahiers chants clause comble cousine croyance crédible dangers délicat déplace dévoile explosé exposés femelle gains génocide gérant instinct irais ironie mensuel mortes occupés pair pompes potable poteau poétique prestige protégés racheter recruter relance remède rigole rotation roulant routine sauveur savaient semestre sergent situées sourit suivis tchèque valide venger zoo étroite achevé amours arrange arrêtent berger cachée choqué claires complice croyant créent cycliste dessiner diamant diane décharge détresse emprunt essor exécuté farine fiches filer finira gaza grotte humidité leaders lits marocain meurs missiles mérites métaux naître opposés oublions partagée plancher posez prisons prières pâques rajouter ravi ressens revu reçus résulte sentait signaux sombres surnom suspects synonyme trouvant valait vivons éclat éclate élan élire évoquer agi agisse aidez allusion blocage bracelet camarade canaux cendres cibles composer couverts creuse croiser deviner diocèse dom doré doubles décalage délicate détient exploit factures flou fluide glisse grise hormis intimité jersey lions masses moque nobles nommés nuire orage ouvrant patrice pervers peste pirate porteurs primes préjugés pénible péril rompre routière serrer short tantôt tournois aisément ajoutée amical arnaque assurant atteints attraper audition bis bâti cabine combler couverte croisés devriez drapeaux défaites détenu entrevue estimer feraient formant frein galeries grenier guérir immigrés imposant imprimer jungle kit légers maintenu mangent mariés monopole mortel motivé mutuelle pare peindre pensions perçu protégée puce regret revues risquent singe survécu touchent vaccin valence vendue vives vulgaire vérifie éliminé aires annoncée appelez appuyant athlètes aurions banquier blesser coiffure colloque coureurs creuser disputer doctorat enchères ennui enterré essayant estiment fatiguée fines finie fiscaux frites full gants glaces habits harper hostile illégale imposent inscrite inspirer inédit jupe laser loyers mafia mails morales mouton mutation oral passions plateaux plongée pluies promener pue rebelle renommée routier sentez servira tirés tribus vaincu vitesses voleur voleurs éclater écrites équation étendu éternité aboutir acquise ados adresses angles assurent bagages boit brave break chu circuler coca cochon compteur contacté dominant doué débattre démons désirs détour employée escalade exiger fibres fiscales fondre foudre fournis fox gaulois grippe gênant homo horloge jugée lente limoges lisant légendes marines maudit mentions mercure mythique mêle neuvième nid notaire partit pelouse placard planètes portées poules pubs punir radar radicale rejoins respire reçue robes réserver sentais slogan sonde sortez talons tasse tigre toilette touches tournent ténèbres versé veuille violet virage écraser édité abeilles accuser admirer aiguille ajout arranger auberge boue bourses brute ciné claque commença cuire disparue dut définie démarrer emmerde ethnique filmer fonder fosse fume grasse grenade habiter humble imposée inquiet inspirée lacs lectures littoral luttes meeting mouche nourrit négatifs orbite pipe planter préface pénétrer rat rats reflète relancer relatifs rendait revenue rituel réalités réfléchi sentier servait sortait tarte thérapie traîne triangle turque utilisez viré volée évidente aborde aimée ajoutent bagarre bouquet budgets carter cession coincé collines collèges comédien confiée coude couture coûter cuisiner dense diront déesse désastre détente externes formules impasse jadis lin loge loisir lumineux mans menti monnaies nocturne otages papillon perdant préférés pull pêcheurs radios raid range reflet relevant renard rentrant rideau rit rude ruine réagit résident segment shopping sylvain terminal tirent variés vider virginie visuel établis étranges accroche accusés acheteur armement audit bannière baptisé baptême bizarres bières bordure bouclier bush calculé chauds cheville chèvre citron cliché comptoir comtesse cousins crains dessine directs dixième duchesse délégués détaillé entourée entrain firme forcée fossiles herbes immunité incarne intégrée irait laissait laissée légales marée mers miens miles module nie ouvrière paires parrain perles piquer poussent profils punk rejeter rejette renforce retient risquer rousseau réputé sables sages secte single soulever trottoir tutelle vampire varier vendeurs vélos éclair aidera allumer appelles battue battus bonbons brève cadavres calibre chauffer chauve chêne concret contents convoi copier cross cède dauphin derby dessinée disparus divin débris décors ego envoient familier flore fragiles fréquent gagnants galaxie garanti guerrier idiots idéale inclure indienne jan laissés levant levier lycées majeures marteau masques moine mâles mènent normaux offerte offerts parvenu passager plumes poker pots radicaux reculer regrets renvoyé repérer reçues sommets staff stages stocks stopper tenez tirée urbains valider vends venues voyageur écossais élites abattre about animée animés anneaux arrache attachée bang basque bidon bretons briques carnaval censée cercles chanceux chauffe chutes clefs comités cruel cuisson diplômes dues débarque décisive détendre détruite enrichir entrant fixes flanc girls gâteaux géniale han honneurs honnêtes honteux hymne hôtes jumeaux landes mamie modifiée notable olive opposent passif pete pie pistolet plonger pourvoir poètes punition ratio salons sapin saveur sommaire soulève suffira supposer surplus tatouage teint touchée tuyau user vendent venons vertus vignes vital vogue édit élégance évacuer acides affreux ajoutez appelant argentin atout aval balcon battant boom boucles bourbon bêtise cachés centimes cheminée classée colons connecté cuit céleste danois devenant dérivés détecter employer enfermé entiers ferons filmé fixation fouilles fracture gage générer habitent hésiter inciter jouez laissons maigre menton mou natation obtenue ombres opus partisan peser plaisirs posture pourvu précoce puni purée revivre rival roches répandu répartis résiste résumer sandwich saurais sobre soldes souvenez stades stylo taxis tonne toxiques trésors vitre voisines vomir étonner achetez alias allier archipel balancer berne borne brosse caca cantons clairs clergé colin coma congés coutume crayon doubler drôles défunt députée engin entités estimée exigence extraire fonte grains grammes lignée localité lycéens manques marchent matelas matins mesdames milles miracles missile mousse naît occupant oeuf opère parade payée peintres pilule pleines péchés rail rentable renversé révèlent saluer savon soudan square statues tireur toiles trêve vaux vertes viser écrivent achever aident appuyé attrapé blessée bouts cartons cavalier changes chars clown combiné contrer coq devenues diviser dotée dragons dresse décisif déclarée décédée déposée dépêche désordre emprise emprunté entendue entendus exclure furieux gouttes graisse gratte guérison habillé habitués have impérial jura marina marquant mature matériau menant modéré mourut méchante nièce oscars parcouru passa percer pin plaie platine plonge poli priver ramasser rapidité redonner rives rurale réalisme réunies salue solaires sursis tarder teneur traitée traîner vannes vernis visée vivez écarter épicerie abrite adaptés aigle amendes assassin ballons barrages bétail cachent cessez chaises châteaux ciment cocktail conquis convenu craquer dallas discrète doses douces doyen départs dévoiler essaient fantômes fillette foncière gardent gardez grandit guides honorer jambon jouet joyeuse justesse laissera lisse litre loger lots marchait muscle mélanger mêler noyer nues occupait pairs paquets perdues plier poison poumons procédés quittent rails ralentir refusant remplit repéré rubrique sierra sorcière sortit soumises store supports tentant tommy tranches vigne écrasé édifices émettre épuisé acceptée admire affectés allume anonymes assurés astuce avaler averti avocate baguette ballet bancs branle chagrin chaire chères cohésion country crue cuite cycles damas décida décroche dépens endormir eurent fui gueules guider gènes hais homicide hybride intérim inédite iront massage modestes moquer moreau paient paradoxe phares pisse plaines pourrons préférez pâle recule relevés relié relèvent renonce repart revenant reçut réduits saisis sers souche strict séduit taureau tickets tirant tomates tonnerre tuent tumeur urbaines variées voltaire végétaux vérités écarts échéance éclairer étroit afro ail aimable annuels arrivées banane brevets cabane cafés calcaire canne citée commente consul cordon couloirs couru coûteux cuisse câbles danses delta devenait divisée emparer engagent entame escorte exposées filets gala gamine gares imbécile iris isolés légères marron menacée mignonne mystères natale nickel opposée orienter passons phoenix piliers placées plates préférer prénoms prêtes rappelez recourir rob rurales réussie sirop sorcier souriant syrien textile timbre tombeau toxique trame transit validité veine visions âne éducatif élaboré élargir éventuel adeptes adressée agissent agressif aies airbus allo aperçoit apprête attachés barbecue bleues bonté bouchon bêtises cire clic clin concile coupure coupée créées cuisses demandée douteux draps drive débuter décrite déranger enfermer envies excusez exposée fabuleux fermées frappes fusée gardant greffe impacts indigne intimes ivre jouera lancent limitées loué mexicain modem moindres moule moulins mystique médiocre mêlée nage naufrage nôtres oser palme parte penalty perle plains pleurs poignet pointes pénurie relire remparts renfort rentrent réflexe sabre script selle sinistre spatial sueur suscite trip tuyaux vastes verdict verront violon visent égyptien éphémère équipée abords accrue addition anxiété artifice atlas atomique attentif audace berceau bulles cerf clarté coureur couteaux crève curieuse duché durent dus délits entrés exclus feras fief fouet foutent fraction franchi fédéraux gironde golden halte intégral isoler joints jouir justes laïque liaisons linéaire mens monts mouches méritait navette neiges normales nuance orienté persiste pleut pois portera posées prolongé puy remets rende requin rédiger répandue sentiers sire soupçons stricte surprend tabou teinte tram tuée uranium veines vichy vilaine virtuel visiteur vitrine vivaient ème électeur émet ais anecdote annales ayons banal clique copines correcte croirait cube culotte dorée engins enquêter examiné excité exigeant facultés fardeau filières finesse fuit gilet grimper hauteurs hurler initié land livrée lointain maintes menteur mortels muet neufs notables oignons oublies paisible pareils penche pisser poupée putains pôles reins renforts repasser resta rochers rouleau rousse réformer sacrés sessions singes sonner souple sperme suffrage sultan syriens séparée tailles trahi troll use vallées vase visuelle yen écrivait éléphant émeutes épaisse abris affecter ana aveugles chaudes civique clips combattu complets conteste conçus cortège courbes courent cristaux demanda dresser décidée définis délivrer dôme ennuis exclut faces figurer félicite garantit grange humides icône immenses incite isolée jalouse jolis lapins latéral lucratif mineure minéraux montent ordures patte permets pipi poivre présidé quais relier relâche reparti revienne rigoler réacteur secs songe sou sévères talon tige valu varient volets époques absents achevée allées antennes bassins bats bienvenu bougies bouillon bâtard certifié cieux confus consulat convoqué cran crochet dentaire diamants docteurs dynastie délivré envoyant fantasme femelles firent flemme fromages fée grèves huiles imposées java magiques manoir manuels marges menacer menés natal noces normand observée obéir océans parier partez pat paysan peloton pencher pilier pilotage précédé pyramide rabat rajoute ravie rejetée remises retiens ris robinet rompu ruban récolter régis senior sentence soul sourcils sourd séparent toits tomate tramway transmet tristes tueurs uniques égaux égoïste élaborer évoquant abuser abusé achètent adverse agressé alinéa annexes annuaire araignée arbitres astuces barreau bof brin brutal cape caves cinéaste classer comptez contours cracher craintes cultes demeurer descendu devine déçue efface enfoncer famine ferry fléau folles foulée fournie gym génère hongrois intégrés iranien jobs kurdes lier loyauté matrice montants mortelle nager nain orale parution pavé picard postale propice préparez préparés recevra renvoi repères revenait réagi répondez sas sembler serbe socle soulager spot sprint sucer surnommé syrienne sécher séparées sérénité tee temples torse traitent vendues vestiges vilain vint votent western yoga éclairé énerver épargner établies abouti adorent amer annulée armure artisan avancés avertir balader baleine bilingue bouchons briller cancers cantine cases censés coeurs colonial communal concrète confiant consommé criant cyclisme dignes directes dures défaire détruits emprunts engagées entrepôt excepté exprimés fiancée frappée freins garnison genèse gâcher homogène humilité hérité imagines informés insister investit ironique joueuse khan lames laure libérée liquides lise machin martial mater meuble motiver natif notation néant obscur obus palace parfaits patiente pros racheté ramadan ramasse remédier rhum rime river ruisseau saumon seniors sieste sterling suicider supposée tic tord tournées unir value ver voiles égales éleveurs élégant éponge aboutit accélère aimant allongé anonymat atouts bouquin brille brique camus capturer caraïbes chienne chocs chèques close cohérent coutumes croyants cultiver danseurs danseuse douanes débutant déroulée détester endormi entendez envahi figurant finisse flèches fournies fringues gravure horizons ignorent illimité imprimés jugent jumelles manges massifs menaçant milice millier mixtes méfier mélodie notons oriental oxford pains piles pins polo recevez recruté rein rente roc ruiner réfugié savant scooter soigné soucieux superbes sécurisé tendue thèses tortue trophées trouvons valises verrons voeux volcan voûte écrivant écurie ému équité absente alla amicale arche argile arène autisme autopsie barbares bloqués bot brutale cabinets calvaire capsule capter casier cessent chargeur conduits confondu courtois cravate cuillère cursus desquels diabète dirigés déménagé détroit enchaîne espérait exigent ferez ferment fiables fondu forums fouille fournier féminins gagnante hébreu idole ignorant instable lampes léonard modérée moniteur moïse musicaux niche palette parfums parlera parodie pesant piétons pointer polaire pompier prairies promu ralenti remontée reprends requiert retenus ring rondes rosa sceaux sic soucier souper stupides susciter séisme trancher troupeau vaccins venais versant éclats écoutant étang évangile évoluent abonné achetée aimons amants anatomie antiques apaiser apprenez bacon bijou blocus braves calmes châssis coke corrigé dentiste déni déposés email enfuir entamer entières falaise files flot foncier fées gaule gazon habituer inédits jeans lavage libanais licences litige louche loupé lunaire lésions méfiance mériter ouvrez parité partagés peaux percé permit planning pluriel presses promise prouvent radars repoussé requêtes résidant réviser saintes self seriez sonores spirale stocker surf survient tendent tentes trilogie tronc tunisien verbal vierges visés vitres étouffer évitant achetés actives adaptées amenés armoire arriva attendue basées boeuf buffet bénin cadet catalan cerise chalet chantage chevet chips chrome cloches coiffeur comics concorde converti coréenne coréens devrez décoré découle déduire définies déployer désirez eden enfonce fatale favorite fisc gendarme graine hache hostiles impunité insérer jurés magicien merlin messager minière molécule nerf nourri obtenues orgue orgueil oubliée posés procure préparée reliés reposent requins retirée rivalité routiers rythmes serions sincères surcroît tank tomes traître unie usure visuels zen échéant éprouve accusée agneau agrément amas analogie appelées artère aurore calories capteurs casa casques chemises choux commises consoles coquille corpus coupures croisée crus créatif devrions dominer douane déconner défenses désignés déçus encadré engrais escale fictif flipper formelle fouiller fourrure garantis haleine here horreurs intenses joies karma lanceur logis martyrs maya menus metteur minimale montrait muni naïf nuque panama parie pelle pigeon pince portez poussant prédit prétendu pudeur pureté raisin rallier recteur rentres restons retards round saxons sensé souffler spencer succéder tardive terroir thriller tiroir tirées traction traitées trouvées vampires veau wagon wagons écarté éruption absorber accents activer adorer aidant apparue avatar aveu baies baskets bastille blond bloquée boulet buisson carottes cartier cochons coffret cola couvrant couvrent croyons droites dédicace défait désireux engendre envahir envoyées exploite fatal froides fumeurs glorieux handball hui imiter inauguré jets lâches légalité minerai montés mosquées mythes mélanges once orages osent panorama paroi payent percée permette pianiste pochette prescrit prône rampe recouvre rendrait reposant rideaux sanguin scores secrètes serpents situent subsiste suivies tracer tribunes tronche tuant unit variante verrais viandes vicieux vitale volent végétale échelon écoutent élevait éloge éloignés élèvent abstenir acceptez adhérer alphabet animales anomalie arrivez attrait barbarie biscuits bosses cailloux caserne cercueil chapeaux choquant circule condé confère conçoit croisade crête datée diras drague dépendre dérouler enterrer farce fermier gagnes géante hidalgo infinie insecte inspirés lacunes mare math mâchoire médian notaires partait payées perse philo plaisant poumon précaire présumé préviens rabais recevant receveur recrue rigide réjouir réussis sceau situer sketch slip soja stables stimuler subtil succédé suivait survenue trinité urine vecteur vertical énigme épices adieux apologie appelons apports arrêtera attaquée attirent basculer bougie boycott brandon bâtons cascade chargées clans clou clous coloris coûtent croître croûte déclarés déconne dédiés défoncer embarque exploits flûte forfaits fourmis fuites fureur garant great habile hormones induit latitude lisent malte maternel mercier nées oublient parasite parois patate perçue pièges plaise porcs pourrie profonds prose prévenus prévient raser rivaux rush réfère réputée rétro réélu scanner suggérer suédoise sèches tambour tarde théorème tons trajets vanter vinaigre violette voudront yang zombie épique érection évalué accordés affectée ailier algues anus aptitude atomes avancent azote aériens bagage bagnole baigner baptisée bénévole caravane causée changez chariot cheikh comparée confond crache crèche cubes diffère dirigent disciple divinité donation draguer durement débiles décerné défiler déguisé entrez espion eue excessif explosif facto failles fiat filiales gymnase habit indiquée jade jésuites lauréat libérés loges logiques légèreté marchant marquent marquées martyr multiple mutuel obésité offertes orge parvenus perçoit pics pigeons plaira plâtre posant projeté rangée redoute rendit repli retarder ronds répandre révélée sains sauront soutenus spider steak superman sus séjours théâtres touriste velours verrait vignoble vécue échos élégante émeute érosion acquiert adhère agrandir allonger apte arcs barrer blâme bobo brèche chantent chaux china consigne cruauté cumul datent donnons dorment durables durera décevant déchiré défier détourné estimant exagéré exécutés fasciste fermeté fermiers filtres fixées flagrant flamand formats fraises frappant gai gorges gothique goûté gratter griffes imagerie implanté insolite jouit judo juristes kilo lancés loto lus mamans manquant minable moelle mouillé nets notez nourris octroi palier pans para partagez patriote patronne peurs promets préavis puces péri raisins rallye rame ravis redire relate revendre rigolo robuste ruraux répondit suce suffire suivra tango toc tournure tuerie tunnels wallon zoom échouer équivaut éventail évoquent actrices amitiés aménagé animer anormal apprenti assureur attendus blâmer boxeur brisée butin cassée chrono chut classées clauses clémence corrompu craqué créneau crêpes cultivé digitale donnerai décoller dégradé essayait essayons fermez fluides formuler gouffre grossir guilde investis laid lyrique mentaux mettrait milices modérés motivée museum méfie méprise neurones panthéon passants pentes pivot plane poêle prairie refusait retomber romance royaumes récidive saisit savants scie semer sirène souches tailler tardif tenais torrent trahir trembler verrai versa vocale votée zinc zombies éloignée abruti agirait alimenté amen ampoule arrivais aînés blindé botte bouddha boum brûlée buste calmez cerveaux clope comète comédies concrets consoler corne crucial diffusés dot défensif déposées désignée effondre enfoirés estivale exercent fondées gazette grecques grenades grès hybrides imam insu insurgés juriste lasse let livrent localisé lucide maris merdique montrez moralité motos nanas naïve nova obtint odeurs offrait oreiller ouragan perdez perturbé pourris prenais preneur presser pénètre pêcheur quotas racontes repenser requise rigoles rite saveurs serein servis soupir sue suivit suspense syndical tais trouva urnes vaudrait végétal écharpe émetteur épopée abeille adjectif affilée arctique atroce basant blair bouc brabant brebis cabaret cachet cale carrée chantant choper coquine corses courtier devises dilemme décrets défendue délires déplore ennemie entra espions exprimée far fascisme fours féroce gagnez gendre gravures grossier haineux halle hameau idéaux janv jettent jouée ladite lanterne limitant lobby masquer menthe neuves négliger oasis obsèques originel parcelle pieux piratage plants pneu prospère péage pénalité rafale reliant rendues retirés rites romaines récoltes régner résidus seconds segments servit smart sodium supplie suspens symptôme tempêtes texture timbres tintin tranchée tuiles visées vivres votants érotique évitez abat adjoints ajuster aligner amènent analyste ancêtre apportée arcade arrêtons attirant barbare barreaux bémol calcium canards charisme citant coloré câlin cérébral danseur devis dominent dune dégoût dément démonter déploie déprime détacher embarras encadrer ennuyer essayent essayes fasses faveurs finalité finition foin forge fraudes fraîches fret gelée ghetto gonflé habitait haricots imposés insigne jonction juives latérale laurier lauréats limousin lèvre mangez mentor mineures mordre nef nerveuse observés offensif oignon pallier patronat perche poteaux prédire pèlerins raide ravages recrues refrain regagner revenons rhume rétabli sente solidité soupçon vanne viole énoncé éolien épave érable accru agresser aisée amenée arrières arrêtait aspire aînée banale barbier baroque bourreau braquage brutes béni bêtement cacao caramel cargo carotte carreaux cars chèvres citées cognac commet corner cornes croquis devinez divisés dotés décevoir décrits défends défiance désirer empathie enlevée envois eus excitant exode faisceau façades foules frotter gates griller grilles gérée gêner habillée hercule inédites larme manquera marqueur menacent meute mortier mémorial nains naissent naïveté orientée perde pizzas plaisait plaisent plasma plaçant posait postal propreté puissiez querelle raids remords remplies restants retenues réduites réfugier salée sphères stérile syndic tailleur thon tiges toiture utopie vicomte vivantes éclipse affronte aliment allongée apôtres aveux bananes basique batteur boivent bridge caresse choisies commode compact créa cuisines dealer direz dotation défoncé désirent détaché embêter empare enrichi escroc faubourg folk froids fériés gloria gomme gonfler guichet génies hanches harceler hommages héroïque hésitent influent jenny jetée joker lama lancées lotus mate meunier minima miroirs motivés métrages navale nazisme ores orné osez ouvrira parue passive patates piloter plais pou pouls pourrir projeter pus pyjama quatuor quittant rase recevait recharge refonte refusée reliques rêvent schémas serrure soudaine sourires surfer suspecte tampon timing trempé tuteur tuées typiques unitaire utérus valables valet vanille verbes vicaire violeur volés votez vêtu échelles égide énième étudiés accusent acquises aillent anal ancre assurez baisers ballade bascule biblique blabla bute bêta cachette cadence carnets chelem chialer conclue cor cuve devrai dirigées donjon douches ducs décalé décline décompte enfers ennuyeux envoler exactes excédent expulser formel foulard grottes gâchis haïr illégaux incarner indirect ion ivresse joueuses judaïsme licencié lys malins modifiés moutarde muse mèche môme naviguer neutres odieux opposées ovale papy partira pendre plaider plaies projette promène puzzle pédale périple raciale rattaché requises rituels référer réputés saxe scorpion sorciers sourds subtile survenu trompes verset versées visait voulions voulue voyaient weber écrivez émouvant abstrait ace aiguë appuient appuis baleines bisou bled boucler brunes cachées cerner chanoine choquer cliente clocher cruelle donneur doués déplacés essaies flippant fondent foutue frange freinage fâché garer glacée gouverne grimpe humilier hurle inertie internat isolées jouais jugées lingerie livreur lunette légaux maillots manie manquez milite minime molle orgasme portions primo proclamé propager proverbe puisses punis retrace réflexes réglée répondra secouer semences sucres tac tenons titan tolérer tortues usées vacance vitalité vitamine vomi écrivit éduquer émerger équiper éteinte abdomen abrutis adepte ajoutés amertume arrivons artères atténuer baume binaire building ciseaux convenir coûtera crient cylindre dauphins denrées dentelle disposés disputes dodo doive doter décrites déléguée déroute détecté efforce exclue explore exporter expulsé faction fiancé frustré gaillard halles hexagone ivoirien laissa loir managers maximal meneur mentales mimi modules mosaïque moules moussa ménager nappe négocie offices oracle parcourt poupées purge rançon remake restées retombe royales répartie réunie saisies sauvée sen serrée serrés serve sourde tournait tournés tremble unanime voirie zénith écoulé étaler étroites évoquée abaisser abattus adjointe agité aigu apportés assigné atterrir badge banquet bastion bazar berges bonbon brûlant brûlés bâtie capteur cassette coffres commando coupées coussin croisent dogme dopage drames déchirer déployé emblème event exerçant financée finement fondant freiner fuis gagnera gallo galères gap gibier granit hanche hart heurte ignorait immobile incluent indiqués inquiets inverser latéraux libraire loterie lueur mangeant martel marxiste mentent miettes mixité monarque médiane médiéval opté ornée panel parenté pavés peints pendu pinceau plaide postuler prieur primitif préfets pèsent rattrape rempart renferme reprit ruelle réponde résout saxon schiste sexisme shérif sitôt suivront taule taupe tenaient tentait traduite traduits triche viable vieillir vocal voyous vérifiez émanant émises épingle épouses éveil éveillé amiable ananas anarchie annexion aquarium archive baba billard brochure brume bruns butte capote capte cartel chaton claquer combiner continua coquin créances culot curry dam douteuse dépourvu enclos endormie enfoiré envahit fameuses fatigués fixant flamands fortunes fraise gaga gagnée géologie hachette idiote jetés lice licorne lucidité ludique malheurs mesurée mettrais moeurs montées mourant offrez perdants perçus phone piges piment placent présidée pépin rafales revente revois réf sabine sanguine sentie servie soprano statique suez suicides tenants tonton tracteur trappe traîtres versés vétérans épuisée équateur étalon évader abolir adultère aidée alliée apogée arrêtées atome ave avérer baisses barque battait blindés calvados cils conçues crues créole dauphiné devenez dissous dosage drap déserte entrave fallut gages glacier grêle huissier invitent jetons lançant lécher manège marchera martyre massives matinale minimal mistral mobilisé mêlant nazie nordique oubliant pascale payez paysanne pionnier plié poings polices poulets pressée rames reines renom revoit roumain royaux ruse réjouit répétées résine serra souhaits stipule sérum taxation temporel textiles tigres tombant touchées toussa toux traque vibrer volley yaourt érigé étudiée adoptées aggraver agira allures altesse armer atypique bacs banni caporal carnage centraux chantait chorale clowns comtes cosmique couette dessein diables diplômée discrets diète douée déchet déclara découper déduit escrime espèrent estimait exotique factions fax folies fragment fresque frontale fumeur gallois gant garou gisement guéri habituée hangar hilaire ignoble importer kayak lanceurs langages lenteur lèche malgache maquette marraine maçon membrane menait miennes minier minières montrée méditer occupera oie outrage passais piscines plombier pognon poney pouvions prions protéine publient ralentit rangées redonne reflets reporté revint riant sanglier saucisse saurez signalés soda sonnerie strictes supposés surmonté synopsis syntaxe tait taré terminés terra trier vante vendant verdure versée vieilli villas zut échappée échelons élargi étendues acceptés accusant accède affaibli aisance alpin amalgame aménager attirés avertis barème bouquins brancher buter cachait canicule caresser cascades cassés coincée colorés compacte comprimé contenue coopérer crétin dunes déluge détenue emmerder enfermés enlevés ennemies ferrée ferveur firmes fleuves flottant formées fossile haies idoles illicite imprimée intact invoquer jurer kiosque kurde lessive lima loyal maigrir marrer maçons mettrai mile motards mènera médium mélodies octave oil oranges ordonner oses partiels parvenue patinage peluche perdait perplexe pige pilules plombs poire porta porteuse poussin poutre pénales rebours recréer reliefs retardé roberts romane roumains salaud samedis saoul savourer scoop sieur sirènes souliers torche tournai trompent turques télévisé écouler équipées éthiques abonner abordés adéquate affichée alertes amnistie amorce ars atteste balai bandeau bandits baraque beautés billes booster boursier calculée canyon capot carreau causant cavité centrée charmes cheveu croate culottes cynique diaspora distant dominée dormait déborde démolir dépendra détenir enchanté envole facettes fat fauve flexible flots frissons fuient fusées fuyant garderie gâche gérés infliger jogging juniors labrador laissées laitiers larves ligues lisais menacées mignons minces miser mono mêlent normands notera noyé opter orphelin panda payante perruque pousses prendrai prisme prudente publiant python pêcher quartz quitta quittera ratée rechange refais renier rivage ruche régent rénové répand sacrifié sainteté salir sauvés seau sentant serbes servante sets stressé tablier tomba toscane tronçon trousse vedettes vertige yacht éliminés éprouver étouffe abîme admise agonie aimeriez alliage ambiante amiante amusent anse apollon apparus apportez arrogant bagues berline bingo bobos bravoure brigades bélier capitole capsules carence catalans chie chuter cinémas clerc cols commise distinct douai douzième déguster dénommé déplacée effigie exercée fable fertile flancs foires foutez fronts gangs incline intacte iras jetez jouaient ledit lisses malien mariées martiaux maudite melon minimes mouiller mouvance must nègres occupées penchant peuplée pillage pion plis postales pouviez prodige rabbin raie rassurez recueils reliées remorque riposte réjouis répit semé soufre souscrit spécimen survit tendres tripoli tuez vaillant verbale vertueux vinyle voilée voué vrac écoutais éliminée étroits abriter aimaient apôtre asthme athée auditeur balayer bits bouchée bulgare buteurs caillou caste changée civiques clics combinée conclus corbeau coûteuse crosse crétins cône deçà dinde dispense débouché dédiées démenti dévotion entourer entraide ethnie experte faciale fie flacon gardait gardée habites haie hic holding immonde intensif lâcheté malsain marquise marées mettais moches muraille nomades nuisible néfastes obscure opportun optimale optiques ottoman ouvres ouvrit palmer parlerai perdra produira prudents publia pulsions punch renée retourna rédigée rémunéré rénover révisé sachent sahel seuils sillage soucie soulagé stands tactile tan tarés teintes trolls trompée tumeurs vices virement vitrines élargie émue évitera abattoir absences accroît achetant adoptés amère apparent apprit assimilé bise bougent bouillir bruyant buvez cages catch caverne chassés choquée colombe conduira consenti contrées coques coudes cynisme devance dormant découpe dégagée démunis dépassée enfiler envoya envoyait forage forçant frappent galette grue guet horde héberger initier initiés innover instauré invitant jetant jugeant jugez jupes limitent lue manteaux mensuels messie montages montait nettoie nudité négation opaque ordure pacha parme partons pauses payait penseurs pignon poussées proprio prêtent purs rareté rasoir remèdes roumaine saines salades sanguins secoue sels serveuse signez slogans soignée songer string subis sèvres tata tireurs tombait tyran tyrannie tôle urne vallon valve vendait vifs vigilant virée volontés vétéran watts zèle éclairée écoliers égards égouts émise abattage absorbé affiliés aigles apprenne assurait attirée bailleur barons beat bit blacks blondes boulots cabines cassent caviar centime chimiste cidre claviers cocher contour corail cornet coupant cramer diarrhée digérer doublure drop délibéré englobe entourés envol estimés faucon fig fis fosses franchit fumier gagnait gardera gourmand gueuler hivers immortel inaperçu inculpé indigène informée iraniens lard legs lexique livrées logos lèvent manette manuelle marquage merdier méconnu obligent odyssée offrira paf paternel paume poirier polar portier portland propage proposez pétales rappels ratés rayé rebondir relevée ricains rouleaux roulent réparé saigne salauds salive sapeurs sauts scellé sembles siéger sombrer soumet subies suicidé synode sûres tempo tiède toxicité tsunami usager vielle vikings élaborée éolienne étendant étonnes afflux alsacien aléas ambre amusante anticipé archer ardoise attendra bactérie baril biscuit cake chaleurs cosmos cultivée deniers devions disco donneurs défie déployés dérision escadron essayais essuie essuyer falaises fictions gland gus humilié importés incluse indécis infidèle infime intestin judas jumeau louper meetings mie minérale monture mordu motard munis niches négligé obtenez ouvrait overdose palmiers pancarte papi parvis passeur peinte plafonds pleuvoir prostate recense regardée remuer ressorts répétés saigner saturne secourir shows siennes sioniste sponsor sponsors subvenir symétrie séparant tara taxer timides tonneau tordu tremplin variant veto virgule vivra écorce étale évaluée abrégé acquitté adoptant adoptent adéquat alerter ambiant ampoules aménagée anéantir aperçois avale avisé bannir cactus carême castor chartes choléra colorées comptais cortex couchée crucifix côtière dialecte enterrée envoies espérais fiasco foncer frise férié glaciers gluten gramme gravée grâces guérilla gèrent havane hôtesse longe luttent lycéen légume maigres manier marxisme minéral mirage motte mouchoir nautique noeud nouilles néfaste oratoire orientés osseuse paiera parkings parus passible pers planifié plénière poulain pourpre profile préservé quota regarda reliée relâcher rentrait repasse revenez ride risquait réalisez révélant satire signées slave sobriété survenir survenus tell tendant tissage urgente valides variée vaudra volées écuries écuyer éloges épousa étendent étonnée évoqués ôter accumule admets amicaux ample appuyée ardeur aspirer baissent barbu blouse bride brusque bruts came canot castres causent cavités clopes collant collet colon connasse corridor coupez crochets créative célébrée dater disputée dormez décidés déficits dégrader délivrée dévoilée dévorer effrayé enrichit escrocs exécutée fasciné fatalité fondés foutus galop gaucher gelé glissant glucose griffe guitares habileté habillés hausses huîtres inaction infâme inventée jaguar jargon lambda latins leviers levées liberty lisible lithium litiges luxueux légions lésion marginal micros mire nids obsédé omega ongle opium oxyde paniers parleur pipeline pool priez pures racontée remette rivale ruptures rênes sacrées servez simuler software sonnette surgit tapes tierce touchait tricher trust tsar versets voilier volcans voyou yards énervée évacué affinité agis aiderait alentour alliées alléger amande analogue arménien arroser arête autiste avertit bikini bouffon brunet cadran cal causées ciao coincés comprit confins crabe câlins digestif divertir doublée déchu dégénéré dévoué embête empires entrera exilé finiront flingue folklore fondue formulée glass grades ions irons lança lents liant mailles mettront mil montrera mord murmure méfaits nappes native nounou nullité onzième pal piéton pointu poutres profites recrutés refusa relax renvoyée reprenne revolver revêt royauté rustique râle révérend saches sauces scission sereine signant signent soupire tabasser tandem voudrez égoïsme éponyme étatique étudient étudiées éveiller affilié ancrage anxieux api appuyés ardent autistes bey blason blonds bordée boîtier brousse brûlent cadenas caprice chlore chênes colliers comiques confrère coïncide denses digue dirigea débits décorée décrété décédés démence effrayer elise emballé emmerdes empirer envier erronée exposant fade faisable fictifs gênée habitée huis humeurs hypnose hérésie infra initiée insensé jointe kabyle lentille liturgie lux léopard maille maxwell menteurs mesurant moquent moraux motrices naval omis onéreux opérant opérée papes parlée pinces piqûre pleures poignets polie prieuré prélever prétends rade recensés rendons rendront renouer rentes ressorti rides risquez régence rêvait sifflet skate sodomie sucrée suive séjourné teinture tenta tentez tirait tombées tortures trahis trahit tropical vases venin verso vivais voilées volants vouliez vôtres écoutait étendard accentue acharné adjudant affût aisés ajoutées alignés allergie allumée assistée atterri aubin avoine baignade basiques baux beige bergers bitume blessant bluff bourrée brefs brie brooks brûlures bûcher cambrai caresses chiot colombes colorée concède connut convives costaud coudre cyclable cyclone danoise dealers dora doutais dureté décidera dépeint enfermée entende enterrés exagérer exilés festin flamande fluidité forges frisson fritz fronde gilets gradins guidée guérit hilarant hystérie imite invoque jésuite kick laide lièvre mairies malle maudits modestie muette nettes noyaux obscures outrance pantin perron phobie piques piston potager prirent prologue prélude queues regain relis réglage répétée résolue résolus sabotage safran sanglant slalom soc sursaut swing thorax tonalité tracts traquer unissent vecteurs verger virilité viseur voulut vécut vêtue éditer émergent épées étoffe évoluant îlot achetées affectif agace alcools allions amandes arrondi assorti autos avorter baigne bambou basques batte bilans bille blindée bloquent bohème bonnets boudin boulets braquer cagnotte clore comparez conduis criait croque cruciale dalles dansant doublage débiteur déborder déceler décence décliner décolle décorer désarroi elfes enfreint esquisse exciter expulsés fachos fervent ficelles filtrer flambeau forcent forger fumées funèbre gave gifle grasses heurter imminent incliner juvénile laps leva levez mandarin mascotte menaçait museau méritée métis nombril notoire nulles obéit offense olives omelette orteils paniquer pannes paralysé parental perdit perçues pions piètre pleurant pointent ponte poésies produise proposa punaise pédales racaille ramenée ravir rejets rem renommé repense restauré retirent râler réactif réprimer sachet samba saoudien saturé skis suspend tapent tate terminus vaincus validée values yankees éclairs égout éligible émerge ériger aggrave agitée alchimie arômes assauts assument axée balades balais biche bunker cerises chatons choqués clivage cogne coiffe connexes costard coulée coupent crayons croisées cultivés discount dissout diva dormais dupe dura décidez déguiser embryon encadrée excluant fanfare figurait filmée folio fourre frotte fus gadget gourou grises gîte homos item lacets laïcs leu levure levés lisait lorrain lâchez mangeait manipulé mitigé méthane nomment normande notices obèse olympe orateur orteil parvint passerai permise pharaon piller pirater piéger piémont pleurent pli porche portique poux provenir précédée prévois puiser pénibles pépites rebond renaître retenez rigidité rubis régal réglages saurai scouts shoot sis spots stéréo tain tripes tunique valse vestes virale volaille affreuse agiter ajoutait ambigu amenant animées antan assemblé avide balise bavarois bide boussole brèves cabanes cachant caprices cloître cockpit combinés couplet cubain cueillir cuvette cygne demeures descends desserts dorés doutait débutent défilés délice détachée escadre exposent fonda fument furieuse gate glacial grenelle géniaux halo hectare icônes ignorais imprévu injecter injure irakien jouable jumelle ketchup lai lulu lustres marks méritez nicotine obsolète ordonnée ornement oubliées peigne peintes pinot planer pleurait pollen portage présumés psychose ravin rejouer relevait retracer rie rougir résonne safari sauras saxonne sermon sexiste slaves standing supra tambours traînent vignette virages écroule équestre absurdes albanais allumage avérée bouillie bovins brassard buvant bâtards bâtisse capuche carapace casseurs celtique choeur chômeur citons clone confuse contrée convois craignez cratère créatifs célibat dansent divan dotées décapité désirée détachés détendu dûment embargo emmenée enclin enverra excitée expédié fatiguer fissures fresques gabarit gag géantes harpe hépatite innovant joug karaté kiki lasser maligne marient marquez martiale matures messire migraine mollet mourra métrique natures neveux noie novice occulte ode opèrent paies paresse piégée poignard prélevé puma péquiste pétanque quittait raffiné rameau ration rejetés relégué remettra remous reptiles retraits rocket rouille rouvrir régnait répètent saleté sandales signalée slovaque soignant souri tapez tenace tombera tornade torts tribut valais versus virent vocales voûtes élargit épines étangs abusive acidité affluent alto anodin aptes arrêtant augure bander bayer bidons bises blizzard bouffée bourdon briquet brisés broche cadets calice captures chariots chouchou civilisé courait crêpe devrons dictée driver débauche déportés déserts désirant détenues essences faillit feriez fers flop gammes gardons gazeuse glandes gravier génome habitez haïtien hospice hébergé incarnée incombe infecté infernal injures insuline inversée jetait jument lancez larguer latex laïc lives locatif majors mina montante mue obtenant obtiens pandémie panthère parages paranoïa payants pendule penseur piété plagiat postée poudres propulsé quint rancune ravagé reggae rompt roulait roulette ruelles rétablie sabres sagement spontané subie suivons taverne tendues timidité unions vendeuse vessie vilains violons vitraux élevant épanouir évier évêché aboli agressée agrégé amples ancrée appuyez arènes aspirant assurera barils baronne barrette biennale blanchir brosser buissons bulgares caleçon camper cannelle cantal casinos causa cavale chameau chargent chauves chiites cogner confiés corporel coussins craie crasse côtoie dia dicter dioxyde dises distrait dortoir dynamite déboires défilent déguisée déplorer emmenés espionne exergue farouche ferré flatteur floue forcées fortin freine fétiche gérées hurlant hélice hésitant iceberg inceste infectés ive jeep labeur labour leurre limpide louable maquis marchais mena nageur narines natalité nausée nausées nettoyé noyade offrande onglet ovni ozone passante passeurs patois pepe pioche polis portière posthume potion pouf prouvant puberté punie ramènent raquette refléter renvoyés reparle repars rédigés rêveur saoule semis stoppé styliste succombé tendus thune tisser titans tonneaux touchera touchez tourna traînée usant vacants verrou viking violeurs voyelle zodiaque ébauche éclosion éduqué élevages éminent épine érudit évitent acronyme apparut arbustes arcades arrêta attarder aumônier avançait balises braque canoë castel censées cervelle chanvre chopper cocotte convainc croquer cuites desserte doris dorsale durées déclic délices dénicher déplaise entendra extase extraite fissure fleuri gale homard immigré influer ingrat insomnie intrus investie latines louanges maestro mage marrons matraque messes microbes mirent moisson mèches négoce oliviers oubliais oubliera paliers parterre piper plongeon prothèse proue préjugé présenta présumée prêcher racontez ranch rayures refermer relayer repaire régale rénale révélés sabots sautent savions sectes seizième semelle sil sorts souples tacite tanks tirages trafics turbines vacant visas vitaux yens éclairés égaré éleveur émane énigmes étagère étanche abusent adverses aligné bandit blessées blocages bobine boisé bourrés brasse brillent carcasse carpe cerfs chenille collants compta concerto coulent creuses crèches cumulé datation destins douille doutent drainage duels dégagent dévasté enlevées esquiver ficelle fiesta figurine figé fonciers fouetter fourche frontal frégate féminité galets gerbe gerber glande glauque graisses grandis gratis honteuse imposait institué instruit inséré labels laxisme lester lieues lilas living livrets lézard manettes méta naquit noisette oculaire opposait optimal ouïe parer percuté perses phoque plantée posa prompt prélat raclette refuges retrouva richards rivages rogue silex slow sortais stratège stériles sublimes sushi tirez tolère tordre totales traitait transat tremper tulle twist vaille vanité verbaux viaduc vieillit vigile viril viticole voyelles véracité écoulée écureuil élaborés émettent émirats érigée étui aimera annulés apparues appoint assistés athées athéisme attribut avenues bave brûlées catalane climats clones corrigée cuits côtoyer devin dicte distante domino emportée encaisse enduit entorse estampes ethnies excités exporte expresse fermant fichu fiefs flocons flotter fourmi fournira graffiti gratin habitats hanté incluses injecté invitées largué liqueur liégeois lustre marquera merdé mesurent morphine morsure mous munie nomade nouer offrons oncles ordonna parure perdure pif piqûres placards poignées polaires poterie poupe proies puise purger quotient rebonds redevenu rejoints relayé rentrées replier retirant rouages rubans résumés sadique scotch siffler smash supplice suture sévit sévérité tasses testés torchon torturer toto training veuves voudrai voyagent écartée émigré émigrés émir énoncés évoquées accepta affamés agile allers alloué amicales apanage appât articule assurées austère balances barman bibi biomasse bouquets boxer brio brûlure cloutier comptons confiées conjugal consorts coteaux célestes discorde dégoûté délaissé délivrés démoli déplaire déployée emballer enclave endurer entrait errant escargot euphorie exit filature finies fixent globales graveur grimace grogne gui guignol hormone housse ignorez illuminé indemne inhumain joliment kan libido litière lunes mages marrante millet mustang mépriser natifs oies oscille paquebot pierrot plant pluvieux pointant promos proteste quittes radieux recevons refroidi remue reportée rescapés retirez rongeurs révoltes rêvez scrupule selles sexistes soude statuer surgir tangible tapie termina tiroirs tondeuse tousse tract voudras vouée émérite épaisses étalage abusif affront antre aperçus aplomb attende aubaine avançant aversion basic blanchet bocal brioche bristol carences cassez cavernes cigare citadins claques comparés compense corniche corvée coupons crabes crocs cuves devras donnais dualité décent démarque dérapage détend dîners endort enrichie exacts fables facho fente fesse fourgon gangster geler glaçons gogo gorgée greffier guette imaginée implants induire infiltré inscris jasmin junte malienne mantes martini moquette motrice nageurs narratif navettes packs palmier panoplie poliment posera promeut pronom précoces quittez raz referme reposait roquette réagis réussira sclérose scout sensée siemens soudure sunnites sélectif sésame tact tartes théâtral tonique ténor visitez vivacité voiler volts vêtus ânes écailles écrasée égoïstes épuisés équipier étain évoluait îlots absorbée accouché adorais adorait algèbre anormale anéanti applaudi argenté asphalte atroces axa aération balayage beauf bistrot bloquant bouchées bris bronzage caféine collée complots corbeaux cuvée côtoient dispersé dissiper dynamo déguisés délicats dépassés déposent enflamme eustache exquis federer flirt foncée fonderie fortiori fûts gadgets garni germaine globes graver guichets guidon générés hue hôtelier joyeuses kil laitière lauriers laïques leucémie lucarne luttant lâchent magnum malice morbide mouillée moult murale naïfs noeuds nommées novateur ogre oued pastel payantes penny piquant placebo pléiade pondre postulat pressing propices prévaut psaume pulls putsch pèlerin péages pétard rai ramenez rance ratifié refuses rentrez reparler replacer repérage rimes robustes rodez rosée rêvais rôti samouraï sculpté seller sentis sillon singer sociable sondes tabous tampons taureaux terriens terrier traiteur tramways tétons vapeurs veillée veuf vivier voudriez wallonne étendait évalués abritant adaptent altérer amusez amènera anses assortie bagarres blouson bombardé carabine caser casernes chaudron chiante cohorte collés couchant crotte curés cutanée diocèses diraient dissoute divines dogmes désirait dévier dévolu effraie encadrés encens enlèvent entraver examinée finirait flair fougères fourrer foutait galant globules grossi guignols génèrent insoumis invalide irakiens larve lisière lombard loulou lourdeur maures migrant morue médoc mômes nominale noyés occupa offenser omnibus opacité palettes panache pancréas parleurs perdrait placez profane présider prévenue prêche rallonge recycler rejetant relevées ronge réservez résilier sapins satin savantes sonnent stature survol tchèques terne terreau truite trèfle tune virtuels votant zizi éclatent évidents abattue aideront alpine aménagés anale aqueduc arnaques arrachée arrose assoit atteigne avèrent battez bordé cab cadette caler canular cessera changea chiants citent clientes cobalt conforte conquise coupole croates créneaux diacre dorées débattu déchirée déjouer dérivée dévoré elfe enlevant ermite escapade escouade estimez estival faciès fayard ferrées fictive forgeron frayeur funèbres hippie hisser javel joyau kits libyen libérées ligament loft maniaque marabout marmite mauve motel mécénat niais noirceur nope omnium pasteurs païens persan pesait poilu pomper postent pourries pourvus projetée pépite redis remettez repentir rivales romano roubles réputées sacoche salsa sauna savante sordide sujette surpasse sushis syllabes tombez turbine ténacité vacciner vassaux veaux verve vexé vingts vivace éclatant égaler épineux évacués éviction abordent accusait affiner agréé alarmes alibi apaise argot assumée astres battues bossent brisées bruyante califat cendre chiffon chlorure citerne cobra cochonne cotée couvrait crapaud credo créez cubaine cubains cumuler dalton divisées doutez défunte défunts désarmé encours endors enfile enrayer estimées fautif feinte ferrer festif feuillet filtrage flirter formait franches fugue fumes fusions galaxies gauches gelées germes graphe gérants hibou indécent informel insignes jeudis joyaux jugeait kart lançait lobe loyaux manne manquée maryland mascara merle meure morgue muets mûre nourrice nourrie palpable parfaire pelé piaf pillages pope poussait probité prouvée prélats pérenne rejetées relaxe rigides résider révélées silicium sionisme sourcil stylos sève tabouret taillée tentera thunes torrents troubler troublée têtu visitent volante écartés écoulés écrasés écrira écrivais écrouler abordée acné adage adhérent agilité alliez amusait archers autruche avouez avérés bates beer bloquées bouscule brunch caille caps carrier chabot chopé collent compas comptage conteur coûtait crampons croie crypte crânes créance crédité cépages devants dicton discutée dominés dressage dressent dénigrer dénué déplaît déroulés endormis ennuyé envahie enverrai estuaire exagérée exercées exigée expire fiston flan fol foudres fougue frérot fâcher goal goudron gravées haïtiens honorée immature injustes inouïe irrité jouons lavabo lundis légiste macabre masser matinal murat méfiant nirvana nota orgie paieront parabole phénix plongeur pompée pond poussins prélevés psaumes psyché raisonné rama relu reports retira retirées rigolade romande rétablit scellés siffle solos spatiaux spray spécifié tantes tentée titane tracée trot tua vassal vautours vendez vidange émeraude éminents épuisant étendus afghan aidait ajusté animent antidote apéritif aria aride autocar avare avenant basilic bassiste bea bic border bouclée canette cassées caïd chiite cognitif confesse contres coulisse crampes crêtes cédant ding dingues dirons divisent donateur débutera décidait décorés déloyale dérober déçoit entamée excède expédier faste fessée fia frite frôle féodal gal giron gravir grillage gémeaux heurts ide influe inondé installa ire jauge liquider lycéenne malsaine maltais massages menottes mentez minerais montra murales médocs navales novices obligées opéras papas passifs patentes pelouses peuplées pise plairait plaquer poires postaux postures présage purent rameaux rassurée rebord revendu rocheux réciter rénovée répétant sachets saisine sanglots sardines sauvez serrées squat substrat superflu syllabe tempe tibia totem trompez tronçons trousses tueries utopique veillez vertiges viendrai vil voeu vécues épinards étayer agrandit aisées ajoutons alfa ambiguë appela arêtes attelage ballades bataclan blanchi bondir boues bouée bâties bénisse cachets cadastre cagoule celtes centième constats copilote corrida cotées couscous cricket crèmes côtoyé dep derrick disparut divorcer duras décerner décidant dénommée embellir erronées excelle furie gais grappe grasset griefs gueux habilité haines hammam hordes hymnes imams immuable imprévus inclinée indigo insolent isolant joua libérez lister lynx légué maillon maliens moelleux momie montez mordant morne mouillés muret méconnue navigue nient nomma nuageux omission opérés ovaires pingouin podiums portons prémices punit purifier périls raies rayer repêché resterai ruinée référant régaler résument sautant semblez semence sevrage sole souffrez surnoms séchage tempéré testée thermes tira toitures tournez trappes téléfilm ultras unanimes urinaire vibrant vocable vrille vénère vérifiée zonage égorger épris abaisse affamé alliant alloués apache aperçue archiduc arsenic asphyxie attarde aune baltes bavard biberon bison bruyère cafards cedex chester chilien chiots choisira clercs clochard closes coche colonisé coulant courez césars dessinés drogué duplex débâcle décris délirant déléguer démonté dérivées dévastée entrons envolée enzymes estimons eues fassiez festive flippe gent gin gitans glucides guidage guérie harcelé houle houlette inactif infligé jasper jeta joins kamikaze lande lauréate lime lords loyale marchons massa menteuse muté ménagère méridien mêlés narcisse official offrit opprimés oraux ornées ornés palma palmes perpétue phoques pitre pizzeria pointues poneys pressent prémunir prêteur pupilles quittée recto redresse regorge relique risquée ruches réfute régies répandus sentit shooter sigle silences situait skieur soignés steaks subite summum tomas tops trompeur télés vagabond vaine vergers vexer vibre vigneron vinrent vitales voiliers vécus wallons yard échouent égérie émotif énervant épuiser abondant agora amazone aminés arrosage balayé bannis bougez brigands brouille candide canettes carrées censurer chantée cloison codage coincer colossal compote cordons crevette cruels disgrâce droitier dupes dégât dénivelé dénombre déporté déposant détours effroi essuyé excéder exigeait faisions feutre fleurir focalise foute frénésie fumant funeste futé fâcheuse gaie galettes garce gracieux grill gué hériter illico incitent joignent juteux kif lasers loués malus manille marquait meneurs modérer munster naissant occupez orales parut payeur pend pilon pinceaux piquet poisse pourtour primauté protégez présumer rabattre ramenés rechute reverra revêtu rient rougeole régit réitère réussies salement saurons scratch sep skipper solennel sonder sosie stimule stressée succéda surgi tapant tiennes toxines tuera valorise venge verge vestige virtuose visitant voyance économe émoi épilogue éternels abîmer acharnée admirez agissez aida alarmant allumés alterne amadou amine annonça arbore armada asperger assouvir baissée ballets baser bastide bastions berbère berbères bobines bourgade brick brûlante bâtis caisson calculés chalets chantre chaperon chargera chiffrer cigares coiffer collage corrects dada discutez diverse divorcés docile dressée débloqué décorées dégradée désarmer effacée encombre enfantin escape esquive exclues exhorte fauché filon flottes frustrés fugitif gaine germe gorille grappes grues géniales hait hamster hobby implant infinies inégale iode items lactée lavande livrant macho mangeais mardis matte mausolée mime minceur miner morse mule méfiez naine niqué notée obscurs obèses octroyer odorat pamphlet papilles pensiez perdons piétonne pompage pores prenante pétards pétasse raciales raffinée recèle relaxer retardée ruée récital réfuter résidait résulter salarial scripts serrures shorts sonorité sortants soulagée soupirs stèle subtiles suivais tartine tournera truqué vocaux votées voyante voyeur yaourts échappés écoutée édifier énumère ôte acadiens activée adoucir ailles aimants alignées approcha armures bailli bals banquise barrée beats bergé binaires boiteux bondé bora bouges boulette bouvier buvait bénigne cantines".split(
-    " ",
-  );
-const THM = [
-  {
-    "n": "Hiver",
-    "w": [
-      ["NEIGE", "Elle tombe en flocons"],
-      ["GLACE", "Eau devenue solide"],
-      ["FLOCON", "Petit cristal de neige"],
-      ["LUGE", "Petit traîneau pour glisser"],
-      ["GIVRE", "Fine couche de glace sur les vitres"],
-      ["SKI", "Sport de glisse sur les pentes"],
-      ["MOUFLE", "Gant sans doigts séparés"],
-      ["ECHARPE", "Elle protège le cou du froid"],
-      ["BONNET", "Il garde la tête au chaud"],
-      ["FRIMAS", "Brouillard givrant, au pluriel"],
-      ["VERGLAS", "Glace traîtresse sur la route"],
-      ["IGLOO", "Maison de blocs de neige"],
-      ["CHALET", "Maison de montagne en bois"],
-      ["PATIN", "On le chausse pour glisser sur la glace"],
-    ],
-  },
-  {
-    "n": "Forêt",
-    "w": [
-      ["SAPIN", "Conifère des fêtes"],
-      ["CHENE", "Arbre aux glands"],
-      ["MOUSSE", "Tapis vert des sous-bois"],
-      ["FOUGERE", "Plante aux grandes feuilles découpées"],
-      ["RENARD", "Rusé roux de la forêt"],
-      ["ECUREUIL", "Il cache des noisettes"],
-      ["SENTIER", "Petit chemin"],
-      ["CLAIRIERE", "Espace dégagé au milieu des arbres"],
-      ["CHAMPIGNON", "Il pousse après la pluie"],
-      ["HIBOU", "Oiseau de nuit aux aigrettes"],
-      ["BICHE", "Femelle du cerf"],
-      ["ECORCE", "Peau de l’arbre"],
-      ["GLAND", "Fruit du chêne"],
-    ],
-  },
-  {
-    "n": "Mer",
-    "w": [
-      ["VAGUE", "Ondulation de la mer"],
-      ["MAREE", "Elle monte et descend deux fois par jour"],
-      ["PHARE", "Tour qui guide les bateaux"],
-      ["CORAIL", "Récif vivant des mers chaudes"],
-      ["DAUPHIN", "Mammifère marin joueur"],
-      ["BALEINE", "Plus grand animal du monde"],
-      ["MOUETTE", "Oiseau des ports"],
-      ["ECUME", "Mousse blanche des vagues"],
-      ["VOILIER", "Bateau poussé par le vent"],
-      ["ANCRE", "Elle retient le navire"],
-      ["ALGUE", "Plante marine"],
-      ["CRABE", "Il marche de côté"],
-      ["ETOILE", "De mer, elle a cinq bras"],
-    ],
-  },
-  {
-    "n": "Montagne",
-    "w": [
-      ["SOMMET", "Point le plus haut"],
-      ["GLACIER", "Fleuve de glace"],
-      ["CHAMOIS", "Agile habitant des cimes"],
-      ["REFUGE", "Abri pour randonneurs"],
-      ["VALLEE", "Creux entre deux montagnes"],
-      ["CASCADE", "Chute d’eau"],
-      ["MARMOTTE", "Elle siffle et hiberne"],
-      ["ALPAGE", "Pâturage d’altitude"],
-      ["CORDEE", "Alpinistes attachés ensemble"],
-      ["EDELWEISS", "Fleur blanche des Alpes"],
-      ["COL", "Passage entre deux sommets"],
-      ["AIGLE", "Rapace royal"],
-    ],
-  },
-  {
-    "n": "Jardin",
-    "w": [
-      ["ROSE", "Fleur aux épines"],
-      ["TULIPE", "Fleur à bulbe de Hollande"],
-      ["ARROSOIR", "Il donne à boire aux plantes"],
-      ["POTAGER", "Jardin de légumes"],
-      ["GRAINE", "Elle deviendra plante"],
-      ["BECHE", "Outil pour retourner la terre"],
-      ["COCCINELLE", "Petite bête à points noirs"],
-      ["ESCARGOT", "Il porte sa maison"],
-      ["HAIE", "Clôture de végétaux"],
-      ["PELOUSE", "Gazon bien tondu"],
-      ["RATEAU", "Outil à dents pour les feuilles"],
-      ["LILAS", "Arbuste aux grappes parfumées"],
-    ],
-  },
-  {
-    "n": "Cuisine",
-    "w": [
-      ["CASSEROLE", "Récipient à manche pour cuire"],
-      ["FOUET", "Il bat les œufs en neige"],
-      ["RECETTE", "Marche à suivre du cuisinier"],
-      ["FOUR", "On y fait gratiner"],
-      ["SOUPE", "Potage du soir"],
-      ["TARTE", "Pâte garnie de fruits"],
-      ["POIVRE", "Épice des grains noirs"],
-      ["SEL", "Il relève les plats"],
-      ["CREPE", "Fine galette de la Chandeleur"],
-      ["GRATIN", "Plat doré au four"],
-      ["LOUCHE", "Grande cuillère à soupe"],
-      ["TABLIER", "Il protège les vêtements du cuisinier"],
-    ],
-  },
-  {
-    "n": "Fruits",
-    "w": [
-      ["POMME", "Fruit de Newton"],
-      ["POIRE", "Fruit en forme de goutte"],
-      ["CERISE", "Petit fruit rouge à noyau"],
-      ["FRAISE", "Fruit rouge du printemps"],
-      ["ORANGE", "Agrume de l’hiver"],
-      ["CITRON", "Agrume acide"],
-      ["BANANE", "Fruit jaune à éplucher"],
-      ["ABRICOT", "Fruit orangé à noyau"],
-      ["MYRTILLE", "Petite baie bleue"],
-      ["FIGUE", "Fruit du Midi plein de graines"],
-      ["PRUNE", "Fruit violet à noyau"],
-      ["KIWI", "Fruit à peau velue et chair verte"],
-      ["MELON", "Gros fruit d’été à la chair orangée"],
-    ],
-  },
-  {
-    "n": "Légumes",
-    "w": [
-      ["CAROTTE", "Racine orange"],
-      ["POIREAU", "Légume du pot-au-feu"],
-      ["TOMATE", "Fruit rouge cuisiné comme un légume"],
-      ["COURGE", "Famille du potiron"],
-      ["NAVET", "Racine blanche et violette"],
-      ["RADIS", "Petite racine piquante"],
-      ["EPINARD", "Légume vert de Popeye"],
-      ["CHOU", "Légume pommé"],
-      ["OIGNON", "Il fait pleurer"],
-      ["LAITUE", "Salade verte"],
-      ["PETITPOIS", "Petite graine verte dans une cosse"],
-      ["BETTERAVE", "Racine rouge sucrée"],
-    ],
-  },
-  {
-    "n": "Oiseaux",
-    "w": [
-      ["MERLE", "Oiseau noir au bec jaune"],
-      ["MESANGE", "Petit oiseau à tête bleue ou noire"],
-      ["ROUGEGORGE", "Petit oiseau à la poitrine orange"],
-      ["HIRONDELLE", "Elle annonce le printemps"],
-      ["CHOUETTE", "Rapace nocturne sans aigrettes"],
-      ["PIGEON", "Habitant des places publiques"],
-      ["CYGNE", "Grand oiseau blanc des étangs"],
-      ["HERON", "Échassier gris des rivières"],
-      ["PIC", "Il tambourine sur les troncs"],
-      ["CORBEAU", "Grand oiseau noir"],
-      ["PERROQUET", "Oiseau coloré qui parle"],
-      ["COLIBRI", "Minuscule oiseau butineur"],
-    ],
-  },
-  {
-    "n": "Animaux",
-    "w": [
-      ["LAPIN", "Il a de longues oreilles"],
-      ["TORTUE", "Elle avance lentement"],
-      ["HERISSON", "Petit animal piquant"],
-      ["LOUTRE", "Nageuse des rivières"],
-      ["OURS", "Grand animal qui hiberne"],
-      ["LOUP", "Il hurle à la lune"],
-      ["CERF", "Il porte des bois"],
-      ["BLAIREAU", "Animal rayé noir et blanc"],
-      ["CASTOR", "Bâtisseur de barrages"],
-      ["ZEBRE", "Cheval rayé"],
-      ["GIRAFE", "Animal au long cou"],
-      ["PANDA", "Ours noir et blanc"],
-      ["KOALA", "Il dort dans les eucalyptus"],
-    ],
-  },
-  {
-    "n": "Insectes",
-    "w": [
-      ["ABEILLE", "Elle fait le miel"],
-      ["PAPILLON", "Il était chenille"],
-      ["LIBELLULE", "Insecte aux ailes transparentes"],
-      ["FOURMI", "Petite ouvrière"],
-      ["GRILLON", "Il chante la nuit"],
-      ["CIGALE", "Elle chante l’été"],
-      ["SCARABEE", "Insecte à carapace"],
-      ["LUCIOLE", "Insecte qui brille la nuit"],
-      ["GUEPE", "Insecte jaune et noir qui pique"],
-      ["CHENILLE", "Futur papillon"],
-      ["SAUTERELLE", "Insecte sauteur"],
-    ],
-  },
-  {
-    "n": "Arbres",
-    "w": [
-      ["ERABLE", "Arbre au sirop"],
-      ["BOULEAU", "Arbre à l’écorce blanche"],
-      ["SAULE", "Arbre pleureur"],
-      ["PEUPLIER", "Grand arbre élancé"],
-      ["TILLEUL", "Arbre aux fleurs en tisane"],
-      ["OLIVIER", "Arbre du Midi"],
-      ["PLATANE", "Arbre des places de village"],
-      ["CEDRE", "Arbre du Liban"],
-      ["HETRE", "Arbre aux faines"],
-      ["MELEZE", "Conifère qui perd ses aiguilles"],
-      ["BAMBOU", "Grande herbe creuse"],
-      ["PALMIER", "Arbre des plages tropicales"],
-    ],
-  },
-  {
-    "n": "Fleurs",
-    "w": [
-      ["MARGUERITE", "On l’effeuille"],
-      ["LAVANDE", "Fleur violette de Provence"],
-      ["TOURNESOL", "Il suit le soleil"],
-      ["COQUELICOT", "Fleur rouge des champs"],
-      ["MUGUET", "Clochettes du 1er mai"],
-      ["VIOLETTE", "Petite fleur mauve parfumée"],
-      ["ORCHIDEE", "Fleur exotique délicate"],
-      ["PIVOINE", "Grosse fleur rose"],
-      ["JONQUILLE", "Fleur jaune du printemps"],
-      ["JASMIN", "Fleur blanche au parfum sucré"],
-      ["LYS", "Fleur royale"],
-      ["IRIS", "Fleur et partie de l’œil"],
-    ],
-  },
-  {
-    "n": "Météo",
-    "w": [
-      ["NUAGE", "Il cache le soleil"],
-      ["PLUIE", "Elle mouille"],
-      ["ORAGE", "Tonnerre et éclairs"],
-      ["BRUME", "Léger brouillard"],
-      ["VENT", "Air en mouvement"],
-      ["ARCENCIEL", "Il apparaît après l’averse"],
-      ["GRELE", "Pluie de glace"],
-      ["ECLAIR", "Lumière de l’orage"],
-      ["TONNERRE", "Bruit de l’orage"],
-      ["ROSEE", "Gouttes du matin"],
-      ["AVERSE", "Pluie soudaine"],
-      ["CANICULE", "Forte chaleur"],
-    ],
-  },
-  {
-    "n": "Ciel",
-    "w": [
-      ["ETOILE", "Elle brille la nuit"],
-      ["LUNE", "Satellite de la Terre"],
-      ["COMETE", "Astre à chevelure"],
-      ["PLANETE", "Mars en est une"],
-      ["GALAXIE", "Notre voie lactée en est une"],
-      ["AURORE", "Lever du jour ou lumière polaire"],
-      ["CREPUSCULE", "Tombée du jour"],
-      ["CONSTELLATION", "Groupe d’étoiles"],
-      ["SATURNE", "Planète aux anneaux"],
-      ["SOLEIL", "Notre étoile"],
-      ["FUSEE", "Elle part dans l’espace"],
-      ["ASTRONAUTE", "Voyageur de l’espace"],
-    ],
-  },
-  {
-    "n": "Musique",
-    "w": [
-      ["PIANO", "Instrument à touches"],
-      ["VIOLON", "Instrument à archet"],
-      ["FLUTE", "Instrument à vent"],
-      ["GUITARE", "Instrument à six cordes"],
-      ["TAMBOUR", "On frappe dessus"],
-      ["HARPE", "Instrument aux nombreuses cordes"],
-      ["CHORALE", "Groupe de chanteurs"],
-      ["MELODIE", "Suite de notes agréable"],
-      ["REFRAIN", "Partie qui revient dans une chanson"],
-      ["VIOLONCELLE", "Grand violon joué assis"],
-      ["TROMPETTE", "Cuivre éclatant"],
-      ["BERCEUSE", "Chanson pour endormir"],
-    ],
-  },
-  {
-    "n": "Couleurs",
-    "w": [
-      ["ROUGE", "Couleur de la fraise"],
-      ["BLEU", "Couleur du ciel"],
-      ["VERT", "Couleur de l’herbe"],
-      ["JAUNE", "Couleur du citron"],
-      ["VIOLET", "Couleur de la lavande"],
-      ["ORANGE", "Couleur de la carotte"],
-      ["TURQUOISE", "Bleu-vert des lagons"],
-      ["BEIGE", "Couleur du sable"],
-      ["ARGENT", "Métal et couleur de la lune"],
-      ["DORE", "Couleur de l’or"],
-      ["INDIGO", "Bleu profond"],
-      ["CORAIL", "Rose orangé"],
-    ],
-  },
-  {
-    "n": "Vêtements",
-    "w": [
-      ["MANTEAU", "Vêtement chaud d’hiver"],
-      ["PULL", "Tricot à enfiler"],
-      ["CHAUSSETTE", "On en perd souvent une"],
-      ["PYJAMA", "Tenue de nuit"],
-      ["ROBE", "Vêtement d’une pièce"],
-      ["GILET", "Veste sans manches ou tricot ouvert"],
-      ["BOTTES", "Chaussures hautes"],
-      ["CHAPEAU", "Couvre-chef"],
-      ["GANTS", "Ils couvrent les mains"],
-      ["PANTOUFLE", "Chausson d’intérieur"],
-      ["JUPE", "Vêtement du bas"],
-      ["CRAVATE", "Accessoire noué au cou"],
-    ],
-  },
-  {
-    "n": "Maison",
-    "w": [
-      ["CHEMINEE", "On y fait du feu"],
-      ["FENETRE", "Ouverture vitrée"],
-      ["GRENIER", "Pièce sous le toit"],
-      ["ESCALIER", "Il mène à l’étage"],
-      ["COUSSIN", "Petit oreiller du canapé"],
-      ["LAMPE", "Elle éclaire"],
-      ["TAPIS", "Il couvre le sol"],
-      ["CANAPE", "Siège pour plusieurs"],
-      ["ETAGERE", "Planche pour les livres"],
-      ["VOLET", "Il ferme la fenêtre"],
-      ["PLAID", "Couverture du canapé"],
-      ["BOUGIE", "Petite flamme de cire"],
-    ],
-  },
-  {
-    "n": "Lecture",
-    "w": [
-      ["ROMAN", "Long récit"],
-      ["POEME", "Texte en vers"],
-      ["CONTE", "Il était une fois"],
-      ["CHAPITRE", "Partie d’un livre"],
-      ["AUTEUR", "Celui qui écrit"],
-      ["MARQUEPAGE", "Il garde la page"],
-      ["BIBLIOTHEQUE", "Lieu plein de livres"],
-      ["ROMANCIER", "Écrivain de romans"],
-      ["POCHE", "Format de livre léger"],
-      ["LIBRAIRE", "Il vend des livres"],
-      ["FABLE", "Récit de La Fontaine"],
-      ["SONNET", "Poème de quatorze vers"],
-    ],
-  },
-  {
-    "n": "Art",
-    "w": [
-      ["PINCEAU", "Outil du peintre"],
-      ["PALETTE", "Planche du peintre"],
-      ["TOILE", "Support du tableau"],
-      ["CHEVALET", "Support de la toile"],
-      ["SCULPTURE", "Œuvre en trois dimensions"],
-      ["MUSEE", "Lieu d’exposition"],
-      ["AQUARELLE", "Peinture à l’eau"],
-      ["PORTRAIT", "Image d’une personne"],
-      ["CROQUIS", "Dessin rapide"],
-      ["FRESQUE", "Peinture murale"],
-      ["MOSAIQUE", "Image de petits carreaux"],
-      ["ESQUISSE", "Premier jet d’un dessin"],
-    ],
-  },
-  {
-    "n": "Voyage",
-    "w": [
-      ["VALISE", "Bagage à roulettes"],
-      ["BILLET", "Titre de transport"],
-      ["CARTE", "Elle montre le chemin"],
-      ["BOUSSOLE", "Elle indique le nord"],
-      ["PASSEPORT", "Document pour voyager"],
-      ["AVION", "Il vole avec des passagers"],
-      ["TRAIN", "Il roule sur des rails"],
-      ["ESCALE", "Arrêt en cours de voyage"],
-      ["SOUVENIR", "On le rapporte de voyage"],
-      ["HOTEL", "Logement de vacances"],
-      ["GARE", "On y prend le train"],
-      ["ROUTE", "Chemin goudronné"],
-    ],
-  },
-  {
-    "n": "Métiers",
-    "w": [
-      ["BOULANGER", "Il fait le pain"],
-      ["JARDINIER", "Il soigne les plantes"],
-      ["FACTEUR", "Il apporte le courrier"],
-      ["PECHEUR", "Il attrape des poissons"],
-      ["MEDECIN", "Il soigne les malades"],
-      ["POMPIER", "Il éteint les feux"],
-      ["MENUISIER", "Il travaille le bois"],
-      ["COIFFEUR", "Il coupe les cheveux"],
-      ["PILOTE", "Il conduit l’avion"],
-      ["INSTITUTEUR", "Maître d’école"],
-      ["FLEURISTE", "Il vend des bouquets"],
-      ["BERGER", "Il garde les moutons"],
-    ],
-  },
-  {
-    "n": "Jeux",
-    "w": [
-      ["DAMES", "Jeu de pions sur damier"],
-      ["ECHECS", "Jeu du roi et de la reine"],
-      ["PUZZLE", "Jeu de pièces à assembler"],
-      ["CARTES", "On les bat et on les distribue"],
-      ["DOMINO", "Pièce à points"],
-      ["TOUPIE", "Elle tourne sur elle-même"],
-      ["CERFVOLANT", "Il vole au bout d’un fil"],
-      ["BILLE", "Petite boule de verre"],
-      ["MARELLE", "Jeu de cases à cloche-pied"],
-      ["CHARADE", "Devinette en plusieurs parties"],
-      ["DEVINETTE", "Petite énigme"],
-    ],
-  },
-  {
-    "n": "Contes",
-    "w": [
-      ["FEE", "Elle a une baguette magique"],
-      ["DRAGON", "Il crache du feu"],
-      ["CHATEAU", "Demeure du roi"],
-      ["PRINCESSE", "Fille du roi"],
-      ["SORCIERE", "Elle vole sur un balai"],
-      ["LUTIN", "Petit être malicieux"],
-      ["GEANT", "Personnage immense"],
-      ["LICORNE", "Cheval à corne"],
-      ["TRESOR", "Coffre plein d’or"],
-      ["OGRE", "Mangeur d’enfants des contes"],
-      ["GRIMOIRE", "Livre de sorts"],
-      ["CITROUILLE", "Elle devient carrosse"],
-    ],
-  },
-  {
-    "n": "Boulangerie",
-    "w": [
-      ["BAGUETTE", "Pain long"],
-      ["CROISSANT", "Viennoiserie en forme de lune"],
-      ["BRIOCHE", "Pain moelleux au beurre"],
-      ["FARINE", "Poudre de blé"],
-      ["LEVAIN", "Il fait lever la pâte"],
-      ["PETRIN", "Machine à pétrir ou situation difficile"],
-      ["CHOUQUETTE", "Petite boule au sucre perlé"],
-      ["ECLAIR", "Pâtisserie au chocolat ou au café"],
-      ["MADELEINE", "Gâteau de Proust"],
-      ["MACARON", "Petit biscuit coloré"],
-      ["FOURNIL", "Atelier du boulanger"],
-      ["PAINDEPICE", "Gâteau aux épices et au miel"],
-    ],
-  },
-  {
-    "n": "Boissons",
-    "w": [
-      ["THE", "Infusion de feuilles"],
-      ["TISANE", "Infusion du soir"],
-      ["CAFE", "Il réveille le matin"],
-      ["CHOCOLAT", "Boisson chaude des enfants"],
-      ["JUS", "Boisson de fruits pressés"],
-      ["LIMONADE", "Boisson pétillante au citron"],
-      ["SIROP", "Liquide sucré à diluer"],
-      ["LAIT", "Boisson blanche"],
-      ["CIDRE", "Boisson de pommes"],
-      ["SMOOTHIE", "Boisson de fruits mixés"],
-      ["INFUSION", "Boisson de plantes"],
-      ["CAPPUCCINO", "Café à la mousse de lait"],
-    ],
-  },
-  {
-    "n": "Nuit",
-    "w": [
-      ["SOMMEIL", "Repos de la nuit"],
-      ["REVE", "Histoire de la nuit"],
-      ["OREILLER", "On y pose la tête"],
-      ["COUETTE", "Elle couvre le lit"],
-      ["VEILLEUSE", "Petite lumière de nuit"],
-      ["BERCEAU", "Lit du bébé"],
-      ["SIESTE", "Petit somme"],
-      ["MINUIT", "Douze coups de la nuit"],
-      ["NUIT", "Elle suit le jour"],
-      ["SILENCE", "Absence de bruit"],
-      ["DOUDOU", "Peluche du coucher"],
-      ["EDREDON", "Couverture rembourrée"],
-    ],
-  },
-  {
-    "n": "Corps",
-    "w": [
-      ["COEUR", "Il bat"],
-      ["MAIN", "Elle a cinq doigts"],
-      ["EPAULE", "Elle relie le bras"],
-      ["GENOU", "Articulation de la jambe"],
-      ["CHEVEUX", "Ils poussent sur la tête"],
-      ["SOURIRE", "Expression de joie"],
-      ["OREILLE", "Organe de l’ouïe"],
-      ["NEZ", "Organe de l’odorat"],
-      ["POUMON", "Il respire"],
-      ["CHEVILLE", "Articulation du pied"],
-      ["SOURCIL", "Poils au-dessus de l’œil"],
-      ["PAUPIERE", "Elle se ferme sur l’œil"],
-    ],
-  },
-  {
-    "n": "Émotions",
-    "w": [
-      ["JOIE", "Sentiment de bonheur"],
-      ["CALME", "Absence d’agitation"],
-      ["PAIX", "Sérénité"],
-      ["TENDRESSE", "Douceur affectueuse"],
-      ["ESPOIR", "Il fait vivre"],
-      ["GRATITUDE", "Reconnaissance"],
-      ["SERENITE", "Calme intérieur"],
-      ["CONFIANCE", "Elle se gagne"],
-      ["COURAGE", "Il aide à affronter"],
-      ["REVERIE", "Pensée qui vagabonde"],
-      ["AMITIE", "Lien entre amis"],
-      ["PATIENCE", "Elle s’exerce en attendant"],
-    ],
-  },
-  {
-    "n": "Sports",
-    "w": [
-      ["TENNIS", "Sport de raquette"],
-      ["NATATION", "Sport de piscine"],
-      ["VELO", "Deux roues à pédales"],
-      ["YOGA", "Gymnastique douce"],
-      ["DANSE", "Art du mouvement"],
-      ["ESCALADE", "On grimpe des parois"],
-      ["RANDONNEE", "Longue marche"],
-      ["AVIRON", "Sport de rame"],
-      ["JUDO", "Art martial japonais"],
-      ["SURF", "Sport de glisse sur les vagues"],
-      ["GOLF", "Sport du trou en un"],
-      ["ESCRIME", "Sport d’épée"],
-    ],
-  },
-  {
-    "n": "Océanie",
-    "w": [
-      ["KANGOUROU", "Il a une poche"],
-      ["CORAIL", "Récif de la Grande Barrière"],
-      ["LAGON", "Étendue d’eau calme"],
-      ["ATOLL", "Île en anneau"],
-      ["PIROGUE", "Embarcation polynésienne"],
-      ["TORTUE", "Elle pond sur la plage"],
-      ["COCOTIER", "Arbre à noix"],
-      ["VOLCAN", "Montagne qui crache du feu"],
-      ["OCEAN", "Vaste étendue d’eau salée"],
-      ["ILE", "Terre entourée d’eau"],
-      ["RECIF", "Rochers sous l’eau"],
-      ["TIARE", "Fleur de Tahiti"],
-    ],
-  },
-  {
-    "n": "Ferme",
-    "w": [
-      ["VACHE", "Elle donne du lait"],
-      ["MOUTON", "Il donne de la laine"],
-      ["POULE", "Elle pond des œufs"],
-      ["COCHON", "Il aime la boue"],
-      ["CHEVAL", "Il hennit"],
-      ["CHEVRE", "Elle donne du fromage"],
-      ["TRACTEUR", "Engin agricole"],
-      ["GRANGE", "On y range le foin"],
-      ["FOIN", "Herbe séchée"],
-      ["CANARD", "Il cancane"],
-      ["ETABLE", "Maison des vaches"],
-      ["FERMIER", "Il s’occupe de la ferme"],
-    ],
-  },
-  {
-    "n": "Pâtisserie",
-    "w": [
-      ["GATEAU", "Dessert d’anniversaire"],
-      ["MERINGUE", "Blancs d’œufs cuits sucrés"],
-      ["CARAMEL", "Sucre fondu doré"],
-      ["CREME", "Garniture onctueuse"],
-      ["VANILLE", "Gousse parfumée"],
-      ["CANNELLE", "Écorce épicée"],
-      ["BEIGNET", "Pâte frite sucrée"],
-      ["GAUFRE", "Pâtisserie quadrillée"],
-      ["CHANTILLY", "Crème fouettée"],
-      ["MILLEFEUILLE", "Gâteau feuilleté à la crème"],
-      ["TIRAMISU", "Dessert italien au café"],
-      ["SABLE", "Biscuit au beurre"],
-    ],
-  },
-  {
-    "n": "Océans et rivières",
-    "w": [
-      ["RIVIERE", "Cours d’eau"],
-      ["ETANG", "Petit lac"],
-      ["SOURCE", "Là où naît la rivière"],
-      ["FLEUVE", "Il se jette dans la mer"],
-      ["DELTA", "Embouchure en éventail"],
-      ["BERGE", "Bord de rivière"],
-      ["PONT", "Il enjambe la rivière"],
-      ["MOULIN", "Il tourne au fil de l’eau"],
-      ["NENUPHAR", "Fleur flottante"],
-      ["GRENOUILLE", "Elle coasse"],
-      ["LIBELLULE", "Elle survole l’eau"],
-      ["TRUITE", "Poisson des rivières"],
-    ],
-  },
-  {
-    "n": "Camping",
-    "w": [
-      ["TENTE", "Abri de toile"],
-      ["FEU", "On s’y réchauffe le soir"],
-      ["LAMPE", "Frontale ou de poche"],
-      ["SAC", "À dos, on le porte"],
-      ["DUVET", "Sac de couchage"],
-      ["GOURDE", "Bouteille de randonnée"],
-      ["GUIMAUVE", "On la fait griller"],
-      ["CARTE", "Elle guide les randonneurs"],
-      ["BOIS", "On le ramasse pour le feu"],
-      ["HAMAC", "Lit suspendu"],
-      ["CANIF", "Petit couteau pliant"],
-      ["LANTERNE", "Lumière de camp"],
-    ],
-  },
-  {
-    "n": "Épices",
-    "w": [
-      ["CANNELLE", "Écorce roulée parfumée"],
-      ["MUSCADE", "Noix râpée sur la purée"],
-      ["CURRY", "Mélange d’épices indien"],
-      ["SAFRAN", "Épice dorée et précieuse"],
-      ["GINGEMBRE", "Racine piquante"],
-      ["CUMIN", "Graine du couscous"],
-      ["PAPRIKA", "Poudre de piment rouge doux"],
-      ["GIROFLE", "Clou parfumé"],
-      ["ANIS", "Graine au goût de réglisse"],
-      ["CARDAMOME", "Petite gousse verte du chai"],
-      ["CURCUMA", "Racine jaune orangé"],
-      ["PIMENT", "Il fait chauffer la bouche"],
-    ],
-  },
-  {
-    "n": "Fromages",
-    "w": [
-      ["COMTE", "Fromage du Jura"],
-      ["BRIE", "Fromage de Meaux"],
-      ["CAMEMBERT", "Fromage normand en boîte ronde"],
-      ["ROQUEFORT", "Fromage à pâte persillée"],
-      ["REBLOCHON", "Fromage de la tartiflette"],
-      ["GRUYERE", "Fromage suisse à pâte dure"],
-      ["MOZZARELLA", "Fromage de la pizza"],
-      ["CHEVRE", "Fromage de lait de chèvre"],
-      ["FETA", "Fromage grec en saumure"],
-      ["PARMESAN", "Fromage italien râpé"],
-      ["RACLETTE", "Fromage fondu des soirées d’hiver"],
-      ["EMMENTAL", "Fromage aux trous"],
-    ],
-  },
-  {
-    "n": "Petit-déjeuner",
-    "w": [
-      ["TARTINE", "Pain beurré"],
-      ["CONFITURE", "Fruits cuits au sucre"],
-      ["MIEL", "Douceur des abeilles"],
-      ["CEREALES", "Elles nagent dans le lait"],
-      ["OMELETTE", "Œufs battus et cuits"],
-      ["BEURRE", "On l’étale sur le pain"],
-      ["YAOURT", "Lait fermenté"],
-      ["PAMPLEMOUSSE", "Gros agrume"],
-      ["BOL", "Tasse sans anse"],
-      ["CROISSANT", "Viennoiserie feuilletée"],
-      ["COMPOTE", "Fruits cuits écrasés"],
-      ["PANCAKE", "Petite crêpe épaisse"],
-    ],
-  },
-  {
-    "n": "Pique-nique",
-    "w": [
-      ["NAPPE", "On l’étend sur l’herbe"],
-      ["PANIER", "Il transporte le repas"],
-      ["SANDWICH", "Pain garni"],
-      ["THERMOS", "Bouteille qui garde chaud"],
-      ["PRAIRIE", "Grande étendue d’herbe"],
-      ["OMBRE", "Fraîcheur sous l’arbre"],
-      ["SALADE", "Mélange de crudités"],
-      ["GLACIERE", "Boîte qui garde au frais"],
-      ["FRISBEE", "Disque qu’on se lance"],
-      ["CERISES", "Fruits rouges de juin"],
-      ["COUVERTURE", "On s’assoit dessus"],
-      ["SERVIETTE", "Pour s’essuyer les mains"],
-    ],
-  },
-  {
-    "n": "Plage",
-    "w": [
-      ["SABLE", "Grains dorés"],
-      ["PARASOL", "Il protège du soleil"],
-      ["COQUILLAGE", "Trésor de la plage"],
-      ["SERVIETTE", "On s’allonge dessus"],
-      ["SEAU", "Récipient du château de sable"],
-      ["PELLE", "Outil pour creuser"],
-      ["MAILLOT", "Tenue de bain"],
-      ["CREME", "Solaire, elle protège la peau"],
-      ["DUNE", "Colline de sable"],
-      ["LUNETTES", "De soleil, elles protègent les yeux"],
-      ["TRANSAT", "Chaise longue"],
-      ["GALET", "Pierre polie par la mer"],
-    ],
-  },
-  {
-    "n": "École",
-    "w": [
-      ["CARTABLE", "Sac d’écolier"],
-      ["CRAIE", "On écrit au tableau avec"],
-      ["CAHIER", "On y écrit ses leçons"],
-      ["CRAYON", "Il se taille"],
-      ["GOMME", "Elle efface"],
-      ["REGLE", "Elle trace droit"],
-      ["TROUSSE", "Elle range les stylos"],
-      ["RECREATION", "Pause dans la cour"],
-      ["DICTEE", "Exercice d’orthographe"],
-      ["MAITRESSE", "Elle fait la classe"],
-      ["PUPITRE", "Table d’écolier"],
-      ["COMPAS", "Il trace des cercles"],
-    ],
-  },
-  {
-    "n": "Papeterie",
-    "w": [
-      ["ENVELOPPE", "Elle contient la lettre"],
-      ["TIMBRE", "On le colle sur la lettre"],
-      ["AGRAFE", "Petit trombone de métal plié"],
-      ["TROMBONE", "Il retient les feuilles"],
-      ["CISEAUX", "Ils coupent le papier"],
-      ["COLLE", "Elle fait tenir"],
-      ["FEUTRE", "Crayon à pointe de fibre"],
-      ["SURLIGNEUR", "Il met en couleur"],
-      ["CLASSEUR", "Il range les feuilles"],
-      ["CARNET", "Petit cahier"],
-      ["ETIQUETTE", "On l’écrit et on la colle"],
-      ["ENCRE", "Liquide du stylo"],
-    ],
-  },
-  {
-    "n": "Couture",
-    "w": [
-      ["AIGUILLE", "Elle a un chas"],
-      ["FIL", "On l’enfile"],
-      ["BOBINE", "Elle enroule le fil"],
-      ["BOUTON", "Il ferme la chemise"],
-      ["ECHEVEAU", "Petit faisceau de fil enroulé"],
-      ["OURLET", "Bord replié et cousu"],
-      ["PATRON", "Modèle en papier"],
-      ["TISSU", "Étoffe"],
-      ["RUBAN", "Bande de tissu décorative"],
-      ["DENTELLE", "Tissu ajouré"],
-      ["FERMETURE", "Éclair, elle zippe"],
-    ],
-  },
-  {
-    "n": "Tricot",
-    "w": [
-      ["LAINE", "Fil de mouton"],
-      ["PELOTE", "Boule de laine"],
-      ["MAILLE", "Boucle du tricot"],
-      ["TORSADE", "Motif tressé"],
-      ["JACQUARD", "Motif de couleurs tricoté"],
-      ["CHAUSSON", "Petite chaussure tricotée"],
-      ["SNOOD", "Écharpe en boucle"],
-      ["ALPAGA", "Laine douce des Andes"],
-      ["MOHAIR", "Laine de chèvre angora"],
-      ["CROCHET", "Aiguille à bout recourbé"],
-      ["MITAINE", "Gant aux doigts coupés"],
-      ["POMPON", "Boule de laine au sommet du bonnet"],
-    ],
-  },
-  {
-    "n": "Outils",
-    "w": [
-      ["MARTEAU", "Il plante les clous"],
-      ["TOURNEVIS", "Il visse"],
-      ["SCIE", "Elle coupe le bois"],
-      ["PINCE", "Elle serre"],
-      ["PERCEUSE", "Elle fait des trous"],
-      ["NIVEAU", "Il vérifie l’horizontale"],
-      ["CLOU", "On l’enfonce"],
-      ["VIS", "Elle se tourne"],
-      ["ECROU", "Il va avec le boulon"],
-      ["RABOT", "Il aplanit le bois"],
-      ["METRE", "Il mesure"],
-      ["ETABLI", "Table de travail"],
-    ],
-  },
-  {
-    "n": "Italie",
-    "w": [
-      ["PIZZA", "Galette garnie napolitaine"],
-      ["PASTA", "Pâtes en italien"],
-      ["GONDOLE", "Barque de Venise"],
-      ["COLISEE", "Amphithéâtre de Rome"],
-      ["LASAGNE", "Pâtes en couches"],
-      ["GELATO", "Glace italienne"],
-      ["RISOTTO", "Riz crémeux"],
-      ["PESTO", "Sauce au basilic"],
-      ["VESPA", "Scooter italien"],
-      ["TOSCANE", "Région de Florence"],
-      ["OPERA", "Spectacle chanté"],
-      ["ESPRESSO", "Café serré"],
-    ],
-  },
-  {
-    "n": "Japon",
-    "w": [
-      ["SUSHI", "Bouchée de riz et de poisson"],
-      ["KIMONO", "Vêtement traditionnel"],
-      ["ORIGAMI", "Art du papier plié"],
-      ["SAKURA", "Fleur de cerisier"],
-      ["SAMOURAI", "Guerrier japonais"],
-      ["HAIKU", "Poème de trois vers"],
-      ["TEMPLE", "Lieu de prière"],
-      ["BONSAI", "Arbre miniature"],
-      ["MANGA", "Bande dessinée japonaise"],
-      ["RAMEN", "Soupe de nouilles"],
-      ["TOKYO", "Capitale du Japon"],
-      ["FUJI", "Mont sacré"],
-    ],
-  },
-  {
-    "n": "Pays",
-    "w": [
-      ["FRANCE", "Pays de l’Hexagone"],
-      ["ITALIE", "Pays en forme de botte"],
-      ["ESPAGNE", "Pays du flamenco"],
-      ["CANADA", "Pays de l’érable"],
-      ["BRESIL", "Pays de la samba"],
-      ["JAPON", "Pays du Soleil levant"],
-      ["EGYPTE", "Pays des pyramides"],
-      ["INDE", "Pays du Taj Mahal"],
-      ["CHINE", "Pays de la Grande Muraille"],
-      ["MAROC", "Pays de Marrakech"],
-      ["GRECE", "Pays de l’Acropole"],
-      ["PEROU", "Pays du Machu Picchu"],
-    ],
-  },
-  {
-    "n": "Villes",
-    "w": [
-      ["PARIS", "Ville lumière"],
-      ["LYON", "Ville des Lumières en décembre"],
-      ["MARSEILLE", "Cité phocéenne"],
-      ["BORDEAUX", "Ville du port de la Lune"],
-      ["LILLE", "Capitale des Flandres françaises"],
-      ["NANTES", "Ville des machines de l’île"],
-      ["STRASBOURG", "Ville du Parlement européen"],
-      ["NICE", "Ville de la promenade des Anglais"],
-      ["QUEBEC", "Ville au Château Frontenac"],
-      ["MONTREAL", "Grande ville du Québec"],
-      ["GENEVE", "Ville au jet d’eau"],
-      ["BRUXELLES", "Ville de l’Atomium"],
-    ],
-  },
-  {
-    "n": "Îles",
-    "w": [
-      ["CORSE", "Île de Beauté"],
-      ["SICILE", "Île italienne de l’Etna"],
-      ["CRETE", "Île grecque du Minotaure"],
-      ["ISLANDE", "Île des geysers"],
-      ["TAHITI", "Île de Polynésie"],
-      ["MADAGASCAR", "Grande île des lémuriens"],
-      ["REUNION", "Île du piton de la Fournaise"],
-      ["MARTINIQUE", "Île aux fleurs"],
-      ["IRLANDE", "Île verte"],
-      ["MALTE", "Petite île méditerranéenne"],
-      ["BALI", "Île indonésienne"],
-      ["CUBA", "Île des Caraïbes"],
-    ],
-  },
-  {
-    "n": "Désert",
-    "w": [
-      ["DUNE", "Colline de sable"],
-      ["OASIS", "Point d’eau dans le désert"],
-      ["CHAMEAU", "Il a deux bosses"],
-      ["DROMADAIRE", "Il a une bosse"],
-      ["MIRAGE", "Illusion du désert"],
-      ["CACTUS", "Plante piquante"],
-      ["SCORPION", "Il a une queue venimeuse"],
-      ["CARAVANE", "File de voyageurs"],
-      ["SAHARA", "Grand désert africain"],
-      ["SIROCCO", "Vent chaud du sud"],
-      ["BEDOUIN", "Nomade du désert"],
-      ["PALMERAIE", "Plantation de palmiers"],
-    ],
-  },
-  {
-    "n": "Jungle",
-    "w": [
-      ["LIANE", "Plante grimpante"],
-      ["TOUCAN", "Oiseau au gros bec"],
-      ["JAGUAR", "Félin tacheté d’Amérique"],
-      ["GORILLE", "Grand singe"],
-      ["PERROQUET", "Oiseau bavard"],
-      ["ORCHIDEE", "Fleur tropicale"],
-      ["CAMELEON", "Il change de couleur"],
-      ["PARESSEUX", "Animal très lent"],
-      ["AMAZONE", "Grand fleuve de la jungle"],
-      ["GRENOUILLE", "Elle coasse"],
-      ["MANGROVE", "Forêt les pieds dans l’eau"],
-      ["SINGE", "Il grimpe aux arbres"],
-    ],
-  },
-  {
-    "n": "Savane",
-    "w": [
-      ["LION", "Roi des animaux"],
-      ["ELEPHANT", "Il a une trompe"],
-      ["GIRAFE", "Animal au long cou"],
-      ["ZEBRE", "Cheval rayé"],
-      ["GUEPARD", "Le plus rapide"],
-      ["HIPPOPOTAME", "Il vit dans l’eau des rivières africaines"],
-      ["RHINOCEROS", "Il a une corne sur le nez"],
-      ["BAOBAB", "Arbre géant d’Afrique"],
-      ["ANTILOPE", "Herbivore gracieux"],
-      ["SAFARI", "Excursion pour voir les animaux"],
-      ["AUTRUCHE", "Grand oiseau coureur"],
-      ["HYENE", "Elle semble rire"],
-    ],
-  },
-  {
-    "n": "Pôle",
-    "w": [
-      ["BANQUISE", "Glace de mer"],
-      ["PINGOUIN", "Oiseau du nord"],
-      ["MANCHOT", "Il ne vole pas, au sud"],
-      ["PHOQUE", "Mammifère des glaces"],
-      ["MORSE", "Il a des défenses"],
-      ["ICEBERG", "Montagne de glace flottante"],
-      ["AURORE", "Boréale, elle danse dans le ciel"],
-      ["TRAINEAU", "Tiré par des chiens"],
-      ["NARVAL", "Licorne des mers"],
-      ["ANTARCTIQUE", "Continent du pôle Sud"],
-      ["RENNE", "Cerf du Grand Nord"],
-      ["HUSKY", "Chien de traîneau"],
-    ],
-  },
-  {
-    "n": "Dinosaures",
-    "w": [
-      ["FOSSILE", "Trace pétrifiée"],
-      ["TYRANNOSAURE", "Grand carnivore préhistorique"],
-      ["DIPLODOCUS", "Herbivore au très long cou"],
-      ["TRICERATOPS", "Dinosaure à trois cornes"],
-      ["PTERODACTYLE", "Reptile volant"],
-      ["STEGOSAURE", "Dinosaure aux plaques dorsales"],
-      ["VELOCIRAPTOR", "Petit chasseur rapide"],
-      ["OEUF", "Les dinosaures en pondaient"],
-      ["SQUELETTE", "Ossature exposée au musée"],
-      ["CRETACE", "Dernière période des dinosaures"],
-      ["JURASSIQUE", "Période et nom de film"],
-      ["PALEONTOLOGUE", "Spécialiste des fossiles"],
-    ],
-  },
-  {
-    "n": "Reptiles",
-    "w": [
-      ["SERPENT", "Il rampe"],
-      ["LEZARD", "Il se dore au soleil"],
-      ["CROCODILE", "Il a de grandes mâchoires"],
-      ["IGUANE", "Grand lézard vert"],
-      ["TORTUE", "Elle porte sa carapace"],
-      ["VIPERE", "Serpent venimeux de France"],
-      ["GECKO", "Il marche au plafond"],
-      ["COBRA", "Serpent à capuchon"],
-      ["ALLIGATOR", "Crocodilien d’Amérique"],
-      ["ECAILLE", "Plaque de peau du reptile"],
-      ["MUE", "Changement de peau"],
-      ["PYTHON", "Grand serpent constricteur"],
-    ],
-  },
-  {
-    "n": "Poissons",
-    "w": [
-      ["SAUMON", "Il remonte les rivières"],
-      ["THON", "Grand poisson des mers"],
-      ["SARDINE", "Petit poisson en boîte"],
-      ["REQUIN", "Prédateur des mers"],
-      ["RAIE", "Poisson plat aux ailes"],
-      ["CARPE", "Poisson des étangs"],
-      ["BROCHET", "Poisson carnassier d’eau douce"],
-      ["DORADE", "Poisson à tête dorée"],
-      ["MERLAN", "Poisson blanc"],
-      ["ANGUILLE", "Poisson serpentin"],
-      ["HIPPOCAMPE", "Cheval de mer"],
-      ["POISSONCLOWN", "Ami de l’anémone"],
-    ],
-  },
-  {
-    "n": "Chiens",
-    "w": [
-      ["CANICHE", "Chien frisé"],
-      ["LABRADOR", "Chien guide"],
-      ["BERGER", "Chien de troupeau"],
-      ["CARLIN", "Petit chien au museau écrasé"],
-      ["TECKEL", "Chien saucisse"],
-      ["DALMATIEN", "Chien à taches noires"],
-      ["CHIHUAHUA", "Le plus petit chien"],
-      ["BEAGLE", "Chien de meute"],
-      ["LEVRIER", "Chien coureur élancé"],
-      ["NICHE", "Maison du chien"],
-      ["LAISSE", "Elle tient le chien en promenade"],
-    ],
-  },
-  {
-    "n": "Chevaux",
-    "w": [
-      ["POULAIN", "Petit du cheval"],
-      ["CRINIERE", "Poils du cou"],
-      ["SABOT", "Pied du cheval"],
-      ["SELLE", "Siège du cavalier"],
-      ["ETRIER", "Appui du pied"],
-      ["GALOP", "Allure la plus rapide"],
-      ["TROT", "Allure intermédiaire"],
-      ["PONEY", "Petit cheval"],
-      ["ECURIE", "Maison des chevaux"],
-      ["CAVALIER", "Il monte à cheval"],
-      ["FER", "Il protège le sabot"],
-      ["BRIDE", "Elle guide le cheval"],
-    ],
-  },
-  {
-    "n": "Abeilles",
-    "w": [
-      ["RUCHE", "Maison des abeilles"],
-      ["REINE", "Elle pond les œufs"],
-      ["NECTAR", "Jus des fleurs"],
-      ["POLLEN", "Poussière des fleurs"],
-      ["CIRE", "Matière des alvéoles"],
-      ["ALVEOLE", "Cellule hexagonale"],
-      ["APICULTEUR", "Il élève les abeilles"],
-      ["ESSAIM", "Groupe d’abeilles"],
-      ["BOURDON", "Grosse abeille velue"],
-      ["BUTINER", "Visiter les fleurs"],
-      ["DARD", "Aiguillon"],
-      ["RAYON", "Plaque d’alvéoles"],
-    ],
-  },
-  {
-    "n": "Automne",
-    "w": [
-      ["FEUILLE", "Elle tombe en automne"],
-      ["CHATAIGNE", "Fruit à bogue"],
-      ["CITROUILLE", "Grosse courge orange"],
-      ["CHAMPIGNON", "Il pousse en sous-bois"],
-      ["VENDANGE", "Récolte du raisin"],
-      ["NOISETTE", "Fruit de l’écureuil"],
-      ["NOVEMBRE", "Onzième mois"],
-      ["PARAPLUIE", "Il protège de la pluie"],
-      ["BRUINE", "Pluie très fine"],
-      ["RENTREE", "Retour à l’école"],
-      ["MARRON", "Fruit brillant du marronnier"],
-      ["POTIRON", "Courge ronde"],
-    ],
-  },
-  {
-    "n": "Printemps",
-    "w": [
-      ["BOURGEON", "Promesse de feuille"],
-      ["PAQUERETTE", "Petite fleur blanche des pelouses"],
-      ["HIRONDELLE", "Messagère du printemps"],
-      ["AVRIL", "Ne te découvre pas d’un fil"],
-      ["NID", "Maison de l’oisillon"],
-      ["GIBOULEE", "Averse de mars"],
-      ["FLORAISON", "Éclosion des fleurs"],
-      ["JACINTHE", "Fleur à clochettes parfumées"],
-      ["POUSSE", "Jeune plante"],
-      ["EQUINOXE", "Jour égal à la nuit"],
-      ["CERISIER", "Arbre en fleurs roses"],
-      ["PRIMEVERE", "Première fleur"],
-    ],
-  },
-  {
-    "n": "Été",
-    "w": [
-      ["VACANCES", "Repos estival"],
-      ["CIGALE", "Chant de l’été"],
-      ["GLACE", "Dessert froid"],
-      ["PISCINE", "Bassin de baignade"],
-      ["SANDALES", "Chaussures ouvertes"],
-      ["CHAPEAU", "Il protège du soleil"],
-      ["SIESTE", "Petit somme après le repas"],
-      ["PASTEQUE", "Gros fruit rouge à pépins"],
-      ["JUILLET", "Septième mois"],
-      ["BRONZAGE", "Teint hâlé"],
-      ["FEUDARTIFICE", "Spectacle du 14 juillet"],
-      ["MOISSON", "Récolte des céréales"],
-    ],
-  },
-  {
-    "n": "Halloween",
-    "w": [
-      ["FANTOME", "Drap qui fait boo"],
-      ["SORCIERE", "Elle a un chaudron"],
-      ["CHAUDRON", "Marmite magique"],
-      ["SQUELETTE", "Os assemblés"],
-      ["CHAUVESOURIS", "Mammifère volant de nuit"],
-      ["BONBON", "Friandise réclamée aux portes"],
-      ["LANTERNE", "Citrouille éclairée"],
-      ["MOMIE", "Bandelettes égyptiennes"],
-      ["VAMPIRE", "Il craint l’ail"],
-      ["ARAIGNEE", "Elle tisse sa toile"],
-      ["DEGUISEMENT", "Costume"],
-      ["BALAI", "Monture de sorcière"],
-    ],
-  },
-  {
-    "n": "Anniversaire",
-    "w": [
-      ["GATEAU", "On y plante des bougies"],
-      ["CADEAU", "Paquet surprise"],
-      ["BOUGIE", "On la souffle"],
-      ["BALLON", "Il se gonfle"],
-      ["GUIRLANDE", "Décoration suspendue"],
-      ["INVITATION", "Carte pour la fête"],
-      ["CONFETTIS", "Petits papiers lancés"],
-      ["CHANSON", "Joyeux anniversaire en est une"],
-      ["SURPRISE", "Fête inattendue"],
-      ["VOEU", "On le fait en soufflant"],
-      ["EMBALLAGE", "Papier cadeau"],
-      ["FESTIN", "Grand repas"],
-    ],
-  },
-  {
-    "n": "Cirque",
-    "w": [
-      ["CLOWN", "Il a un nez rouge"],
-      ["JONGLEUR", "Il lance des balles"],
-      ["ACROBATE", "Il fait des pirouettes"],
-      ["TRAPEZE", "Barre suspendue"],
-      ["CHAPITEAU", "Grande tente"],
-      ["FUNAMBULE", "Il marche sur un fil"],
-      ["MAGICIEN", "Il sort un lapin du chapeau"],
-      ["DOMPTEUR", "Il dresse les fauves"],
-      ["PISTE", "Cercle du spectacle"],
-      ["MONOCYCLE", "Vélo à une roue"],
-      ["CRACHEUR", "De feu, il souffle des flammes"],
-      ["MONSIEURLOYAL", "Présentateur du cirque"],
-    ],
-  },
-  {
-    "n": "Fête foraine",
-    "w": [
-      ["MANEGE", "Il tourne avec des chevaux de bois"],
-      ["BARBEAPAPA", "Sucre filé rose"],
-      ["GRANDEROUE", "Attraction circulaire géante"],
-      ["CHURROS", "Beignets en bâtons"],
-      ["PELUCHE", "Lot à gagner"],
-      ["TOMBOLA", "Jeu de tirage"],
-      ["CHENILLE", "Manège ondulant"],
-      ["STAND", "Baraque de jeu"],
-      ["TIR", "On vise les cibles"],
-      ["POMMEDAMOUR", "Fruit enrobé de sucre rouge"],
-      ["LOTERIE", "Jeu de hasard"],
-    ],
-  },
-  {
-    "n": "Théâtre",
-    "w": [
-      ["SCENE", "Plateau des acteurs"],
-      ["RIDEAU", "Il se lève au début"],
-      ["COULISSES", "Derrière la scène"],
-      ["COSTUME", "Habit de scène"],
-      ["APPLAUDIR", "Taper des mains"],
-      ["REPLIQUE", "Phrase d’un acteur"],
-      ["MOLIERE", "Auteur du Malade imaginaire"],
-      ["COMEDIE", "Pièce drôle"],
-      ["TRAGEDIE", "Pièce triste"],
-      ["SOUFFLEUR", "Il aide l’acteur trou de mémoire"],
-      ["ENTRACTE", "Pause du spectacle"],
-      ["PROJECTEUR", "Il éclaire la scène"],
-    ],
-  },
-  {
-    "n": "Cinéma",
-    "w": [
-      ["FILM", "Œuvre projetée"],
-      ["ECRAN", "Grande toile blanche"],
-      ["POPCORN", "Maïs éclaté"],
-      ["ACTRICE", "Elle joue un rôle"],
-      ["REALISATEUR", "Il dirige le tournage"],
-      ["SCENARIO", "Histoire écrite du film"],
-      ["CAMERA", "Elle filme"],
-      ["GENERIQUE", "Liste des noms à la fin"],
-      ["OSCAR", "Statuette d’Hollywood"],
-      ["DOUBLAGE", "Voix traduite"],
-      ["TOURNAGE", "Fabrication du film"],
-      ["BANDEANNONCE", "Extrait promotionnel"],
-    ],
-  },
-  {
-    "n": "Photographie",
-    "w": [
-      ["OBJECTIF", "Lentille de l’appareil"],
-      ["FLASH", "Éclair lumineux"],
-      ["CADRAGE", "Composition de l’image"],
-      ["PELLICULE", "Film argentique"],
-      ["ZOOM", "Il rapproche l’image"],
-      ["TREPIED", "Support à trois pieds"],
-      ["PORTRAIT", "Photo d’une personne"],
-      ["PAYSAGE", "Photo de la nature"],
-      ["ALBUM", "Il range les photos"],
-      ["SELFIE", "Autoportrait au téléphone"],
-      ["NETTETE", "Image bien précise"],
-      ["EXPOSITION", "Quantité de lumière reçue"],
-    ],
-  },
-  {
-    "n": "Danse",
-    "w": [
-      ["VALSE", "Danse à trois temps"],
-      ["TANGO", "Danse argentine"],
-      ["BALLET", "Spectacle de danseurs classiques"],
-      ["TUTU", "Jupe de danseuse"],
-      ["SALSA", "Danse latine"],
-      ["POINTES", "Chaussons de ballerine"],
-      ["CLAQUETTES", "Danse rythmée aux chaussures ferrées"],
-      ["FLAMENCO", "Danse espagnole"],
-      ["RONDE", "Danse en cercle"],
-      ["CHOREGRAPHIE", "Suite de pas"],
-      ["HIPHOP", "Danse urbaine"],
-      ["PIROUETTE", "Tour sur soi-même"],
-    ],
-  },
-  {
-    "n": "Orchestre",
-    "w": [
-      ["CHEF", "Il dirige avec une baguette"],
-      ["PARTITION", "Musique écrite"],
-      ["SYMPHONIE", "Grande œuvre orchestrale"],
-      ["CONTREBASSE", "Le plus grand des violons"],
-      ["CLARINETTE", "Instrument à anche"],
-      ["HAUTBOIS", "Instrument à double anche"],
-      ["TIMBALE", "Gros tambour"],
-      ["PUPITRE", "Support des partitions"],
-      ["ALTO", "Entre violon et violoncelle"],
-      ["BASSON", "Instrument grave à vent"],
-      ["CYMBALES", "Disques de métal frappés"],
-      ["TRIANGLE", "Petit instrument tinté"],
-    ],
-  },
-  {
-    "n": "Système solaire",
-    "w": [
-      ["MERCURE", "Planète la plus proche du Soleil"],
-      ["VENUS", "Étoile du berger"],
-      ["TERRE", "Notre planète"],
-      ["MARS", "Planète rouge"],
-      ["JUPITER", "Plus grosse planète"],
-      ["URANUS", "Planète couchée sur le côté"],
-      ["NEPTUNE", "Planète la plus lointaine"],
-      ["ORBITE", "Trajectoire autour d’un astre"],
-      ["ASTEROIDE", "Petit corps rocheux"],
-      ["ECLIPSE", "Le Soleil caché par la Lune"],
-      ["SATELLITE", "Il tourne autour d’une planète"],
-      ["METEORE", "Étoile filante"],
-    ],
-  },
-  {
-    "n": "Formes",
-    "w": [
-      ["CERCLE", "Rond parfait"],
-      ["CARRE", "Quatre côtés égaux"],
-      ["TRIANGLE", "Trois côtés"],
-      ["LOSANGE", "Carré penché"],
-      ["OVALE", "Forme d’œuf"],
-      ["ETOILE", "Forme à branches"],
-      ["SPIRALE", "Courbe qui s’enroule"],
-      ["CUBE", "Six faces carrées"],
-      ["SPHERE", "Boule"],
-      ["PYRAMIDE", "Monument égyptien"],
-      ["CYLINDRE", "Forme de boîte de conserve"],
-      ["HEXAGONE", "Six côtés"],
-    ],
-  },
-  {
-    "n": "Mathématiques",
-    "w": [
-      ["ADDITION", "Opération du plus"],
-      ["SOUSTRACTION", "Opération du moins"],
-      ["FRACTION", "Un demi en est une"],
-      ["CALCUL", "Opération mentale"],
-      ["EQUATION", "Égalité à résoudre"],
-      ["CHIFFRE", "De zéro à neuf"],
-      ["NOMBRE", "Il compte"],
-      ["ANGLE", "Il se mesure en degrés"],
-      ["DIAMETRE", "Il traverse le cercle"],
-      ["SOMME", "Résultat de l’addition"],
-      ["PRODUIT", "Résultat de la multiplication"],
-      ["POURCENTAGE", "Part sur cent"],
-    ],
-  },
-  {
-    "n": "Informatique",
-    "w": [
-      ["CLAVIER", "Il a des touches"],
-      ["SOURIS", "Elle déplace le curseur"],
-      ["ECRAN", "Il affiche"],
-      ["LOGICIEL", "Programme"],
-      ["ORDINATEUR", "Machine à calculer moderne"],
-      ["INTERNET", "Réseau mondial"],
-      ["COURRIEL", "Message électronique"],
-      ["FICHIER", "Document enregistré"],
-      ["DOSSIER", "Il range les fichiers"],
-      ["PIXEL", "Point d’image"],
-      ["CLIC", "Appui sur la souris"],
-      ["TABLETTE", "Écran tactile"],
-    ],
-  },
-  {
-    "n": "Moyen Âge",
-    "w": [
-      ["CHEVALIER", "Il porte une armure"],
-      ["DONJON", "Tour principale du château"],
-      ["REMPART", "Muraille de défense"],
-      ["ARMURE", "Protection de métal"],
-      ["BLASON", "Emblème de famille"],
-      ["TROUBADOUR", "Poète musicien"],
-      ["PONTLEVIS", "Pont qui se relève"],
-      ["CATAPULTE", "Elle lance des pierres"],
-      ["ECUYER", "Assistant du chevalier"],
-      ["TOURNOI", "Joute de chevaliers"],
-      ["MONASTERE", "Couvent de moines"],
-      ["MENESTREL", "Musicien de cour"],
-    ],
-  },
-  {
-    "n": "Pirates",
-    "w": [
-      ["CORSAIRE", "Pirate autorisé par le roi"],
-      ["TRESOR", "Coffre caché"],
-      ["PERROQUET", "Il se perche sur l’épaule"],
-      ["CARTE", "Elle mène au trésor"],
-      ["ABORDAGE", "Attaque d’un navire"],
-      ["CANON", "Il tire des boulets"],
-      ["CAPITAINE", "Chef du navire"],
-      ["DRAPEAU", "Noir à tête de mort"],
-      ["LONGUEVUE", "Petite lunette"],
-      ["JAMBEDEBOIS", "Prothèse du vieux pirate"],
-      ["ILE", "Où l’on cache le trésor"],
-      ["COFFRE", "Boîte à doublons"],
-    ],
-  },
-  {
-    "n": "Égypte ancienne",
-    "w": [
-      ["PYRAMIDE", "Tombeau géant"],
-      ["PHARAON", "Roi d’Égypte"],
-      ["SPHINX", "Lion à tête humaine"],
-      ["HIEROGLYPHE", "Écriture sacrée"],
-      ["PAPYRUS", "Papier du Nil"],
-      ["NIL", "Fleuve d’Égypte"],
-      ["SARCOPHAGE", "Cercueil de pierre"],
-      ["SCARABEE", "Insecte sacré"],
-      ["OBELISQUE", "Monument en aiguille"],
-      ["TOUTANKHAMON", "Jeune pharaon célèbre"],
-      ["CLEOPATRE", "Reine d’Égypte"],
-      ["ANKH", "Croix de vie"],
-    ],
-  },
-  {
-    "n": "Préhistoire",
-    "w": [
-      ["MAMMOUTH", "Éléphant laineux"],
-      ["SILEX", "Pierre taillée"],
-      ["GROTTE", "Abri des premiers hommes"],
-      ["LASCAUX", "Grotte ornée de Dordogne"],
-      ["CHASSEUR", "Il traquait le gibier"],
-      ["FEU", "Grande découverte"],
-      ["OUTIL", "Pierre taillée utile"],
-      ["BISON", "Animal peint sur les parois"],
-      ["MENHIR", "Pierre dressée"],
-      ["DOLMEN", "Table de pierre"],
-      ["TOTEM", "Emblème sculpté"],
-      ["CUEILLETTE", "Récolte des baies"],
-    ],
-  },
-  {
-    "n": "Minéraux",
-    "w": [
-      ["CRISTAL", "Minéral transparent"],
-      ["QUARTZ", "Minéral des montres"],
-      ["GRANIT", "Roche dure de Bretagne"],
-      ["MARBRE", "Roche des statues"],
-      ["DIAMANT", "Pierre la plus dure"],
-      ["RUBIS", "Pierre rouge"],
-      ["EMERAUDE", "Pierre verte"],
-      ["SAPHIR", "Pierre bleue"],
-      ["AMETHYSTE", "Pierre violette"],
-      ["AMBRE", "Résine fossilisée"],
-      ["PERLE", "Née dans une huître"],
-      ["JADE", "Pierre verte d’Asie"],
-    ],
-  },
-  {
-    "n": "Métaux",
-    "w": [
-      ["ARGENT", "Métal brillant blanc"],
-      ["CUIVRE", "Métal orangé conducteur"],
-      ["FER", "Métal qui rouille"],
-      ["ZINC", "Métal des toits de Paris"],
-      ["ETAIN", "Métal des vieux soldats de plomb"],
-      ["ACIER", "Fer allié au carbone"],
-      ["BRONZE", "Alliage de la troisième place"],
-      ["PLATINE", "Métal précieux gris"],
-      ["ALUMINIUM", "Métal léger"],
-      ["PLOMB", "Métal lourd"],
-      ["LAITON", "Alliage de cuivre et zinc"],
-    ],
-  },
-  {
-    "n": "Bijoux",
-    "w": [
-      ["BAGUE", "Elle se porte au doigt"],
-      ["COLLIER", "Il entoure le cou"],
-      ["BRACELET", "Il entoure le poignet"],
-      ["BROCHE", "Bijou à épingle"],
-      ["DIADEME", "Couronne légère"],
-      ["BOUCLE", "D’oreille"],
-      ["MEDAILLON", "Pendentif qui s’ouvre"],
-      ["GOURMETTE", "Bracelet à plaque"],
-      ["CHEVALIERE", "Bague à blason"],
-      ["PENDENTIF", "Il pend au collier"],
-      ["ECRIN", "Boîte à bijoux"],
-      ["ALLIANCE", "Bague de mariage"],
-    ],
-  },
-  {
-    "n": "Parfums",
-    "w": [
-      ["LAVANDE", "Parfum de Provence"],
-      ["ROSE", "Fleur reine des parfums"],
-      ["VANILLE", "Parfum gourmand"],
-      ["MUSC", "Note animale"],
-      ["SANTAL", "Bois parfumé"],
-      ["AGRUME", "Note fraîche citronnée"],
-      ["FLACON", "Il contient le parfum"],
-      ["VAPORISATEUR", "Il diffuse en gouttelettes"],
-      ["GRASSE", "Capitale du parfum"],
-      ["NEZ", "Créateur de parfums"],
-      ["ENCENS", "Il brûle en fumée parfumée"],
-      ["PATCHOULI", "Note boisée orientale"],
-    ],
-  },
-  {
-    "n": "Salle de bain",
-    "w": [
-      ["SAVON", "Il mousse"],
-      ["BAIGNOIRE", "On s’y prélasse"],
-      ["DOUCHE", "Pluie d’intérieur"],
-      ["SERVIETTE", "Pour se sécher"],
-      ["SHAMPOOING", "Pour laver les cheveux"],
-      ["MIROIR", "Il reflète"],
-      ["BROSSE", "À dents, elle nettoie"],
-      ["PEIGNOIR", "Robe de bain"],
-      ["EPONGE", "Elle absorbe l’eau"],
-      ["LAVABO", "Petit évier"],
-      ["DENTIFRICE", "Pâte pour les dents"],
-      ["CANARD", "En plastique, il flotte"],
-    ],
-  },
-  {
-    "n": "Herbes aromatiques",
-    "w": [
-      ["BASILIC", "Herbe du pesto"],
-      ["THYM", "Herbe de Provence"],
-      ["ROMARIN", "Herbe des grillades"],
-      ["PERSIL", "Herbe verte du taboulé"],
-      ["MENTHE", "Herbe fraîche du thé"],
-      ["CIBOULETTE", "Petites tiges vertes"],
-      ["ESTRAGON", "Herbe de la sauce béarnaise"],
-      ["LAURIER", "Feuille du bouquet garni"],
-      ["ORIGAN", "Herbe de la pizza"],
-      ["SAUGE", "Herbe aux feuilles veloutées"],
-      ["CORIANDRE", "Herbe de la cuisine asiatique"],
-      ["ANETH", "Herbe du saumon"],
-    ],
-  },
-  {
-    "n": "Champignons",
-    "w": [
-      ["CEPE", "Champignon à pied ventru"],
-      ["GIROLLE", "Champignon jaune orangé"],
-      ["TRUFFE", "Diamant noir"],
-      ["AMANITE", "Champignon souvent toxique"],
-      ["PLEUROTE", "Champignon en éventail"],
-      ["CHANTERELLE", "Autre nom de la girolle"],
-      ["CUEILLIR", "Ramasser"],
-      ["SPORE", "Graine de champignon"],
-      ["MYCELIUM", "Réseau souterrain"],
-      ["CHAPEAU", "Partie haute du champignon"],
-    ],
-  },
-  {
-    "n": "Voiture",
-    "w": [
-      ["VOLANT", "On le tourne pour diriger"],
-      ["MOTEUR", "Cœur de la voiture"],
-      ["PNEU", "Il roule"],
-      ["ESSENCE", "Carburant"],
-      ["PHARE", "Il éclaire la route"],
-      ["COFFRE", "On y range les bagages"],
-      ["CEINTURE", "De sécurité"],
-      ["FREIN", "Il arrête"],
-      ["KLAXON", "Il fait tut tut"],
-      ["RETROVISEUR", "Il montre l’arrière"],
-      ["EMBRAYAGE", "Pédale de gauche"],
-      ["GARAGE", "Abri de la voiture"],
-    ],
-  },
-  {
-    "n": "Vélo",
-    "w": [
-      ["PEDALE", "On appuie dessus"],
-      ["GUIDON", "On le tient"],
-      ["SELLE", "On s’assoit dessus"],
-      ["CHAINE", "Elle entraîne la roue"],
-      ["RAYON", "Tige de la roue"],
-      ["SONNETTE", "Dring dring"],
-      ["CASQUE", "Il protège la tête"],
-      ["TANDEM", "Vélo à deux places"],
-      ["DERAILLEUR", "Il change les vitesses"],
-      ["CADRE", "Squelette du vélo"],
-      ["CYCLISTE", "Il pédale"],
-      ["TOURDEFRANCE", "Grande course de juillet"],
-    ],
-  },
-  {
-    "n": "Bateaux",
-    "w": [
-      ["VOILE", "Elle prend le vent"],
-      ["MAT", "Il porte la voile"],
-      ["GOUVERNAIL", "Il dirige le bateau"],
-      ["HUBLOT", "Fenêtre ronde"],
-      ["PROUE", "Avant du navire"],
-      ["POUPE", "Arrière du navire"],
-      ["CANOE", "Petite embarcation à pagaie"],
-      ["PAQUEBOT", "Grand navire de croisière"],
-      ["CATAMARAN", "Bateau à deux coques"],
-      ["MATELOT", "Marin"],
-      ["PORT", "Abri des bateaux"],
-      ["KAYAK", "Embarcation à pagaie double"],
-    ],
-  },
-  {
-    "n": "Train",
-    "w": [
-      ["LOCOMOTIVE", "Elle tire les wagons"],
-      ["WAGON", "Voiture du train"],
-      ["RAILS", "Voie ferrée"],
-      ["QUAI", "On y attend le train"],
-      ["CONTROLEUR", "Il vérifie les billets"],
-      ["TUNNEL", "Passage sous la montagne"],
-      ["GARE", "Station de train"],
-      ["VAPEUR", "Ancienne force motrice"],
-      ["TGV", "Train à grande vitesse"],
-      ["AIGUILLAGE", "Il change de voie"],
-      ["COUCHETTE", "Lit du train de nuit"],
-      ["TERMINUS", "Fin de ligne"],
-    ],
-  },
-  {
-    "n": "Monuments",
-    "w": [
-      ["TOUREIFFEL", "Dame de fer"],
-      ["ARCDETRIOMPHE", "Sur les Champs-Élysées"],
-      ["LOUVRE", "Musée à la pyramide de verre"],
-      ["VERSAILLES", "Château du Roi-Soleil"],
-      ["COLISEE", "Arène romaine"],
-      ["PARTHENON", "Temple d’Athènes"],
-      ["BIGBEN", "Horloge de Londres"],
-      ["TAJMAHAL", "Mausolée indien"],
-      ["ACROPOLE", "Colline d’Athènes"],
-      ["STONEHENGE", "Cercle de pierres anglais"],
-    ],
-  },
-  {
-    "n": "Ville",
-    "w": [
-      ["RUE", "Voie urbaine"],
-      ["PLACE", "Espace ouvert en ville"],
-      ["FONTAINE", "Elle jaillit sur la place"],
-      ["TROTTOIR", "Chemin des piétons"],
-      ["LAMPADAIRE", "Il éclaire la rue la nuit"],
-      ["IMMEUBLE", "Grand bâtiment"],
-      ["MAIRIE", "Bâtiment du maire"],
-      ["BOULEVARD", "Large avenue"],
-      ["PARC", "Jardin public"],
-      ["BOUTIQUE", "Petit magasin"],
-      ["CARREFOUR", "Croisement"],
-      ["METRO", "Train souterrain"],
-    ],
-  },
-  {
-    "n": "Famille",
-    "w": [
-      ["GRANDMERE", "Mère d’un parent"],
-      ["COUSIN", "Enfant de l’oncle"],
-      ["ONCLE", "Frère d’un parent"],
-      ["TANTE", "Sœur d’un parent"],
-      ["NEVEU", "Fils du frère"],
-      ["NIECE", "Fille de la sœur"],
-      ["PARRAIN", "Il accompagne au baptême"],
-      ["JUMEAU", "Né le même jour"],
-      ["BEBE", "Tout-petit"],
-      ["FRATRIE", "Frères et sœurs"],
-      ["AINE", "Le premier né"],
-      ["BENJAMIN", "Le plus jeune"],
-    ],
-  },
-  {
-    "n": "Animaux de compagnie",
-    "w": [
-      ["CHATON", "Petit chat"],
-      ["HAMSTER", "Petit rongeur à joues"],
-      ["COCHONDINDE", "Petit rongeur sans queue"],
-      ["CANARI", "Petit oiseau jaune"],
-      ["POISSONROUGE", "Il tourne dans son bocal"],
-      ["LAPIN", "Il aime les carottes"],
-      ["TORTUE", "Elle hiberne dans le jardin"],
-      ["PERRUCHE", "Petit perroquet"],
-      ["FURET", "Petit animal joueur"],
-      ["GAMELLE", "Bol de l’animal"],
-      ["CROQUETTES", "Nourriture sèche"],
-      ["VETERINAIRE", "Médecin des animaux"],
-    ],
-  },
-  {
-    "n": "Céréales",
-    "w": [
-      ["BLE", "Céréale du pain"],
-      ["RIZ", "Céréale d’Asie"],
-      ["MAIS", "Céréale à épis jaunes"],
-      ["ORGE", "Céréale de la bière"],
-      ["AVOINE", "Céréale des chevaux"],
-      ["SEIGLE", "Céréale du pain noir"],
-      ["QUINOA", "Graine des Andes"],
-      ["SARRASIN", "Blé noir des galettes"],
-      ["EPI", "Tête de la céréale"],
-      ["MOISSON", "Récolte des blés"],
-      ["MOULIN", "Il moud le grain"],
-      ["SEMOULE", "Blé concassé"],
-    ],
-  },
-  {
-    "n": "Desserts",
-    "w": [
-      ["MOUSSE", "Au chocolat, légère"],
-      ["FLAN", "Dessert tremblotant"],
-      ["TARTETATIN", "Tarte renversée"],
-      ["CREMEBRULEE", "Crème au sucre caramélisé"],
-      ["CLAFOUTIS", "Dessert aux cerises"],
-      ["PROFITEROLES", "Choux au chocolat chaud"],
-      ["SORBET", "Glace sans lait"],
-      ["ILEFLOTTANTE", "Meringue sur crème anglaise"],
-      ["BAVAROIS", "Dessert moulé"],
-      ["CHARLOTTE", "Dessert aux biscuits"],
-      ["PANNACOTTA", "Crème cuite italienne"],
-      ["FONDANT", "Gâteau au cœur coulant"],
-    ],
-  },
-  {
-    "n": "Plats français",
-    "w": [
-      ["RATATOUILLE", "Mijoté de légumes du Sud"],
-      ["CASSOULET", "Plat de haricots de Toulouse"],
-      ["BLANQUETTE", "Veau à la sauce blanche"],
-      ["POTAUFEU", "Bouilli de bœuf et légumes"],
-      ["QUICHE", "Tarte lorraine"],
-      ["BOUILLABAISSE", "Soupe de poissons marseillaise"],
-      ["TARTIFLETTE", "Gratin savoyard"],
-      ["GALETTE", "Crêpe de sarrasin"],
-      ["FONDUE", "Fromage fondu partagé"],
-      ["SOUFFLE", "Plat qui gonfle au four"],
-      ["CHOUCROUTE", "Plat alsacien"],
-    ],
-  },
-  {
-    "n": "Fruits exotiques",
-    "w": [
-      ["MANGUE", "Fruit à gros noyau"],
-      ["ANANAS", "Fruit à couronne"],
-      ["PAPAYE", "Fruit orange tropical"],
-      ["LITCHI", "Petit fruit à coque rose"],
-      ["GOYAVE", "Fruit parfumé tropical"],
-      ["COCO", "Noix à eau"],
-      ["GRENADE", "Fruit aux grains rouges"],
-      ["KAKI", "Fruit orange d’automne"],
-      ["CARAMBOLE", "Fruit en étoile"],
-      ["AVOCAT", "Fruit du guacamole"],
-      ["DATTE", "Fruit du palmier"],
-    ],
-  },
-  {
-    "n": "Noix",
-    "w": [
-      ["NOIX", "Fruit du noyer"],
-      ["AMANDE", "Fruit de l’amandier"],
-      ["NOISETTE", "Fruit du noisetier"],
-      ["PISTACHE", "Petite noix verte"],
-      ["CACAHUETE", "Arachide"],
-      ["NOIXDECAJOU", "Noix en forme de rein"],
-      ["PECAN", "Noix américaine"],
-      ["GRAINE", "Petite semence"],
-      ["SESAME", "Graine du pain burger"],
-      ["TOURNESOL", "Ses graines se grignotent"],
-      ["PIGNON", "Graine de pin"],
-      ["CHATAIGNE", "Fruit d’automne grillé"],
-    ],
-  },
-  {
-    "n": "Tissus",
-    "w": [
-      ["COTON", "Fibre des tee-shirts"],
-      ["SOIE", "Fibre précieuse du ver"],
-      ["LIN", "Fibre des nappes"],
-      ["VELOURS", "Tissu doux à poils ras"],
-      ["JEAN", "Toile bleue"],
-      ["FLANELLE", "Tissu chaud"],
-      ["SATIN", "Tissu brillant"],
-      ["TWEED", "Tissu écossais"],
-      ["POLAIRE", "Tissu chaud synthétique"],
-      ["CACHEMIRE", "Laine très douce"],
-      ["DENIM", "Toile du jean"],
-      ["MOUSSELINE", "Tissu léger"],
-    ],
-  },
-  {
-    "n": "Chaussures",
-    "w": [
-      ["BASKET", "Chaussure de sport"],
-      ["ESCARPIN", "Chaussure à talon"],
-      ["MOCASSIN", "Chaussure sans lacets"],
-      ["SANDALE", "Chaussure ouverte"],
-      ["BOTTINE", "Petite botte"],
-      ["TONG", "Sandale de plage"],
-      ["CHAUSSON", "Pantoufle douce"],
-      ["LACET", "Il se noue"],
-      ["SEMELLE", "Dessous de la chaussure"],
-      ["TALON", "Il grandit"],
-      ["CORDONNIER", "Il répare les chaussures"],
-      ["SABOT", "Chaussure de bois"],
-    ],
-  },
-  {
-    "n": "Sports d'équipe",
-    "w": [
-      ["FOOTBALL", "Sport du ballon rond"],
-      ["BASKETBALL", "Sport du panier"],
-      ["RUGBY", "Sport du ballon ovale"],
-      ["HANDBALL", "Sport de balle à la main"],
-      ["VOLLEYBALL", "Sport du filet"],
-      ["HOCKEY", "Sport de crosse"],
-      ["ARBITRE", "Il siffle"],
-      ["GARDIEN", "Il protège le but"],
-      ["EQUIPE", "Groupe de joueurs"],
-      ["MATCH", "Rencontre sportive"],
-      ["TROPHEE", "Coupe du vainqueur"],
-      ["SUPPORTER", "Il encourage"],
-    ],
-  },
-  {
-    "n": "Sports nautiques",
-    "w": [
-      ["NATATION", "Sport de la piscine"],
-      ["PLONGEE", "Exploration sous l’eau"],
-      ["VOILE", "Sport du vent"],
-      ["SURF", "Glisse sur les vagues"],
-      ["KITESURF", "Surf tiré par une aile"],
-      ["CANOE", "Pagaie en rivière"],
-      ["WATERPOLO", "Polo dans l’eau"],
-      ["PLONGEON", "Saut dans l’eau"],
-      ["RAFTING", "Descente en radeau"],
-      ["PADDLE", "Planche à pagaie debout"],
-      ["TUBA", "Tube pour respirer sous l’eau"],
-      ["PALMES", "Chaussures de plongée"],
-    ],
-  },
-  {
-    "n": "Jeux olympiques",
-    "w": [
-      ["ANNEAUX", "Symbole olympique"],
-      ["FLAMME", "Elle voyage jusqu’au stade"],
-      ["MEDAILLE", "Récompense du podium"],
-      ["PODIUM", "Marches des vainqueurs"],
-      ["MARATHON", "Course de 42 km"],
-      ["RELAIS", "Course en équipe"],
-      ["JAVELOT", "Lance de l’athlète"],
-      ["PERCHE", "Saut à la..."],
-      ["DECATHLON", "Dix épreuves"],
-      ["STADE", "Lieu des épreuves"],
-      ["ATHLETE", "Sportif"],
-      ["RECORD", "Meilleure performance"],
-    ],
-  },
-  {
-    "n": "Échecs",
-    "w": [
-      ["ROI", "Pièce à protéger"],
-      ["REINE", "Pièce la plus puissante"],
-      ["TOUR", "Elle va en ligne droite"],
-      ["FOU", "Il va en diagonale"],
-      ["CAVALIER", "Il saute en L"],
-      ["PION", "Petite pièce"],
-      ["ECHEC", "Le roi est menacé"],
-      ["MAT", "Fin de partie"],
-      ["ROQUE", "Coup du roi et de la tour"],
-      ["ECHIQUIER", "Plateau de 64 cases"],
-      ["PENDULE", "Elle mesure le temps"],
-      ["GAMBIT", "Sacrifice d’ouverture"],
-    ],
-  },
-  {
-    "n": "Jouets",
-    "w": [
-      ["POUPEE", "Jouet à habiller"],
-      ["NOUNOURS", "Ours en peluche"],
-      ["TRAIN", "Électrique, il tourne"],
-      ["CUBES", "On les empile"],
-      ["LEGO", "Briques à assembler"],
-      ["CERCEAU", "Grand anneau"],
-      ["YOYO", "Il monte et descend"],
-      ["TROTTINETTE", "Planche à guidon"],
-      ["BALLON", "Il rebondit"],
-      ["DINETTE", "Petite vaisselle de jeu"],
-      ["KALEIDOSCOPE", "Tube à motifs colorés"],
-      ["MARIONNETTE", "Poupée animée à la main"],
-    ],
-  },
-  {
-    "n": "Écriture",
-    "w": [
-      ["PLUME", "Ancien stylo"],
-      ["LETTRE", "On l’envoie"],
-      ["STYLO", "Il écrit à l’encre"],
-      ["ALPHABET", "De A à Z"],
-      ["VOYELLE", "A, E, I, O, U ou Y"],
-      ["CONSONNE", "Lettre qui n’est pas voyelle"],
-      ["ACCENT", "Aigu, grave ou circonflexe"],
-      ["VIRGULE", "Petite pause écrite"],
-      ["POINT", "Fin de phrase"],
-      ["CALLIGRAPHIE", "Belle écriture"],
-      ["BROUILLON", "Premier jet"],
-      ["JOURNAL", "Carnet intime"],
-    ],
-  },
-  {
-    "n": "Magie",
-    "w": [
-      ["BAGUETTE", "Outil du magicien"],
-      ["SORTILEGE", "Formule magique"],
-      ["POTION", "Breuvage enchanté"],
-      ["CHAPEAU", "On en sort un lapin"],
-      ["ILLUSION", "Tour de passe-passe"],
-      ["ENCHANTEUR", "Merlin en est un"],
-      ["AMULETTE", "Porte-bonheur"],
-      ["GRIMOIRE", "Livre de sorts"],
-      ["CRISTAL", "Boule de voyance"],
-      ["TELEPORTATION", "Déplacement instantané"],
-      ["INVISIBLE", "Qu’on ne voit pas"],
-      ["ABRACADABRA", "Formule magique célèbre"],
-    ],
-  },
-  {
-    "n": "Saisons et temps",
-    "w": [
-      ["JANVIER", "Premier mois"],
-      ["FEVRIER", "Mois le plus court"],
-      ["DECEMBRE", "Mois de Noël"],
-      ["SAISON", "Il y en a quatre"],
-      ["SOLSTICE", "Jour le plus long ou le plus court"],
-      ["CALENDRIER", "Il compte les jours"],
-      ["SEMAINE", "Sept jours"],
-      ["HORLOGE", "Elle donne l’heure"],
-      ["SABLIER", "Il s’écoule"],
-      ["AUBE", "Début du jour"],
-      ["MIDI", "Milieu de la journée"],
-      ["SOIREE", "Fin de journée"],
-    ],
-  },
-  {
-    "n": "Peinture",
-    "w": [
-      ["PEINTURE", "Liquide coloré"],
-      ["ROULEAU", "Il peint les murs"],
-      ["BACHE", "Elle protège le sol"],
-      ["ENDUIT", "Il bouche les trous"],
-      ["PONCEUSE", "Elle lisse"],
-      ["ESCABEAU", "Petite échelle"],
-      ["VERNIS", "Il fait briller"],
-      ["TEINTE", "Nuance de couleur"],
-      ["PIGMENT", "Poudre colorée"],
-      ["SOLVANT", "Il dilue"],
-      ["MASQUE", "Il protège le visage"],
-      ["GOUACHE", "Peinture épaisse à l’eau"],
-    ],
-  },
-  {
-    "n": "Santé",
-    "w": [
-      ["INFIRMIERE", "Elle soigne"],
-      ["PANSEMENT", "Il protège la plaie"],
-      ["STETHOSCOPE", "Il écoute le cœur"],
-      ["SIROP", "Médicament sucré"],
-      ["THERMOMETRE", "Il mesure la fièvre"],
-      ["PHARMACIE", "On y achète les médicaments"],
-      ["VITAMINE", "Bonne pour la santé"],
-      ["REPOS", "Il aide à guérir"],
-      ["CONVALESCENCE", "Période de guérison"],
-      ["ORDONNANCE", "Papier du médecin"],
-      ["PLATRE", "Il immobilise"],
-      ["SOURIRE", "Le meilleur remède"],
-    ],
-  },
-  {
-    "n": "Canada",
-    "w": [
-      ["ERABLE", "Feuille du drapeau"],
-      ["CASTOR", "Animal national bâtisseur"],
-      ["ORIGNAL", "Grand cervidé du Nord"],
-      ["TOTEM", "Mât sculpté autochtone"],
-      ["CARIBOU", "Renne d’Amérique"],
-      ["HOCKEY", "Sport national d’hiver"],
-      ["TOUNDRA", "Plaine glacée du Grand Nord"],
-      ["ROCHEUSES", "Chaîne de montagnes de l’Ouest"],
-      ["POUTINE", "Frites, fromage en grains et sauce"],
-      ["CANOT", "Embarcation des coureurs des bois"],
-    ],
-  },
-  {
-    "n": "Québec",
-    "w": [
-      ["CABANE", "À sucre, au printemps"],
-      ["SIROP", "D’érable, on le verse sur la tire"],
-      ["TIRE", "Sucre d’érable sur la neige"],
-      ["TUQUE", "Bonnet en québécois"],
-      ["FLEURDELYS", "Emblème du drapeau québécois"],
-      ["GASPESIE", "Péninsule du rocher Percé"],
-      ["SAGUENAY", "Fjord et région"],
-      ["OUANANICHE", "Saumon d’eau douce"],
-      ["TOURTIERE", "Pâté à la viande des fêtes"],
-      ["CHICOUTAI", "Plaquebière de la Côte-Nord"],
-    ],
-  },
-  {
-    "n": "Mexique",
-    "w": [
-      ["SOMBRERO", "Grand chapeau"],
-      ["TACO", "Galette garnie pliée"],
-      ["MARIACHI", "Musicien traditionnel"],
-      ["PINATA", "On la casse les yeux bandés"],
-      ["CACTUS", "Plante du désert"],
-      ["AZTEQUE", "Ancien peuple de Mexico"],
-      ["TORTILLA", "Galette de maïs"],
-      ["GUACAMOLE", "Purée d’avocat"],
-      ["MAYA", "Civilisation du Yucatan"],
-      ["PONCHO", "Cape en laine"],
-    ],
-  },
-  {
-    "n": "Brésil",
-    "w": [
-      ["SAMBA", "Danse du carnaval"],
-      ["CARNAVAL", "Grande fête de Rio"],
-      ["AMAZONIE", "Grande forêt"],
-      ["BOSSANOVA", "Musique douce brésilienne"],
-      ["TOUCAN", "Oiseau au bec coloré"],
-      ["RIO", "Ville du Pain de Sucre"],
-      ["CAFE", "Grande culture brésilienne"],
-      ["CAPOEIRA", "Art martial dansé"],
-      ["ACAI", "Baie violette"],
-      ["FOOTBALL", "Passion nationale"],
-    ],
-  },
-  {
-    "n": "Argentine",
-    "w": [
-      ["TANGO", "Danse de Buenos Aires"],
-      ["PAMPA", "Grande plaine"],
-      ["GAUCHO", "Cavalier des plaines"],
-      ["PATAGONIE", "Région du sud"],
-      ["ASADO", "Grillade traditionnelle"],
-      ["MATE", "Infusion partagée"],
-      ["GLACIER", "Perito Moreno en est un"],
-      ["ANDES", "Montagnes de l’ouest"],
-      ["DULCEDELECHE", "Confiture de lait"],
-      ["CONDOR", "Grand rapace"],
-    ],
-  },
-  {
-    "n": "Pérou",
-    "w": [
-      ["INCA", "Ancien empire"],
-      ["LAMA", "Animal des Andes"],
-      ["ALPAGA", "Cousin du lama"],
-      ["QUINOA", "Graine des hauts plateaux"],
-      ["TITICACA", "Lac le plus haut"],
-      ["CUZCO", "Ancienne capitale inca"],
-      ["CONDOR", "Oiseau des Andes"],
-      ["PONCHO", "Vêtement de laine"],
-      ["CEVICHE", "Poisson mariné au citron"],
-      ["NAZCA", "Lignes dessinées dans le désert"],
-    ],
-  },
-  {
-    "n": "Royaume-Uni",
-    "w": [
-      ["LONDRES", "Capitale anglaise"],
-      ["TAMISE", "Fleuve de Londres"],
-      ["PUDDING", "Dessert anglais"],
-      ["CORNEMUSE", "Instrument écossais"],
-      ["CRICKET", "Sport à la batte"],
-      ["BIGBEN", "Cloche célèbre"],
-      ["SCONES", "Petits pains du thé"],
-      ["PARAPLUIE", "Accessoire indispensable"],
-    ],
-  },
-  {
-    "n": "Irlande",
-    "w": [
-      ["TREFLE", "Emblème vert"],
-      ["LEPRECHAUN", "Lutin farceur"],
-      ["HARPE", "Symbole national"],
-      ["DUBLIN", "Capitale"],
-      ["FALAISES", "De Moher, face à l’Atlantique"],
-      ["GAELIQUE", "Langue celtique"],
-      ["LANDE", "Paysage de bruyère"],
-      ["TOURBE", "Combustible des marais"],
-      ["CLADDAGH", "Bague aux mains et cœur"],
-      ["SAINTPATRICK", "Fête du 17 mars"],
-    ],
-  },
-  {
-    "n": "Écosse",
-    "w": [
-      ["KILT", "Jupe traditionnelle"],
-      ["TARTAN", "Tissu à carreaux"],
-      ["LOCHNESS", "Lac du monstre"],
-      ["HIGHLANDS", "Hautes terres"],
-      ["CHARDON", "Fleur emblème"],
-      ["EDIMBOURG", "Capitale"],
-      ["CORNEMUSE", "Instrument national"],
-      ["HAGGIS", "Plat de panse farcie"],
-      ["CLAN", "Grande famille"],
-      ["LOCH", "Lac en écossais"],
-    ],
-  },
-  {
-    "n": "Allemagne",
-    "w": [
-      ["BERLIN", "Capitale"],
-      ["BRETZEL", "Pain en nœud"],
-      ["FORETNOIRE", "Gâteau aux cerises"],
-      ["RHIN", "Fleuve des châteaux"],
-      ["BAVIERE", "Région de Munich"],
-      ["CHOUCROUTE", "Chou fermenté"],
-      ["CASSENOISETTE", "Figurine en bois"],
-      ["BEETHOVEN", "Compositeur de Bonn"],
-      ["STOLLEN", "Pain de Noël"],
-      ["GRIMM", "Frères conteurs"],
-    ],
-  },
-  {
-    "n": "Suisse",
-    "w": [
-      ["ALPES", "Montagnes"],
-      ["FONDUE", "Fromage fondu"],
-      ["CHOCOLAT", "Spécialité gourmande"],
-      ["MONTRE", "Horlogerie célèbre"],
-      ["COUCOU", "Horloge à oiseau"],
-      ["GENEVE", "Ville du lac Léman"],
-      ["EDELWEISS", "Fleur des cimes"],
-      ["COR", "Des Alpes, long instrument"],
-      ["CANTON", "Région suisse"],
-      ["LEMAN", "Grand lac"],
-    ],
-  },
-  {
-    "n": "Belgique",
-    "w": [
-      ["BRUXELLES", "Capitale"],
-      ["GAUFRE", "Spécialité sucrée"],
-      ["FRITES", "Servies en cornet"],
-      ["PRALINE", "Bonbon de chocolat"],
-      ["ATOMIUM", "Monument géant"],
-      ["SPECULOOS", "Biscuit à la cannelle"],
-      ["ANVERS", "Port diamantaire"],
-      ["BRUGES", "Venise du Nord"],
-      ["MOULES", "Plat avec frites"],
-    ],
-  },
-  {
-    "n": "Pays-Bas",
-    "w": [
-      ["TULIPE", "Fleur nationale"],
-      ["MOULINAVENT", "Il tourne sur les polders"],
-      ["SABOT", "Chaussure de bois"],
-      ["CANAL", "Voie d’eau d’Amsterdam"],
-      ["POLDER", "Terre gagnée sur la mer"],
-      ["DIGUE", "Elle retient la mer"],
-      ["VELO", "Transport roi"],
-      ["GOUDA", "Fromage rond"],
-      ["AMSTERDAM", "Capitale"],
-      ["DELFT", "Faïence bleue"],
-    ],
-  },
-  {
-    "n": "Scandinavie",
-    "w": [
-      ["FJORD", "Bras de mer entre falaises"],
-      ["VIKING", "Navigateur nordique"],
-      ["AURORE", "Boréale, lumière du ciel"],
-      ["SAUNA", "Bain de vapeur"],
-      ["LAPONIE", "Pays du Père Noël"],
-      ["HYGGE", "Art danois du bien-être"],
-      ["TROLL", "Créature des contes"],
-      ["ELAN", "Grand cervidé"],
-      ["RENNE", "Animal du Grand Nord"],
-    ],
-  },
-  {
-    "n": "Islande",
-    "w": [
-      ["GEYSER", "Source jaillissante"],
-      ["VOLCAN", "Montagne de feu"],
-      ["GLACIER", "Vatnajökull en est un"],
-      ["MACAREUX", "Oiseau au bec coloré"],
-      ["REYKJAVIK", "Capitale"],
-      ["LAGON", "Bleu, bain chaud"],
-      ["SAGA", "Récit ancien"],
-      ["LAVE", "Roche en fusion"],
-      ["BALEINE", "On l’observe en mer"],
-      ["FUMEROLLE", "Vapeur volcanique"],
-    ],
-  },
-  {
-    "n": "Grèce",
-    "w": [
-      ["ATHENES", "Capitale"],
-      ["OLIVIER", "Arbre sacré"],
-      ["ACROPOLE", "Colline aux temples"],
-      ["FETA", "Fromage en saumure"],
-      ["CYCLADES", "Îles blanches et bleues"],
-      ["OLYMPE", "Mont des dieux"],
-      ["TZATZIKI", "Sauce au concombre"],
-      ["MOUSSAKA", "Gratin d’aubergines"],
-      ["SANTORIN", "Île volcanique"],
-      ["AMPHORE", "Vase antique"],
-    ],
-  },
-  {
-    "n": "Turquie",
-    "w": [
-      ["ISTANBUL", "Ville sur deux continents"],
-      ["BAZAR", "Grand marché couvert"],
-      ["LOUKOUM", "Confiserie parfumée"],
-      ["CAPPADOCE", "Région des cheminées de fées"],
-      ["HAMMAM", "Bain de vapeur"],
-      ["TAPIS", "Tissé à la main"],
-      ["KEBAB", "Viande grillée"],
-      ["BOSPHORE", "Détroit"],
-      ["MOSQUEE", "Lieu de prière"],
-      ["THE", "Servi dans un verre tulipe"],
-    ],
-  },
-  {
-    "n": "Maroc",
-    "w": [
-      ["MARRAKECH", "Ville rouge"],
-      ["TAJINE", "Plat mijoté"],
-      ["SOUK", "Marché"],
-      ["COUSCOUS", "Graine de semoule"],
-      ["RIAD", "Maison à patio"],
-      ["ATLAS", "Chaîne de montagnes"],
-      ["MENTHE", "Thé à la..."],
-      ["MEDINA", "Vieille ville"],
-      ["ARGAN", "Huile précieuse"],
-      ["BABOUCHE", "Chausson de cuir"],
-    ],
-  },
-  {
-    "n": "Inde",
-    "w": [
-      ["TAJMAHAL", "Mausolée de marbre"],
-      ["SARI", "Vêtement drapé"],
-      ["CURRY", "Plat épicé"],
-      ["GANGE", "Fleuve sacré"],
-      ["YOGA", "Discipline née en Inde"],
-      ["CHAI", "Thé épicé au lait"],
-      ["MOUSSON", "Saison des pluies"],
-      ["TIGRE", "Félin du Bengale"],
-      ["MANDALA", "Dessin circulaire"],
-      ["DIWALI", "Fête des lumières"],
-    ],
-  },
-  {
-    "n": "Chine",
-    "w": [
-      ["PEKIN", "Capitale"],
-      ["MURAILLE", "Grande, elle est visible de loin"],
-      ["PANDA", "Ours noir et blanc"],
-      ["DRAGON", "Créature porte-bonheur"],
-      ["LANTERNE", "Fête de la mi-automne"],
-      ["DIMSUM", "Bouchées vapeur"],
-      ["SOIE", "Tissu de la route ancienne"],
-      ["JADE", "Pierre verte précieuse"],
-      ["BAGUETTES", "Couverts en bois"],
-      ["CALLIGRAPHIE", "Art du pinceau"],
-    ],
-  },
-  {
-    "n": "Corée",
-    "w": [
-      ["SEOUL", "Capitale"],
-      ["KIMCHI", "Chou fermenté épicé"],
-      ["HANBOK", "Habit traditionnel"],
-      ["KPOP", "Musique populaire"],
-      ["BIBIMBAP", "Bol de riz garni"],
-      ["HANGEUL", "Alphabet coréen"],
-      ["TAEKWONDO", "Art martial"],
-      ["TEMPLE", "Bouddhiste dans la montagne"],
-      ["GINSENG", "Racine tonique"],
-      ["CERISIER", "Floraison au printemps"],
-    ],
-  },
-  {
-    "n": "Vietnam",
-    "w": [
-      ["HANOI", "Capitale"],
-      ["PHO", "Soupe de nouilles"],
-      ["BAIEDHALONG", "Baie aux pitons rocheux"],
-      ["RIZIERE", "Champ en terrasses"],
-      ["NEM", "Rouleau frit"],
-      ["CHAPEAU", "Conique, en feuilles"],
-      ["MEKONG", "Grand fleuve"],
-      ["LOTUS", "Fleur nationale"],
-      ["LANTERNE", "Hoi An en est remplie"],
-      ["AODAI", "Tunique traditionnelle"],
-    ],
-  },
-  {
-    "n": "Thaïlande",
-    "w": [
-      ["BANGKOK", "Capitale"],
-      ["ELEPHANT", "Animal emblème"],
-      ["PADTHAI", "Nouilles sautées"],
-      ["TEMPLE", "Wat doré"],
-      ["TUKTUK", "Taxi à trois roues"],
-      ["MANGUE", "Avec du riz gluant"],
-      ["MASSAGE", "Soin traditionnel"],
-      ["ORCHIDEE", "Fleur exotique"],
-      ["PLAGE", "Sable blanc des îles"],
-      ["MARCHE", "Flottant, sur les canaux"],
-    ],
-  },
-  {
-    "n": "Australie",
-    "w": [
-      ["KANGOUROU", "Il saute avec une poche"],
-      ["KOALA", "Il dort dans l’eucalyptus"],
-      ["OPERA", "De Sydney, en voiles"],
-      ["OUTBACK", "Arrière-pays désertique"],
-      ["BOOMERANG", "Il revient"],
-      ["EUCALYPTUS", "Arbre du koala"],
-      ["ULURU", "Rocher rouge sacré"],
-      ["DINGO", "Chien sauvage"],
-      ["CORAIL", "Grande barrière"],
-      ["WOMBAT", "Petit marsupial fouisseur"],
-    ],
-  },
-  {
-    "n": "Nouvelle-Zélande",
-    "w": [
-      ["KIWI", "Oiseau qui ne vole pas"],
-      ["MAORI", "Peuple autochtone"],
-      ["HAKA", "Danse guerrière"],
-      ["FOUGERE", "Argentée, emblème"],
-      ["GEYSER", "Rotorua en est plein"],
-      ["WELLINGTON", "Capitale"],
-      ["FJORD", "Milford Sound en est un"],
-      ["MOUTON", "Il y en a beaucoup"],
-      ["VOLCAN", "Mont Ruapehu"],
-    ],
-  },
-  {
-    "n": "Hawaï",
-    "w": [
-      ["VOLCAN", "Kilauea en est un"],
-      ["SURF", "Né sur ces vagues"],
-      ["UKULELE", "Petite guitare"],
-      ["HULA", "Danse aux hanches"],
-      ["LEI", "Collier de fleurs"],
-      ["ALOHA", "Bonjour et au revoir"],
-      ["ANANAS", "Fruit de l’archipel"],
-      ["TORTUE", "Marine, sur les plages"],
-      ["LAVE", "Coulée noire"],
-      ["PLAGE", "Sable noir ou doré"],
-    ],
-  },
-  {
-    "n": "Antilles",
-    "w": [
-      ["MARTINIQUE", "Île aux fleurs"],
-      ["GUADELOUPE", "Île papillon"],
-      ["BANANE", "Culture locale"],
-      ["RHUMERIE", "Distillerie de canne"],
-      ["CREOLE", "Langue des îles"],
-      ["MADRAS", "Tissu à carreaux"],
-      ["COLOMBO", "Plat épicé"],
-      ["ZOUK", "Musique dansante"],
-      ["COCOTIER", "Arbre des plages"],
-      ["ACCRAS", "Beignets de morue"],
-    ],
-  },
-  {
-    "n": "Sénégal",
-    "w": [
-      ["DAKAR", "Capitale"],
-      ["BAOBAB", "Arbre géant"],
-      ["THIEBOUDIENNE", "Riz au poisson"],
-      ["TERANGA", "Hospitalité"],
-      ["DJEMBE", "Tambour"],
-      ["BISSAP", "Boisson à l’hibiscus"],
-      ["GOREE", "Île du souvenir"],
-      ["PIROGUE", "Bateau de pêche coloré"],
-      ["LACROSE", "Lac Rose"],
-      ["GRIOT", "Conteur musicien"],
-    ],
-  },
-  {
-    "n": "Kenya",
-    "w": [
-      ["SAFARI", "Voyage d’observation"],
-      ["MASAI", "Peuple de bergers"],
-      ["SAVANE", "Plaine herbeuse"],
-      ["NAIROBI", "Capitale"],
-      ["GIRAFE", "Haute silhouette"],
-      ["ELEPHANT", "Géant de la savane"],
-      ["KILIMANDJARO", "Sommet voisin"],
-      ["ACACIA", "Arbre en parasol"],
-      ["GNOU", "Grande migration"],
-      ["LION", "Roi de la savane"],
-    ],
-  },
-  {
-    "n": "Andes",
-    "w": [
-      ["CORDILLERE", "Chaîne de montagnes"],
-      ["LAMA", "Animal de bât"],
-      ["CONDOR", "Grand oiseau"],
-      ["ALTIPLANO", "Haut plateau"],
-      ["PONCHO", "Cape de laine"],
-      ["FLUTE", "De Pan, instrument"],
-      ["QUECHUA", "Langue des Incas"],
-      ["SALAR", "Désert de sel"],
-      ["VOLCAN", "Montagne active"],
-      ["ACONCAGUA", "Plus haut sommet"],
-    ],
-  },
-  {
-    "n": "Alpes",
-    "w": [
-      ["MONTBLANC", "Plus haut sommet d’Europe"],
-      ["CHAMONIX", "Ville au pied du glacier"],
-      ["FROMAGE", "Beaufort ou reblochon"],
-      ["CHALET", "Maison de bois"],
-      ["ESTIVE", "Pâturage d’été"],
-      ["TELEPHERIQUE", "Cabine suspendue"],
-      ["GENTIANE", "Fleur bleue"],
-      ["BOUQUETIN", "Chèvre sauvage"],
-      ["SKI", "Sport de glisse"],
-      ["ALPINISTE", "Grimpeur des sommets"],
-    ],
-  },
-  {
-    "n": "Pyrénées",
-    "w": [
-      ["PIC", "Du Midi, observatoire"],
-      ["CIRQUE", "De Gavarnie"],
-      ["ISARD", "Chamois pyrénéen"],
-      ["OURS", "Brun, il est de retour"],
-      ["TRANSHUMANCE", "Montée des troupeaux"],
-      ["GAVE", "Torrent de montagne"],
-      ["BERET", "Couvre-chef basque"],
-      ["BASQUE", "Pays et langue"],
-      ["ANDORRE", "Petit pays"],
-      ["PELOTE", "Sport de balle basque"],
-    ],
-  },
-  {
-    "n": "Himalaya",
-    "w": [
-      ["EVEREST", "Plus haut sommet du monde"],
-      ["SHERPA", "Guide de montagne"],
-      ["YAK", "Bovin à longs poils"],
-      ["NEPAL", "Pays des sommets"],
-      ["TIBET", "Haut plateau"],
-      ["DRAPEAUX", "De prière, colorés"],
-      ["MONASTERE", "Perché sur la montagne"],
-      ["LEOPARD", "Des neiges, félin rare"],
-      ["YETI", "Abominable homme des neiges"],
-      ["EXPEDITION", "Ascension en équipe"],
-    ],
-  },
-  {
-    "n": "Amazonie",
-    "w": [
-      ["FLEUVE", "Le plus puissant du monde"],
-      ["PIRANHA", "Poisson aux dents pointues"],
-      ["ARA", "Perroquet coloré"],
-      ["CANOPEE", "Toit de la forêt"],
-      ["LIANE", "Elle pend des arbres"],
-      ["JAGUAR", "Félin tacheté"],
-      ["DAUPHIN", "Rose, il vit dans le fleuve"],
-      ["HEVEA", "Arbre à caoutchouc"],
-      ["TAPIR", "Animal à trompe courte"],
-      ["ANACONDA", "Serpent géant"],
-    ],
-  },
-  {
-    "n": "Provence",
-    "w": [
-      ["LAVANDE", "Champs violets"],
-      ["CIGALE", "Chant de l’été"],
-      ["OLIVIER", "Arbre argenté"],
-      ["MISTRAL", "Vent du nord"],
-      ["CALISSON", "Douceur d’Aix"],
-      ["SANTON", "Figurine de crèche"],
-      ["PASTIS", "Apéritif anisé"],
-      ["GARRIGUE", "Lande parfumée"],
-      ["BOULES", "Jeu de pétanque"],
-      ["TOMETTE", "Carreau de terre cuite"],
-    ],
-  },
-  {
-    "n": "Bretagne",
-    "w": [
-      ["CREPE", "Spécialité au froment"],
-      ["GALETTE", "Crêpe de sarrasin"],
-      ["MENHIR", "Pierre levée"],
-      ["PHARE", "Il veille sur les côtes"],
-      ["KOUIGNAMANN", "Gâteau au beurre"],
-      ["BINIOU", "Cornemuse bretonne"],
-      ["MAREE", "Grande à Saint-Malo"],
-      ["CIDRE", "Boisson de pommes"],
-      ["LANDES", "Bruyère et ajoncs"],
-    ],
-  },
-  {
-    "n": "Normandie",
-    "w": [
-      ["CAMEMBERT", "Fromage de la région"],
-      ["POMME", "Fruit des vergers"],
-      ["FALAISES", "D’Étretat"],
-      ["TEURGOULE", "Riz au lait à la cannelle"],
-      ["COLOMBAGE", "Maison à pans de bois"],
-      ["DEBARQUEMENT", "Plages de 1944"],
-      ["VACHE", "Normande, tachetée"],
-      ["BOCAGE", "Champs entourés de haies"],
-      ["CALVADOS", "Département et eau-de-vie"],
-    ],
-  },
-  {
-    "n": "Alsace",
-    "w": [
-      ["CIGOGNE", "Oiseau emblème"],
-      ["BRETZEL", "Pain noué"],
-      ["KOUGELHOF", "Brioche en couronne"],
-      ["COLMAR", "Petite Venise"],
-      ["STRASBOURG", "Ville de la cathédrale"],
-      ["FLAMMEKUECHE", "Tarte flambée"],
-      ["MARCHE", "De Noël, très célèbre"],
-      ["COLOMBAGE", "Maisons à pans de bois"],
-      ["VOSGES", "Massif voisin"],
-      ["BAECKEOFFE", "Plat mijoté"],
-    ],
-  },
-  {
-    "n": "Paris",
-    "w": [
-      ["SEINE", "Fleuve de la capitale"],
-      ["TOUREIFFEL", "Dame de fer"],
-      ["LOUVRE", "Musée célèbre"],
-      ["MONTMARTRE", "Butte des peintres"],
-      ["METRO", "Transport souterrain"],
-      ["BATEAUMOUCHE", "Croisière sur le fleuve"],
-      ["NOTREDAME", "Cathédrale"],
-      ["TERRASSE", "Café en plein air"],
-      ["BOUQUINISTE", "Libraire des quais"],
-      ["OPERA", "Palais Garnier"],
-    ],
-  },
-  {
-    "n": "Venise",
-    "w": [
-      ["GONDOLE", "Barque noire"],
-      ["CANAL", "Grand, il traverse la ville"],
-      ["CARNAVAL", "Fête masquée"],
-      ["MASQUE", "On le porte au carnaval"],
-      ["RIALTO", "Pont célèbre"],
-      ["LAGUNE", "Étendue d’eau salée"],
-      ["MURANO", "Île du verre"],
-      ["VAPORETTO", "Bateau-bus"],
-      ["GONDOLIER", "Il rame en chantant"],
-      ["PALAIS", "Des Doges"],
-    ],
-  },
-  {
-    "n": "Londres",
-    "w": [
-      ["TAMISE", "Fleuve"],
-      ["TOWERBRIDGE", "Pont à bascule"],
-      ["BUS", "Rouge à étage"],
-      ["TAXI", "Noir, typique"],
-      ["BIGBEN", "Cloche de l’horloge"],
-      ["METRO", "Tube en anglais"],
-      ["PALAIS", "De Buckingham"],
-      ["GARDE", "Au bonnet à poils"],
-      ["BROUILLARD", "Fog londonien"],
-      ["PARC", "Hyde Park en est un"],
-    ],
-  },
-  {
-    "n": "New York",
-    "w": [
-      ["GRATTECIEL", "Immeuble immense"],
-      ["TAXI", "Jaune"],
-      ["STATUE", "De la Liberté"],
-      ["BROADWAY", "Rue des théâtres"],
-      ["CENTRALPARK", "Grand parc"],
-      ["BAGEL", "Petit pain en anneau"],
-      ["METRO", "Subway"],
-      ["PONT", "De Brooklyn"],
-      ["TIMESSQUARE", "Place aux écrans"],
-      ["HUDSON", "Fleuve"],
-    ],
-  },
-  {
-    "n": "Rome",
-    "w": [
-      ["COLISEE", "Amphithéâtre"],
-      ["FONTAINE", "De Trevi, on y jette une pièce"],
-      ["VATICAN", "Plus petit État"],
-      ["FORUM", "Place antique"],
-      ["PIZZA", "Spécialité italienne"],
-      ["TIBRE", "Fleuve"],
-      ["GLADIATEUR", "Combattant antique"],
-      ["VESPA", "Scooter"],
-      ["GELATO", "Glace italienne"],
-      ["LOUVE", "Elle a nourri Romulus"],
-    ],
-  },
-  {
-    "n": "Océans",
-    "w": [
-      ["PACIFIQUE", "Le plus grand"],
-      ["ATLANTIQUE", "Entre Europe et Amérique"],
-      ["INDIEN", "Océan de Madagascar"],
-      ["ARCTIQUE", "Au nord, glacé"],
-      ["AUSTRAL", "Autour de l’Antarctique"],
-      ["ABYSSE", "Grande profondeur"],
-      ["COURANT", "Mouvement de l’eau"],
-      ["FOSSE", "Des Mariannes"],
-      ["HOULE", "Mouvement de la mer"],
-      ["ATOLL", "Île en anneau"],
-    ],
-  },
-  {
-    "n": "Fleuves du monde",
-    "w": [
-      ["NIL", "Fleuve d’Égypte"],
-      ["AMAZONE", "Le plus puissant"],
-      ["YANGTSE", "Fleuve chinois"],
-      ["MISSISSIPPI", "Fleuve américain"],
-      ["DANUBE", "Bleu, il traverse l’Europe"],
-      ["RHIN", "Fleuve des châteaux"],
-      ["LOIRE", "Plus long fleuve français"],
-      ["GANGE", "Fleuve sacré"],
-      ["VOLGA", "Fleuve russe"],
-      ["MEKONG", "Fleuve d’Asie du Sud-Est"],
-    ],
-  },
-  {
-    "n": "Lacs",
-    "w": [
-      ["LEMAN", "Lac de Genève"],
-      ["BAIKAL", "Le plus profond"],
-      ["TITICACA", "Lac des Andes"],
-      ["VICTORIA", "Grand lac africain"],
-      ["COME", "Lac italien"],
-      ["ANNECY", "Lac aux eaux pures"],
-      ["SUPERIEUR", "Un des Grands Lacs"],
-      ["TAHOE", "Lac de montagne américain"],
-      ["ONTARIO", "Lac et province"],
-      ["LOCH", "Lac écossais"],
-    ],
-  },
-  {
-    "n": "Volcans",
-    "w": [
-      ["CRATERE", "Bouche du volcan"],
-      ["LAVE", "Roche en fusion"],
-      ["MAGMA", "Roche fondue souterraine"],
-      ["ERUPTION", "Réveil du volcan"],
-      ["CENDRES", "Poussière volcanique"],
-      ["VESUVE", "Il a enseveli Pompéi"],
-      ["ETNA", "Volcan de Sicile"],
-      ["FUJI", "Mont japonais"],
-      ["PUY", "Volcan d’Auvergne"],
-      ["BASALTE", "Roche noire volcanique"],
-    ],
-  },
-  {
-    "n": "Grottes",
-    "w": [
-      ["STALACTITE", "Elle tombe du plafond"],
-      ["STALAGMITE", "Elle monte du sol"],
-      ["SPELEOLOGUE", "Explorateur souterrain"],
-      ["GOUFFRE", "Grand trou profond"],
-      ["CAVERNE", "Grande grotte"],
-      ["CHAUVESOURIS", "Habitant des grottes"],
-      ["CONCRETION", "Dépôt calcaire"],
-      ["LAMPE", "Frontale, indispensable"],
-      ["ECHO", "Son qui revient"],
-      ["LAC", "Souterrain et calme"],
-    ],
-  },
-  {
-    "n": "Canyons",
-    "w": [
-      ["GRANDCANYON", "Gorge de l’Arizona"],
-      ["GORGES", "Du Verdon"],
-      ["FALAISE", "Paroi rocheuse"],
-      ["EROSION", "Usure de la roche"],
-      ["RIVIERE", "Elle a creusé la roche"],
-      ["STRATES", "Couches de roche"],
-      ["BELVEDERE", "Point de vue"],
-      ["MESA", "Plateau rocheux"],
-      ["ARCHE", "Rocher en pont"],
-      ["CANYONING", "Descente sportive"],
-    ],
-  },
-  {
-    "n": "Capitales d'Europe",
-    "w": [
-      ["LISBONNE", "Capitale du Portugal"],
-      ["MADRID", "Capitale de l’Espagne"],
-      ["VIENNE", "Capitale de l’Autriche"],
-      ["PRAGUE", "Capitale tchèque"],
-      ["BUDAPEST", "Capitale hongroise"],
-      ["OSLO", "Capitale norvégienne"],
-      ["VARSOVIE", "Capitale polonaise"],
-      ["DUBLIN", "Capitale irlandaise"],
-      ["HELSINKI", "Capitale finlandaise"],
-      ["COPENHAGUE", "Capitale danoise"],
-    ],
-  },
-  {
-    "n": "Capitales du monde",
-    "w": [
-      ["OTTAWA", "Capitale du Canada"],
-      ["TOKYO", "Capitale du Japon"],
-      ["NAIROBI", "Capitale du Kenya"],
-      ["LIMA", "Capitale du Pérou"],
-      ["CANBERRA", "Capitale de l’Australie"],
-      ["SEOUL", "Capitale de la Corée du Sud"],
-      ["RABAT", "Capitale du Maroc"],
-      ["DAKAR", "Capitale du Sénégal"],
-      ["HANOI", "Capitale du Vietnam"],
-      ["BRASILIA", "Capitale du Brésil"],
-    ],
-  },
-  {
-    "n": "Continents",
-    "w": [
-      ["EUROPE", "Continent de la France"],
-      ["AFRIQUE", "Continent du Sahara"],
-      ["ASIE", "Le plus grand continent"],
-      ["AMERIQUE", "Nord et Sud"],
-      ["OCEANIE", "Continent de l’Australie"],
-      ["ANTARCTIQUE", "Continent glacé"],
-      ["EURASIE", "Europe et Asie réunies"],
-      ["PANGEE", "Supercontinent ancien"],
-      ["PLAQUE", "Tectonique"],
-      ["ISTHME", "Bande de terre étroite"],
-    ],
-  },
-  {
-    "n": "Orientation",
-    "w": [
-      ["NORD", "Où pointe la boussole"],
-      ["SUD", "Opposé du nord"],
-      ["EST", "Où se lève le soleil"],
-      ["OUEST", "Où se couche le soleil"],
-      ["BOUSSOLE", "Elle indique le nord"],
-      ["CARTE", "Elle représente le terrain"],
-      ["LATITUDE", "Coordonnée horizontale"],
-      ["LONGITUDE", "Coordonnée verticale"],
-      ["EQUATEUR", "Ligne au milieu du globe"],
-      ["TROPIQUE", "Du Cancer ou du Capricorne"],
-    ],
-  },
-  {
-    "n": "Langues",
-    "w": [
-      ["FRANCAIS", "Langue de Molière"],
-      ["ANGLAIS", "Langue de Shakespeare"],
-      ["ESPAGNOL", "Langue de Cervantès"],
-      ["ITALIEN", "Langue de Dante"],
-      ["ALLEMAND", "Langue de Goethe"],
-      ["JAPONAIS", "Langue de Tokyo"],
-      ["ARABE", "Langue écrite de droite à gauche"],
-      ["LATIN", "Langue ancienne de Rome"],
-      ["BRETON", "Langue celtique de France"],
-      ["ESPERANTO", "Langue inventée universelle"],
-    ],
-  },
-  {
-    "n": "Monnaies",
-    "w": [
-      ["EURO", "Monnaie européenne"],
-      ["DOLLAR", "Monnaie américaine"],
-      ["YEN", "Monnaie japonaise"],
-      ["LIVRE", "Monnaie britannique"],
-      ["FRANC", "Monnaie suisse"],
-      ["ROUPIE", "Monnaie indienne"],
-      ["PESO", "Monnaie mexicaine"],
-      ["ROUBLE", "Monnaie russe"],
-      ["DIRHAM", "Monnaie marocaine"],
-      ["TIRELIRE", "Cochon à pièces"],
-    ],
-  },
-  {
-    "n": "Arbres fruitiers",
-    "w": [
-      ["POMMIER", "Il donne des pommes"],
-      ["POIRIER", "Il donne des poires"],
-      ["CERISIER", "Il donne des cerises"],
-      ["PRUNIER", "Il donne des prunes"],
-      ["ABRICOTIER", "Il donne des abricots"],
-      ["FIGUIER", "Arbre du Midi aux fruits mous"],
-      ["NOYER", "Il donne des noix"],
-      ["AMANDIER", "Il fleurit tôt au printemps"],
-      ["CITRONNIER", "Arbre aux agrumes jaunes"],
-      ["OLIVIER", "Arbre de Méditerranée"],
-    ],
-  },
-  {
-    "n": "Conifères",
-    "w": [
-      ["PIN", "Il donne des pommes de pin"],
-      ["EPICEA", "Sapin de Noël courant"],
-      ["MELEZE", "Il perd ses aiguilles l’hiver"],
-      ["CEDRE", "Arbre majestueux du Liban"],
-      ["SEQUOIA", "Arbre géant de Californie"],
-      ["CYPRES", "Arbre élancé du Sud"],
-      ["GENEVRIER", "Arbuste aux baies bleues"],
-      ["AIGUILLE", "Feuille du conifère"],
-      ["RESINE", "Sève collante"],
-    ],
-  },
-  {
-    "n": "Plantes grimpantes",
-    "w": [
-      ["LIERRE", "Il couvre les murs"],
-      ["GLYCINE", "Grappes mauves"],
-      ["CHEVREFEUILLE", "Fleur au parfum sucré"],
-      ["CLEMATITE", "Grimpante aux grandes fleurs"],
-      ["VIGNE", "Elle donne le raisin"],
-      ["HOUBLON", "Plante de la bière"],
-      ["JASMIN", "Grimpante parfumée"],
-      ["PASSIFLORE", "Fleur de la passion"],
-      ["TREILLE", "Support de vigne"],
-    ],
-  },
-  {
-    "n": "Succulentes",
-    "w": [
-      ["ALOES", "Plante au gel apaisant"],
-      ["AGAVE", "Grande rosette piquante"],
-      ["CACTUS", "Plante à épines"],
-      ["ECHEVERIA", "Rosette charnue"],
-      ["CRASSULA", "Arbre de jade"],
-      ["OPUNTIA", "Figuier de Barbarie"],
-      ["EPINE", "Piquant du cactus"],
-      ["DESERT", "Milieu aride"],
-      ["SEDUM", "Orpin des rocailles"],
-      ["JOUBARBE", "Elle pousse sur les toits"],
-    ],
-  },
-  {
-    "n": "Plantes d'intérieur",
-    "w": [
-      ["FICUS", "Plante verte d’appartement"],
-      ["MONSTERA", "Feuilles trouées"],
-      ["POTHOS", "Plante retombante facile"],
-      ["ORCHIDEE", "Fleur d’appartement élégante"],
-      ["SANSEVIERIA", "Langue de belle-mère"],
-      ["CACHEPOT", "Il habille le pot"],
-      ["TERREAU", "Terre pour pots"],
-      ["ARROSAGE", "Eau pour les plantes"],
-      ["BOUTURE", "Morceau qu’on replante"],
-      ["REMPOTAGE", "Changement de pot"],
-    ],
-  },
-  {
-    "n": "Fleurs sauvages",
-    "w": [
-      ["BLEUET", "Fleur bleue des champs"],
-      ["PISSENLIT", "On souffle ses graines"],
-      ["TREFLE", "À quatre feuilles, porte-bonheur"],
-      ["BOUTONDOR", "Petite fleur jaune brillante"],
-      ["CAMOMILLE", "Fleur de tisane"],
-      ["ACHILLEE", "Fleur des prés en ombelle"],
-      ["SCABIEUSE", "Fleur mauve des talus"],
-      ["CHARDON", "Fleur piquante"],
-      ["DIGITALE", "Fleur en doigts de gant"],
-      ["ORTIE", "Elle pique"],
-    ],
-  },
-  {
-    "n": "Bulbes",
-    "w": [
-      ["TULIPE", "Fleur en coupe"],
-      ["JONQUILLE", "Fleur jaune trompette"],
-      ["CROCUS", "Il perce la neige"],
-      ["JACINTHE", "Fleur parfumée en épi"],
-      ["NARCISSE", "Fleur blanche au cœur jaune"],
-      ["PERCENEIGE", "Première fleur de l’hiver"],
-      ["DAHLIA", "Fleur aux nombreux pétales"],
-      ["GLAIEUL", "Fleur en épée"],
-      ["AMARYLLIS", "Grande fleur d’hiver"],
-      ["AIL", "Bulbe de cuisine"],
-    ],
-  },
-  {
-    "n": "Mousses et lichens",
-    "w": [
-      ["MOUSSE", "Tapis vert humide"],
-      ["LICHEN", "Algue et champignon associés"],
-      ["SPHAIGNE", "Mousse des tourbières"],
-      ["TOURBIERE", "Marais acide"],
-      ["HUMIDITE", "Ce qu’aime la mousse"],
-      ["ROCHER", "Support du lichen"],
-      ["ECORCE", "Peau de l’arbre"],
-      ["NORD", "Côté où pousse la mousse"],
-      ["FOUGERE", "Plante sans fleurs"],
-      ["PRELE", "Plante préhistorique"],
-    ],
-  },
-  {
-    "n": "Rapaces",
-    "w": [
-      ["AIGLE", "Rapace royal"],
-      ["FAUCON", "Rapace très rapide"],
-      ["BUSE", "Rapace des bords de route"],
-      ["EPERVIER", "Petit rapace chasseur"],
-      ["VAUTOUR", "Charognard planeur"],
-      ["MILAN", "Rapace à queue fourchue"],
-      ["HIBOU", "Rapace nocturne à aigrettes"],
-      ["CHOUETTE", "Rapace nocturne"],
-      ["SERRE", "Griffe du rapace"],
-      ["FAUCONNIER", "Dresseur de rapaces"],
-    ],
-  },
-  {
-    "n": "Oiseaux marins",
-    "w": [
-      ["MOUETTE", "Oiseau du port"],
-      ["GOELAND", "Grande mouette"],
-      ["MACAREUX", "Perroquet de mer"],
-      ["CORMORAN", "Oiseau plongeur noir"],
-      ["FOU", "De Bassan, il plonge"],
-      ["ALBATROS", "Grand planeur des mers"],
-      ["STERNE", "Hirondelle de mer"],
-      ["PETREL", "Oiseau des tempêtes"],
-      ["PELICAN", "Bec à poche"],
-      ["FREGATE", "Oiseau à gorge rouge"],
-    ],
-  },
-  {
-    "n": "Oiseaux exotiques",
-    "w": [
-      ["FLAMANT", "Rose, il tient sur une patte"],
-      ["PAON", "Il fait la roue"],
-      ["COLIBRI", "Oiseau-mouche"],
-      ["TOUCAN", "Gros bec coloré"],
-      ["ARA", "Perroquet coloré"],
-      ["CACATOES", "Perroquet à huppe"],
-      ["IBIS", "Oiseau sacré égyptien"],
-      ["MARABOUT", "Grand échassier africain"],
-      ["PERRUCHE", "Petit perroquet"],
-    ],
-  },
-  {
-    "n": "Oiseaux du jardin",
-    "w": [
-      ["MOINEAU", "Petit oiseau brun"],
-      ["PINSON", "Gai comme lui"],
-      ["SITTELLE", "Elle descend la tête en bas"],
-      ["VERDIER", "Oiseau vert-jaune"],
-      ["CHARDONNERET", "Oiseau au masque rouge"],
-      ["ROITELET", "Plus petit oiseau d’Europe"],
-      ["GRIVE", "Oiseau tacheté chanteur"],
-      ["TOURTERELLE", "Elle roucoule"],
-      ["ETOURNEAU", "Il vole en nuées"],
-      ["NICHOIR", "Petite maison pour oiseaux"],
-    ],
-  },
-  {
-    "n": "Échassiers",
-    "w": [
-      ["HERON", "Il pêche immobile"],
-      ["CIGOGNE", "Elle apporte les bébés"],
-      ["GRUE", "Grand oiseau migrateur"],
-      ["AIGRETTE", "Héron blanc"],
-      ["SPATULE", "Oiseau au bec plat"],
-      ["BECASSE", "Oiseau au long bec"],
-      ["VANNEAU", "Oiseau huppé des champs"],
-      ["FLAMANT", "Échassier rose"],
-      ["BUTOR", "Héron discret des roseaux"],
-      ["CHEVALIER", "Petit échassier"],
-    ],
-  },
-  {
-    "n": "Canards et cie",
-    "w": [
-      ["COLVERT", "Canard à tête verte"],
-      ["CANETON", "Petit du canard"],
-      ["CYGNE", "Grand oiseau blanc"],
-      ["OIE", "Elle cacarde"],
-      ["SARCELLE", "Petit canard"],
-      ["MANDARIN", "Canard très coloré"],
-      ["EIDER", "Canard au duvet précieux"],
-      ["MARE", "Petite étendue d’eau"],
-      ["PALMES", "Pieds du canard"],
-      ["PLUMAGE", "Ensemble des plumes"],
-    ],
-  },
-  {
-    "n": "Rongeurs",
-    "w": [
-      ["SOURIS", "Petit rongeur gris"],
-      ["ECUREUIL", "Rongeur roux des arbres"],
-      ["HAMSTER", "Rongeur aux bajoues"],
-      ["MARMOTTE", "Rongeur des montagnes"],
-      ["CASTOR", "Rongeur bâtisseur"],
-      ["LOIR", "Il dort longtemps"],
-      ["MULOT", "Souris des champs"],
-      ["CAMPAGNOL", "Petit rongeur des prés"],
-      ["CHINCHILLA", "Rongeur à fourrure douce"],
-      ["PORCEPIC", "Rongeur à piquants"],
-    ],
-  },
-  {
-    "n": "Félins",
-    "w": [
-      ["LION", "Félin à crinière"],
-      ["TIGRE", "Félin rayé"],
-      ["LEOPARD", "Félin tacheté"],
-      ["GUEPARD", "Félin le plus rapide"],
-      ["LYNX", "Félin aux oreilles pointues"],
-      ["PUMA", "Couguar"],
-      ["JAGUAR", "Félin d’Amérique"],
-      ["OCELOT", "Petit félin tacheté"],
-      ["SERVAL", "Félin aux grandes oreilles"],
-      ["CHAT", "Félin domestique"],
-    ],
-  },
-  {
-    "n": "Primates",
-    "w": [
-      ["GORILLE", "Le plus grand singe"],
-      ["CHIMPANZE", "Singe très intelligent"],
-      ["ORANGOUTAN", "Homme de la forêt"],
-      ["GIBBON", "Singe acrobate"],
-      ["BABOUIN", "Singe au museau allongé"],
-      ["LEMURIEN", "Primate de Madagascar"],
-      ["OUISTITI", "Tout petit singe"],
-      ["MACAQUE", "Singe des neiges au Japon"],
-      ["MANDRILL", "Singe au visage coloré"],
-      ["BONOBO", "Cousin du chimpanzé"],
-    ],
-  },
-  {
-    "n": "Cétacés",
-    "w": [
-      ["BALEINE", "Plus grand animal"],
-      ["DAUPHIN", "Cétacé joueur"],
-      ["ORQUE", "Baleine tueuse"],
-      ["CACHALOT", "Grand cétacé à dents"],
-      ["NARVAL", "Licorne des mers"],
-      ["BELUGA", "Baleine blanche"],
-      ["MARSOUIN", "Petit cétacé"],
-      ["EVENT", "Narine sur le dos"],
-      ["FANON", "Lame de la bouche"],
-      ["CHANT", "Celui des baleines"],
-    ],
-  },
-  {
-    "n": "Marsupiaux",
-    "w": [
-      ["KANGOUROU", "Grand sauteur"],
-      ["KOALA", "Dormeur des eucalyptus"],
-      ["WALLABY", "Petit kangourou"],
-      ["WOMBAT", "Marsupial fouisseur"],
-      ["OPOSSUM", "Marsupial d’Amérique"],
-      ["DIABLE", "De Tasmanie"],
-      ["POCHE", "Marsupium"],
-      ["QUOKKA", "Marsupial souriant"],
-      ["PHALANGER", "Marsupial planeur"],
-      ["BANDICOOT", "Petit marsupial"],
-    ],
-  },
-  {
-    "n": "Animaux nocturnes",
-    "w": [
-      ["HIBOU", "Il hulule la nuit"],
-      ["CHAUVESOURIS", "Elle vole la nuit"],
-      ["HERISSON", "Il cherche des limaces la nuit"],
-      ["LUCIOLE", "Elle brille"],
-      ["RENARD", "Il rôde au crépuscule"],
-      ["BLAIREAU", "Il sort la nuit"],
-      ["LOIR", "Petit dormeur"],
-      ["PAPILLON", "De nuit, attiré par la lumière"],
-      ["CHOUETTE", "Elle chasse dans l’obscurité"],
-      ["RATONLAVEUR", "Masqué nocturne"],
-    ],
-  },
-  {
-    "n": "Hibernation",
-    "w": [
-      ["OURS", "Il dort tout l’hiver"],
-      ["MARMOTTE", "Grande dormeuse"],
-      ["LOIR", "Dormeur proverbial"],
-      ["HERISSON", "Il hiberne sous les feuilles"],
-      ["TERRIER", "Abri souterrain"],
-      ["TORPEUR", "Sommeil profond"],
-      ["RESERVES", "Graisse pour l’hiver"],
-      ["TANIERE", "Abri de l’ours"],
-      ["REVEIL", "Au printemps"],
-      ["LEROT", "Cousin du loir"],
-    ],
-  },
-  {
-    "n": "Mare",
-    "w": [
-      ["TETARD", "Bébé grenouille"],
-      ["NENUPHAR", "Feuille flottante"],
-      ["CRAPAUD", "Cousin de la grenouille"],
-      ["TRITON", "Petit amphibien à queue"],
-      ["GERRIS", "Il marche sur l’eau"],
-      ["DYTIQUE", "Coléoptère aquatique"],
-      ["ROSEAU", "Plante des berges"],
-      ["LENTILLE", "D’eau, minuscule plante"],
-      ["LIBELLULE", "Elle survole l’eau"],
-      ["SALAMANDRE", "Amphibien tacheté"],
-    ],
-  },
-  {
-    "n": "Mollusques",
-    "w": [
-      ["ESCARGOT", "Il bave et a une coquille"],
-      ["LIMACE", "Escargot sans coquille"],
-      ["POULPE", "Huit bras"],
-      ["CALAMAR", "Céphalopode"],
-      ["SEICHE", "Elle projette de l’encre"],
-      ["HUITRE", "Elle fabrique la perle"],
-      ["MOULE", "Coquillage noir"],
-      ["COQUILLE", "Saint-Jacques"],
-      ["BIGORNEAU", "Petit coquillage spiralé"],
-      ["PALOURDE", "Coquillage des plages"],
-    ],
-  },
-  {
-    "n": "Crustacés",
-    "w": [
-      ["CRABE", "Il marche de côté"],
-      ["HOMARD", "Il a de grosses pinces"],
-      ["LANGOUSTE", "Crustacé sans pinces"],
-      ["CREVETTE", "Petit crustacé rose"],
-      ["ECREVISSE", "Crustacé d’eau douce"],
-      ["PINCE", "Arme du crabe"],
-      ["CARAPACE", "Armure du crustacé"],
-      ["BERNARD", "L’ermite"],
-      ["KRILL", "Nourriture des baleines"],
-      ["TOURTEAU", "Gros crabe"],
-    ],
-  },
-  {
-    "n": "Coquillages",
-    "w": [
-      ["NACRE", "Intérieur brillant"],
-      ["CONQUE", "Coquillage qu’on souffle"],
-      ["COQUE", "Coquillage des sables"],
-      ["PATELLE", "Chapeau chinois"],
-      ["CAURI", "Coquillage monnaie"],
-      ["OURSIN", "Boule à piquants"],
-      ["NAUTILE", "Coquillage spiralé"],
-      ["ETOILE", "De mer"],
-      ["BULOT", "Gros escargot de mer"],
-      ["PERLE", "Née dans l’huître"],
-    ],
-  },
-  {
-    "n": "Araignées et cie",
-    "w": [
-      ["ARAIGNEE", "Huit pattes"],
-      ["TOILE", "Elle la tisse"],
-      ["TARENTULE", "Grosse araignée velue"],
-      ["MYGALE", "Araignée géante"],
-      ["FAUCHEUX", "Araignée aux longues pattes"],
-      ["SOIE", "Fil de l’araignée"],
-      ["SCORPION", "Il a un dard"],
-      ["ACARIEN", "Minuscule habitant des tapis"],
-      ["TIQUE", "Elle s’accroche"],
-      ["ROSEE", "Sur la toile au matin"],
-    ],
-  },
-  {
-    "n": "Animaux légendaires",
-    "w": [
-      ["LICORNE", "Cheval à corne"],
-      ["PHENIX", "Il renaît de ses cendres"],
-      ["DRAGON", "Il crache du feu"],
-      ["GRIFFON", "Aigle et lion"],
-      ["SIRENE", "Femme poisson"],
-      ["CENTAURE", "Homme cheval"],
-      ["PEGASE", "Cheval ailé"],
-      ["KRAKEN", "Monstre des mers"],
-      ["YETI", "Homme des neiges"],
-      ["MINOTAURE", "Homme taureau"],
-    ],
-  },
-  {
-    "n": "Habitats",
-    "w": [
-      ["NID", "Maison de l’oiseau"],
-      ["TERRIER", "Maison du lapin"],
-      ["RUCHE", "Maison des abeilles"],
-      ["TANIERE", "Repaire du loup"],
-      ["FOURMILIERE", "Maison des fourmis"],
-      ["HUTTE", "Maison du castor"],
-      ["ETABLE", "Maison de la vache"],
-      ["CLAPIER", "Cabane à lapins"],
-      ["POULAILLER", "Maison des poules"],
-      ["ECURIE", "Maison du cheval"],
-    ],
-  },
-  {
-    "n": "Nuages",
-    "w": [
-      ["CUMULUS", "Nuage en chou-fleur"],
-      ["CIRRUS", "Nuage en filaments"],
-      ["STRATUS", "Nuage en couche grise"],
-      ["NIMBUS", "Nuage de pluie"],
-      ["CUMULONIMBUS", "Nuage d’orage"],
-      ["BROUILLARD", "Nuage au sol"],
-      ["ALTOSTRATUS", "Voile d’altitude moyenne"],
-      ["MOUTONS", "Petits nuages"],
-      ["CIEL", "Il porte les nuages"],
-      ["CONDENSATION", "Formation des gouttes"],
-    ],
-  },
-  {
-    "n": "Vents",
-    "w": [
-      ["MISTRAL", "Vent du Rhône"],
-      ["TRAMONTANE", "Vent du Roussillon"],
-      ["SIROCCO", "Vent chaud du Sahara"],
-      ["ALIZE", "Vent régulier des tropiques"],
-      ["BISE", "Vent froid du nord"],
-      ["ZEPHYR", "Brise légère"],
-      ["FOEHN", "Vent chaud des Alpes"],
-      ["TORNADE", "Tourbillon violent"],
-      ["OURAGAN", "Tempête tropicale"],
-      ["GIROUETTE", "Elle indique le vent"],
-    ],
-  },
-  {
-    "n": "Phénomènes lumineux",
-    "w": [
-      ["ARCENCIEL", "Après la pluie"],
-      ["AURORE", "Boréale ou australe"],
-      ["HALO", "Cercle autour de la lune"],
-      ["MIRAGE", "Illusion de chaleur"],
-      ["ECLAIR", "Flash de l’orage"],
-      ["REFLET", "Image sur l’eau"],
-      ["SCINTILLEMENT", "Étoiles qui tremblent"],
-      ["CREPUSCULE", "Lumière du soir"],
-      ["GLOIRE", "Auréole autour de l’ombre"],
-    ],
-  },
-  {
-    "n": "Géologie",
-    "w": [
-      ["ROCHE", "Matériau de la Terre"],
-      ["CALCAIRE", "Roche blanche"],
-      ["GRES", "Roche de sable"],
-      ["ARGILE", "Terre à modeler"],
-      ["SCHISTE", "Roche en feuillets"],
-      ["SEDIMENT", "Dépôt au fond de l’eau"],
-      ["FOSSILE", "Trace ancienne"],
-      ["SEISME", "Tremblement de terre"],
-      ["FAILLE", "Cassure de l’écorce"],
-      ["MINERAL", "Il compose la roche"],
-    ],
-  },
-  {
-    "n": "Eau",
-    "w": [
-      ["GLACE", "Eau solide"],
-      ["VAPEUR", "Eau gazeuse"],
-      ["GOUTTE", "Petite quantité"],
-      ["SOURCE", "Où naît l’eau"],
-      ["NAPPE", "Phréatique, sous terre"],
-      ["EVAPORATION", "L’eau devient vapeur"],
-      ["PLUIE", "Eau du ciel"],
-      ["OCEAN", "Grande étendue salée"],
-      ["FILTRE", "Il purifie"],
-      ["ROBINET", "On l’ouvre pour boire"],
-    ],
-  },
-  {
-    "n": "Agrumes",
-    "w": [
-      ["ORANGE", "Agrume juteux"],
-      ["CITRON", "Agrume jaune acide"],
-      ["PAMPLEMOUSSE", "Gros agrume amer"],
-      ["MANDARINE", "Petit agrume"],
-      ["CLEMENTINE", "Agrume de Noël"],
-      ["BERGAMOTE", "Agrume du thé Earl Grey"],
-      ["YUZU", "Agrume japonais"],
-      ["KUMQUAT", "Agrume qu’on mange avec la peau"],
-      ["LIME", "Citron vert"],
-      ["ZESTE", "Peau râpée"],
-    ],
-  },
-  {
-    "n": "Fruits rouges",
-    "w": [
-      ["FRAISE", "Fruit du printemps"],
-      ["FRAMBOISE", "Fruit rouge velouté"],
-      ["GROSEILLE", "Petites perles rouges"],
-      ["CASSIS", "Baie noire"],
-      ["MURE", "Baie des ronces"],
-      ["MYRTILLE", "Baie bleue"],
-      ["CANNEBERGE", "Baie acidulée"],
-      ["CERISE", "Fruit à queue"],
-      ["AIRELLE", "Baie des montagnes"],
-      ["SUREAU", "Baies noires en ombelles"],
-    ],
-  },
-  {
-    "n": "Légumes racines",
-    "w": [
-      ["CAROTTE", "Racine orange"],
-      ["PANAIS", "Racine blanche sucrée"],
-      ["NAVET", "Racine ronde"],
-      ["RADIS", "Petite racine piquante"],
-      ["BETTERAVE", "Racine rouge"],
-      ["CELERI", "Rave, en rémoulade"],
-      ["TOPINAMBOUR", "Racine oubliée"],
-      ["SALSIFIS", "Racine longue et noire"],
-      ["PATATE", "Douce, orange"],
-      ["GINGEMBRE", "Racine épicée"],
-    ],
-  },
-  {
-    "n": "Légumineuses",
-    "w": [
-      ["LENTILLE", "Petite graine plate"],
-      ["POISCHICHE", "Base du houmous"],
-      ["HARICOT", "Rouge, blanc ou vert"],
-      ["FEVE", "On la cache dans la galette"],
-      ["SOJA", "Graine du tofu"],
-      ["FLAGEOLET", "Petit haricot vert pâle"],
-      ["PETITPOIS", "Graine verte ronde"],
-      ["ARACHIDE", "Cacahuète"],
-      ["LUPIN", "Graine jaune"],
-      ["COSSE", "Enveloppe des pois"],
-    ],
-  },
-  {
-    "n": "Courges",
-    "w": [
-      ["POTIRON", "Grosse courge orange"],
-      ["CITROUILLE", "Courge d’Halloween"],
-      ["COURGETTE", "Courge verte allongée"],
-      ["BUTTERNUT", "Courge en forme de poire"],
-      ["POTIMARRON", "Courge au goût de châtaigne"],
-      ["PATISSON", "Courge en soucoupe"],
-      ["CONCOMBRE", "Cousin des courges"],
-      ["MELON", "Fruit de la même famille"],
-      ["SPAGHETTI", "Courge aux filaments"],
-      ["VELOUTE", "Soupe de courge"],
-    ],
-  },
-  {
-    "n": "Salades",
-    "w": [
-      ["LAITUE", "Salade tendre"],
-      ["ROQUETTE", "Salade poivrée"],
-      ["MACHE", "Petite salade d’hiver"],
-      ["ENDIVE", "Chicon"],
-      ["FRISEE", "Salade aux feuilles bouclées"],
-      ["SCAROLE", "Chicorée large"],
-      ["CRESSON", "Salade des fontaines"],
-      ["VINAIGRETTE", "Sauce de la salade"],
-      ["CROUTONS", "Petits pains grillés"],
-      ["ESSOREUSE", "Elle sèche la salade"],
-    ],
-  },
-  {
-    "n": "Pains du monde",
-    "w": [
-      ["BAGUETTE", "Pain français"],
-      ["NAAN", "Pain indien"],
-      ["PITA", "Pain à poche"],
-      ["FOCACCIA", "Pain italien à l’huile"],
-      ["BRETZEL", "Pain noué"],
-      ["BAGEL", "Pain en anneau"],
-      ["CIABATTA", "Pain en pantoufle"],
-      ["TORTILLA", "Galette mexicaine"],
-      ["PAINDEMIE", "Pain de mie"],
-      ["FOUGASSE", "Pain provençal ajouré"],
-    ],
-  },
-  {
-    "n": "Biscuits",
-    "w": [
-      ["SABLE", "Biscuit au beurre"],
-      ["SPECULOOS", "Biscuit à la cannelle"],
-      ["MACARON", "Biscuit coloré"],
-      ["TUILE", "Biscuit fin incurvé"],
-      ["CIGARETTE", "Biscuit roulé"],
-      ["BOUDOIR", "Biscuit à cuillère"],
-      ["FINANCIER", "Petit gâteau aux amandes"],
-      ["PALMIER", "Biscuit feuilleté en cœur"],
-      ["COOKIE", "Biscuit aux pépites"],
-      ["BISCOTTE", "Pain grillé croquant"],
-    ],
-  },
-  {
-    "n": "Bonbons",
-    "w": [
-      ["GUIMAUVE", "Bonbon moelleux"],
-      ["REGLISSE", "Bonbon noir"],
-      ["CARAMEL", "Bonbon doré"],
-      ["NOUGAT", "Spécialité de Montélimar"],
-      ["SUCETTE", "Bonbon sur bâton"],
-      ["DRAGEE", "Amande sucrée des baptêmes"],
-      ["BERLINGOT", "Bonbon de Carpentras"],
-      ["CALISSON", "Bonbon d’Aix"],
-      ["PATE", "De fruits"],
-      ["SUCREDORGE", "Bâton sucré"],
-    ],
-  },
-  {
-    "n": "Glaces",
-    "w": [
-      ["SORBET", "Glace aux fruits sans lait"],
-      ["CORNET", "Gaufrette conique"],
-      ["BOULE", "Portion de glace"],
-      ["VANILLE", "Parfum classique"],
-      ["CHANTILLY", "Crème fouettée"],
-      ["COUPE", "Glace en verre"],
-      ["SUNDAE", "Glace nappée"],
-      ["ESQUIMAU", "Glace sur bâton"],
-      ["GRANITE", "Glace pilée"],
-      ["GLACIER", "Il vend des glaces"],
-    ],
-  },
-  {
-    "n": "Soupes",
-    "w": [
-      ["VELOUTE", "Soupe onctueuse"],
-      ["GASPACHO", "Soupe froide espagnole"],
-      ["MINESTRONE", "Soupe italienne aux légumes"],
-      ["BOUILLON", "Liquide de cuisson parfumé"],
-      ["POTAGE", "Soupe du soir"],
-      ["CONSOMME", "Bouillon clair"],
-      ["BISQUE", "Soupe de crustacés"],
-      ["SOUPEALOIGNON", "Soupe gratinée"],
-      ["LOUCHE", "Elle sert la soupe"],
-      ["SOUPIERE", "Récipient de service"],
-    ],
-  },
-  {
-    "n": "Sauces",
-    "w": [
-      ["BECHAMEL", "Sauce blanche"],
-      ["MAYONNAISE", "Sauce aux œufs et à l’huile"],
-      ["VINAIGRETTE", "Sauce à salade"],
-      ["PESTO", "Sauce au basilic"],
-      ["KETCHUP", "Sauce tomate sucrée"],
-      ["AIOLI", "Sauce à l’ail"],
-      ["BEARNAISE", "Sauce à l’estragon"],
-      ["HOLLANDAISE", "Sauce au beurre et citron"],
-      ["TARTARE", "Sauce aux câpres"],
-      ["MOUTARDE", "Condiment de Dijon"],
-    ],
-  },
-  {
-    "n": "Pâtes",
-    "w": [
-      ["SPAGHETTI", "Pâtes longues"],
-      ["PENNE", "Pâtes en tube"],
-      ["FARFALLE", "Pâtes papillon"],
-      ["RAVIOLI", "Pâtes farcies"],
-      ["TAGLIATELLE", "Pâtes en ruban"],
-      ["LASAGNE", "Pâtes en feuilles"],
-      ["GNOCCHI", "Petites boules de pomme de terre"],
-      ["FUSILLI", "Pâtes en spirale"],
-      ["MACARONI", "Petits tubes"],
-      ["TORTELLINI", "Petites pâtes farcies en anneau"],
-    ],
-  },
-  {
-    "n": "Cuisine asiatique",
-    "w": [
-      ["WOK", "Poêle profonde"],
-      ["TOFU", "Pâté de soja"],
-      ["NOUILLES", "Pâtes asiatiques"],
-      ["SUSHI", "Riz et poisson cru"],
-      ["GYOZA", "Ravioli grillé"],
-      ["MISO", "Pâte fermentée"],
-      ["TERIYAKI", "Sauce sucrée-salée"],
-      ["CURRY", "Plat épicé"],
-      ["CITRONNELLE", "Herbe parfumée"],
-      ["LAIT", "De coco"],
-    ],
-  },
-  {
-    "n": "Cuisine indienne",
-    "w": [
-      ["NAAN", "Pain cuit au four tandoor"],
-      ["TANDOORI", "Cuisson au four d’argile"],
-      ["DAHL", "Plat de lentilles"],
-      ["BIRYANI", "Riz épicé"],
-      ["SAMOSA", "Beignet triangulaire"],
-      ["LASSI", "Boisson au yaourt"],
-      ["CHUTNEY", "Condiment sucré-salé"],
-      ["GARAM", "Masala, mélange d’épices"],
-      ["PANEER", "Fromage frais indien"],
-      ["RAITA", "Sauce au yaourt et concombre"],
-    ],
-  },
-  {
-    "n": "Cuisine libanaise",
-    "w": [
-      ["HOUMOUS", "Purée de pois chiches"],
-      ["TABOULE", "Salade au persil"],
-      ["FALAFEL", "Boulette frite"],
-      ["PITA", "Pain rond"],
-      ["BABAGANOUSH", "Caviar d’aubergine"],
-      ["BAKLAVA", "Pâtisserie au miel"],
-      ["KEBBE", "Boulette de boulgour"],
-      ["ZAATAR", "Mélange au thym"],
-      ["FATTOUCH", "Salade au pain grillé"],
-      ["MEZZE", "Petites entrées variées"],
-    ],
-  },
-  {
-    "n": "Cuisine québécoise",
-    "w": [
-      ["POUTINE", "Frites, fromage et sauce"],
-      ["TOURTIERE", "Pâté de viande"],
-      ["PUDDING", "Chômeur, dessert sucré"],
-      ["CRETONS", "Tartinade de porc"],
-      ["FEVES", "Au lard"],
-      ["TIRE", "Sur la neige"],
-      ["SUCRE", "À la crème"],
-      ["GRANDPERES", "Dans le sirop"],
-      ["BEIGNES", "Beignets"],
-      ["BLEUETS", "Petites baies bleues"],
-    ],
-  },
-  {
-    "n": "Ustensiles",
-    "w": [
-      ["SPATULE", "Elle retourne"],
-      ["ECUMOIRE", "Grande cuillère trouée"],
-      ["PASSOIRE", "Elle égoutte"],
-      ["ECONOME", "Il épluche"],
-      ["RAPE", "Elle râpe le fromage"],
-      ["ROULEAU", "À pâtisserie"],
-      ["BALANCE", "Elle pèse"],
-      ["CHINOIS", "Passoire fine conique"],
-      ["MANDOLINE", "Elle tranche finement"],
-      ["PILON", "Il écrase dans le mortier"],
-    ],
-  },
-  {
-    "n": "Vaisselle",
-    "w": [
-      ["ASSIETTE", "On y sert le repas"],
-      ["VERRE", "On y boit"],
-      ["TASSE", "Pour le thé"],
-      ["BOL", "Pour la soupe"],
-      ["SAUCIERE", "Pour la sauce"],
-      ["SALADIER", "Pour la salade"],
-      ["PLAT", "De service"],
-      ["CARAFE", "Pour l’eau"],
-      ["SOUCOUPE", "Sous la tasse"],
-      ["THEIERE", "Pour infuser"],
-    ],
-  },
-  {
-    "n": "Électroménager",
-    "w": [
-      ["FRIGO", "Il garde au frais"],
-      ["FOUR", "Il cuit"],
-      ["MICROONDES", "Il réchauffe vite"],
-      ["GRILLEPAIN", "Il dore les tartines"],
-      ["BOUILLOIRE", "Elle chauffe l’eau"],
-      ["MIXEUR", "Il mélange"],
-      ["CAFETIERE", "Elle prépare le café"],
-      ["ASPIRATEUR", "Il aspire la poussière"],
-      ["LAVELINGE", "Il lave les vêtements"],
-      ["CONGELATEUR", "Il garde au froid"],
-    ],
-  },
-  {
-    "n": "Marché",
-    "w": [
-      ["ETAL", "Table du marchand"],
-      ["CAGEOT", "Caisse de fruits"],
-      ["PRIMEUR", "Marchand de légumes"],
-      ["PANIER", "On y met ses achats"],
-      ["BALANCE", "Elle pèse les fruits"],
-      ["MONNAIE", "Pièces rendues"],
-      ["FROMAGER", "Marchand de fromages"],
-      ["POISSONNIER", "Marchand de poissons"],
-      ["FLEURISTE", "Marchande de fleurs"],
-      ["SAISON", "Fruits de..."],
-    ],
-  },
-  {
-    "n": "Restaurant",
-    "w": [
-      ["SERVEUR", "Il apporte les plats"],
-      ["MENU", "Liste des plats"],
-      ["ENTREE", "Premier plat"],
-      ["DESSERT", "Fin du repas"],
-      ["ADDITION", "On la paie"],
-      ["CHEF", "Il dirige la cuisine"],
-      ["POURBOIRE", "Petit supplément"],
-      ["TERRASSE", "Tables dehors"],
-      ["RESERVATION", "Table retenue"],
-      ["NAPPE", "Elle couvre la table"],
-    ],
-  },
-  {
-    "n": "Café et barista",
-    "w": [
-      ["EXPRESSO", "Café serré"],
-      ["CAPPUCCINO", "Café mousseux"],
-      ["LATTE", "Café au lait"],
-      ["ARABICA", "Variété de café"],
-      ["MOUTURE", "Café moulu"],
-      ["TORREFACTION", "Grillage des grains"],
-      ["BARISTA", "Expert du café"],
-      ["MOUSSE", "De lait"],
-      ["GRAIN", "De café"],
-      ["TASSE", "On y boit le café"],
-    ],
-  },
-  {
-    "n": "Thés du monde",
-    "w": [
-      ["MATCHA", "Thé vert en poudre"],
-      ["SENCHA", "Thé vert japonais"],
-      ["DARJEELING", "Thé noir indien"],
-      ["EARLGREY", "Thé à la bergamote"],
-      ["ROOIBOS", "Thé rouge sans théine"],
-      ["OOLONG", "Thé semi-oxydé"],
-      ["CHAI", "Thé épicé"],
-      ["MENTHE", "Thé à la marocaine"],
-      ["THEIERE", "Elle infuse"],
-      ["INFUSION", "Temps de pause"],
-    ],
-  },
-  {
-    "n": "Boissons fraîches",
-    "w": [
-      ["CITRONNADE", "Boisson au citron"],
-      ["ORANGEADE", "Boisson à l’orange"],
-      ["SMOOTHIE", "Fruits mixés"],
-      ["MILKSHAKE", "Lait frappé"],
-      ["GLACON", "Cube de glace"],
-      ["PAILLE", "Pour aspirer"],
-      ["GRENADINE", "Sirop rouge"],
-      ["MENTHE", "À l’eau, boisson verte"],
-      ["THEGLACE", "Thé froid"],
-      ["DIABOLO", "Limonade et sirop"],
-    ],
-  },
-  {
-    "n": "Condiments",
-    "w": [
-      ["MOUTARDE", "Condiment de Dijon"],
-      ["CORNICHON", "Petit concombre au vinaigre"],
-      ["CAPRE", "Bouton floral au vinaigre"],
-      ["VINAIGRE", "Liquide acide"],
-      ["OLIVE", "Fruit noir ou vert"],
-      ["KETCHUP", "Sauce tomate"],
-      ["RELISH", "Condiment haché"],
-      ["CHUTNEY", "Condiment aux fruits"],
-      ["SAUCESOJA", "Sauce salée asiatique"],
-      ["WASABI", "Raifort japonais"],
-    ],
-  },
-  {
-    "n": "Produits laitiers",
-    "w": [
-      ["LAIT", "Boisson blanche"],
-      ["BEURRE", "On le tartine"],
-      ["CREME", "Fraîche ou liquide"],
-      ["YAOURT", "Lait fermenté"],
-      ["FROMAGE", "Il y en a des centaines"],
-      ["FAISSELLE", "Fromage blanc égoutté"],
-      ["KEFIR", "Lait fermenté pétillant"],
-      ["PETITSUISSE", "Petit fromage frais"],
-      ["LACTOSE", "Sucre du lait"],
-      ["LAITERIE", "Où l’on transforme le lait"],
-    ],
-  },
-  {
-    "n": "Œufs",
-    "w": [
-      ["COQUILLE", "Enveloppe de l’œuf"],
-      ["JAUNE", "Centre de l’œuf"],
-      ["BLANC", "Il monte en neige"],
-      ["OMELETTE", "Œufs battus cuits"],
-      ["COQUE", "Œuf à la..., avec mouillettes"],
-      ["POCHE", "Œuf cuit dans l’eau"],
-      ["BROUILLES", "Œufs remués"],
-      ["MIROIR", "Œuf au plat"],
-      ["MOUILLETTE", "Pain trempé"],
-      ["COQUETIER", "Support de l’œuf"],
-    ],
-  },
-  {
-    "n": "Fruits de mer",
-    "w": [
-      ["HUITRE", "Coquillage à perle"],
-      ["MOULE", "Coquillage noir"],
-      ["CREVETTE", "Petit crustacé"],
-      ["LANGOUSTINE", "Crustacé à pinces fines"],
-      ["SAINTJACQUES", "Coquille noble"],
-      ["CRABE", "Crustacé à pinces"],
-      ["OURSIN", "Boule à piquants"],
-      ["PLATEAU", "De fruits de mer"],
-      ["COQUE", "Petit coquillage"],
-      ["BULOT", "Escargot de mer"],
-    ],
-  },
-  {
-    "n": "Gâteaux de fête",
-    "w": [
-      ["BUCHE", "Gâteau de Noël"],
-      ["GALETTE", "Gâteau des rois"],
-      ["FRAISIER", "Gâteau aux fraises"],
-      ["PIECEMONTEE", "Gâteau de mariage"],
-      ["FORETNOIRE", "Gâteau aux cerises"],
-      ["OPERA", "Gâteau café-chocolat"],
-      ["SAVARIN", "Gâteau imbibé en couronne"],
-      ["PARISBREST", "Gâteau en roue"],
-      ["CHARLOTTE", "Gâteau aux biscuits"],
-      ["MOELLEUX", "Gâteau fondant"],
-    ],
-  },
-  {
-    "n": "Crêperie",
-    "w": [
-      ["CREPE", "Pâte fine sucrée"],
-      ["GALETTE", "Crêpe salée de sarrasin"],
-      ["BILIG", "Plaque à crêpes"],
-      ["ROZELL", "Râteau à crêpe"],
-      ["CIDRE", "Boisson bretonne"],
-      ["BOLEE", "Tasse à cidre"],
-      ["CARAMEL", "Au beurre salé"],
-      ["SUZETTE", "Crêpe flambée"],
-      ["COMPLETE", "Jambon, œuf, fromage"],
-      ["FROMENT", "Farine de blé"],
-    ],
-  },
-  {
-    "n": "Pizzeria",
-    "w": [
-      ["PIZZA", "Galette garnie"],
-      ["FOUR", "À bois"],
-      ["PATE", "Base de la pizza"],
-      ["MOZZARELLA", "Fromage filant"],
-      ["ORIGAN", "Herbe aromatique"],
-      ["MARGHERITA", "Tomate, mozzarella, basilic"],
-      ["CALZONE", "Pizza pliée"],
-      ["PIZZAIOLO", "Il fait les pizzas"],
-      ["TOMATE", "Sauce rouge"],
-      ["OLIVES", "Noires sur la pizza"],
-    ],
-  },
-  {
-    "n": "Sandwichs",
-    "w": [
-      ["JAMBONBEURRE", "Classique parisien"],
-      ["CLUB", "Sandwich en étages"],
-      ["PANINI", "Sandwich grillé italien"],
-      ["WRAP", "Galette roulée"],
-      ["HAMBURGER", "Sandwich rond au steak"],
-      ["CROQUE", "Monsieur ou madame"],
-      ["BAGNAT", "Pan bagnat niçois"],
-      ["FALAFEL", "En sandwich pita"],
-      ["BAGUETTE", "Pain du sandwich"],
-      ["GARNITURE", "Ce qu’on met dedans"],
-    ],
-  },
-  {
-    "n": "Saveurs",
-    "w": [
-      ["SUCRE", "Saveur des bonbons"],
-      ["SALE", "Saveur des chips"],
-      ["ACIDE", "Saveur du citron"],
-      ["AMER", "Saveur du café noir"],
-      ["UMAMI", "Cinquième saveur"],
-      ["EPICE", "Qui pique"],
-      ["DOUX", "Sans force"],
-      ["FUME", "Goût de feu de bois"],
-      ["ACIDULE", "Légèrement acide"],
-      ["SUCRESALE", "Mélange des deux"],
-    ],
-  },
-  {
-    "n": "Textures",
-    "w": [
-      ["CROQUANT", "Qui fait crac"],
-      ["MOELLEUX", "Doux et tendre"],
-      ["FONDANT", "Qui fond en bouche"],
-      ["CROUSTILLANT", "Qui craque légèrement"],
-      ["ONCTUEUX", "Riche et crémeux"],
-      ["MOUSSEUX", "Plein de bulles"],
-      ["GRANULEUX", "Avec des grains"],
-      ["SOYEUX", "Doux comme la soie"],
-      ["VELOUTE", "Lisse et doux"],
-      ["GLUANT", "Qui colle"],
-    ],
-  },
-  {
-    "n": "Chambre",
-    "w": [
-      ["LIT", "On y dort"],
-      ["ARMOIRE", "Elle range les vêtements"],
-      ["COMMODE", "Meuble à tiroirs"],
-      ["TABLEDENUIT", "À côté du lit"],
-      ["RIDEAU", "Il cache la fenêtre"],
-      ["MATELAS", "Base moelleuse du lit"],
-      ["TRAVERSIN", "Long oreiller"],
-      ["REVEIL", "Il sonne le matin"],
-      ["CHEVET", "Lampe de..."],
-      ["PENDERIE", "Placard à cintres"],
-    ],
-  },
-  {
-    "n": "Salon",
-    "w": [
-      ["CANAPE", "Siège moelleux"],
-      ["FAUTEUIL", "Siège individuel"],
-      ["TELEVISION", "Écran du salon"],
-      ["BIBLIOTHEQUE", "Meuble à livres"],
-      ["TABLEBASSE", "Petite table du salon"],
-      ["POUF", "Siège sans dossier"],
-      ["CHEMINEE", "Foyer"],
-      ["TAPIS", "Il réchauffe le sol"],
-      ["COUSSIN", "Petit oreiller décoratif"],
-      ["LAMPADAIRE", "Lampe sur pied"],
-    ],
-  },
-  {
-    "n": "Ménage",
-    "w": [
-      ["BALAI", "Il balaie"],
-      ["SERPILLIERE", "Elle lave le sol"],
-      ["PLUMEAU", "Il chasse la poussière"],
-      ["CHIFFON", "Tissu pour essuyer"],
-      ["SEAU", "Récipient d’eau"],
-      ["EPONGE", "Elle frotte"],
-      ["POUSSIERE", "Elle se dépose"],
-      ["ASPIRATEUR", "Il aspire"],
-      ["PELLE", "Avec la balayette"],
-      ["VITRES", "On les fait briller"],
-    ],
-  },
-  {
-    "n": "Lessive",
-    "w": [
-      ["LINGE", "Vêtements à laver"],
-      ["ETENDOIR", "Il sèche le linge"],
-      ["PINCE", "À linge"],
-      ["FER", "À repasser"],
-      ["REPASSAGE", "Défroissage du linge"],
-      ["ADOUCISSANT", "Il rend le linge doux"],
-      ["PANIER", "À linge sale"],
-      ["TACHE", "Elle doit partir"],
-      ["ESSORAGE", "Rotation rapide"],
-      ["LESSIVE", "Produit de lavage"],
-    ],
-  },
-  {
-    "n": "Déménagement",
-    "w": [
-      ["CARTON", "Boîte du déménagement"],
-      ["CAMION", "Il transporte les meubles"],
-      ["SCOTCH", "Il ferme les cartons"],
-      ["ETIQUETTE", "Elle indique le contenu"],
-      ["DEMENAGEUR", "Il porte les meubles"],
-      ["CLES", "Celles du nouveau logement"],
-      ["ETAGE", "Il faut le monter"],
-      ["INVENTAIRE", "Liste des affaires"],
-      ["EMBALLAGE", "Papier bulle"],
-      ["CREMAILLERE", "Fête du nouveau logement"],
-    ],
-  },
-  {
-    "n": "Décoration",
-    "w": [
-      ["CADRE", "Il entoure le tableau"],
-      ["VASE", "Il accueille les fleurs"],
-      ["MIROIR", "Il agrandit la pièce"],
-      ["GUIRLANDE", "Lumineuse ou en papier"],
-      ["BOUGEOIR", "Support de bougie"],
-      ["POTERIE", "Objet en terre cuite"],
-      ["TENTURE", "Tissu mural"],
-      ["PAPIERPEINT", "Revêtement mural"],
-      ["BIBELOT", "Petit objet décoratif"],
-      ["TABLEAU", "Œuvre accrochée"],
-    ],
-  },
-  {
-    "n": "Lumières",
-    "w": [
-      ["AMPOULE", "Elle s’allume"],
-      ["LUSTRE", "Luminaire suspendu"],
-      ["APPLIQUE", "Lampe murale"],
-      ["VEILLEUSE", "Petite lumière de nuit"],
-      ["LANTERNE", "Lampe portable"],
-      ["BOUGIE", "Flamme de cire"],
-      ["INTERRUPTEUR", "Il allume"],
-      ["ABATJOUR", "Il adoucit la lumière"],
-      ["LAMPION", "Lanterne de papier"],
-      ["LUMIERE", "Ce qui éclaire"],
-    ],
-  },
-  {
-    "n": "Meubles",
-    "w": [
-      ["TABLE", "On y mange"],
-      ["CHAISE", "On s’y assoit"],
-      ["BUFFET", "Meuble de salle à manger"],
-      ["TABOURET", "Siège sans dossier"],
-      ["BUREAU", "Table de travail"],
-      ["ETAGERE", "Planche de rangement"],
-      ["BANC", "Siège long"],
-      ["VAISSELIER", "Meuble à vaisselle"],
-      ["SECRETAIRE", "Bureau à abattant"],
-      ["BERCEUSE", "Chaise qui se balance"],
-    ],
-  },
-  {
-    "n": "Rangement",
-    "w": [
-      ["BOITE", "Elle contient"],
-      ["TIROIR", "Il coulisse"],
-      ["PLACARD", "Armoire encastrée"],
-      ["PANIER", "En osier"],
-      ["CASIER", "Compartiment"],
-      ["CROCHET", "Pour suspendre"],
-      ["CINTRE", "Pour les vêtements"],
-      ["MALLE", "Grand coffre"],
-      ["ETIQUETTE", "Pour s’y retrouver"],
-      ["CARTON", "Boîte en papier fort"],
-    ],
-  },
-  {
-    "n": "Bureau",
-    "w": [
-      ["AGENDA", "Il note les rendez-vous"],
-      ["CLASSEUR", "Il range les documents"],
-      ["LAMPE", "De bureau"],
-      ["AGRAFEUSE", "Elle attache les feuilles"],
-      ["CALCULATRICE", "Elle compte"],
-      ["IMPRIMANTE", "Elle sort les pages"],
-      ["POSTIT", "Petite note collante"],
-      ["CORBEILLE", "Pour les papiers"],
-      ["CHAISE", "De bureau"],
-      ["REUNION", "Rencontre de travail"],
-    ],
-  },
-  {
-    "n": "Plomberie",
-    "w": [
-      ["TUYAU", "Il conduit l’eau"],
-      ["ROBINET", "Il s’ouvre"],
-      ["FUITE", "Goutte qui s’échappe"],
-      ["JOINT", "Il assure l’étanchéité"],
-      ["SIPHON", "Sous l’évier"],
-      ["EVIER", "Bac de cuisine"],
-      ["CHAUFFEEAU", "Ballon d’eau chaude"],
-      ["PLOMBIER", "Il répare les fuites"],
-      ["CLE", "À molette"],
-      ["VANNE", "Elle coupe l’eau"],
-    ],
-  },
-  {
-    "n": "Électricité",
-    "w": [
-      ["PRISE", "On y branche"],
-      ["FIL", "Conducteur"],
-      ["FUSIBLE", "Il protège le circuit"],
-      ["DISJONCTEUR", "Il coupe le courant"],
-      ["AMPOULE", "Elle éclaire"],
-      ["PILE", "Petite source d’énergie"],
-      ["BATTERIE", "Elle se recharge"],
-      ["COURANT", "Électrique"],
-      ["ELECTRICIEN", "Il installe les circuits"],
-      ["RALLONGE", "Câble plus long"],
-    ],
-  },
-  {
-    "n": "Chauffage",
-    "w": [
-      ["RADIATEUR", "Il chauffe la pièce"],
-      ["POELE", "À bois"],
-      ["CHAUDIERE", "Elle chauffe l’eau"],
-      ["THERMOSTAT", "Il règle la température"],
-      ["BOUILLOTTE", "Elle chauffe le lit"],
-      ["BUCHE", "Morceau de bois"],
-      ["ISOLATION", "Elle garde la chaleur"],
-      ["CHALEUR", "Ce qu’on cherche l’hiver"],
-      ["COUVERTURE", "Elle réchauffe"],
-      ["PLAID", "Petite couverture"],
-    ],
-  },
-  {
-    "n": "Bébé",
-    "w": [
-      ["BIBERON", "Bouteille du bébé"],
-      ["TETINE", "Elle apaise"],
-      ["COUCHE", "Change du bébé"],
-      ["LANDAU", "Voiture d’enfant"],
-      ["BERCEAU", "Lit qui se balance"],
-      ["HOCHET", "Jouet qui fait du bruit"],
-      ["BAVOIR", "Il protège des taches"],
-      ["DOUDOU", "Peluche préférée"],
-      ["LAYETTE", "Vêtements de bébé"],
-      ["COMPTINE", "Chanson d’enfant"],
-    ],
-  },
-  {
-    "n": "Bien-être",
-    "w": [
-      ["SPA", "Lieu de détente"],
-      ["MASSAGE", "Il détend les muscles"],
-      ["SAUNA", "Chaleur sèche"],
-      ["HAMMAM", "Bain de vapeur"],
-      ["PEIGNOIR", "Après le bain"],
-      ["TISANE", "Infusion relaxante"],
-      ["HUILE", "Essentielle, parfumée"],
-      ["RELAXATION", "Détente profonde"],
-      ["RESPIRATION", "Inspire, expire"],
-      ["SIESTE", "Petit somme réparateur"],
-    ],
-  },
-  {
-    "n": "Yoga",
-    "w": [
-      ["POSTURE", "Asana"],
-      ["LOTUS", "Position assise jambes croisées"],
-      ["SALUTATION", "Au soleil, enchaînement"],
-      ["TAPIS", "On y pratique"],
-      ["ARBRE", "Posture en équilibre"],
-      ["CHAT", "Posture du dos rond"],
-      ["SOUFFLE", "Respiration"],
-      ["MANTRA", "Formule répétée"],
-      ["NAMASTE", "Salut final"],
-      ["EQUILIBRE", "Stabilité du corps"],
-    ],
-  },
-  {
-    "n": "Rêves",
-    "w": [
-      ["SONGE", "Rêve"],
-      ["CAUCHEMAR", "Mauvais rêve"],
-      ["REVERIE", "Rêve éveillé"],
-      ["IMAGINATION", "Elle crée des images"],
-      ["NUAGE", "On y est dans la lune"],
-      ["ETOILE", "On en a plein les yeux"],
-      ["ATTRAPEREVES", "Objet amérindien"],
-      ["SOMMEIL", "Moment des rêves"],
-      ["PAUPIERES", "Elles se ferment"],
-      ["OREILLER", "Confident des rêves"],
-    ],
-  },
-  {
-    "n": "Matin",
-    "w": [
-      ["REVEIL", "Il sonne"],
-      ["CAFE", "Il réveille"],
-      ["DOUCHE", "Elle réveille"],
-      ["TARTINE", "Pain beurré"],
-      ["AUBE", "Lever du jour"],
-      ["ROSEE", "Gouttes sur l’herbe"],
-      ["CROISSANT", "Viennoiserie du matin"],
-      ["ETIREMENT", "Mouvement au réveil"],
-      ["BOL", "Pour les céréales"],
-      ["COQ", "Il chante à l’aube"],
-    ],
-  },
-  {
-    "n": "Courses",
-    "w": [
-      ["LISTE", "On la prépare avant"],
-      ["CHARIOT", "On le pousse"],
-      ["CADDIE", "Chariot de supermarché"],
-      ["CAISSE", "On y paie"],
-      ["TICKET", "Preuve d’achat"],
-      ["SAC", "Pour transporter"],
-      ["RAYON", "Allée du magasin"],
-      ["PROMOTION", "Prix réduit"],
-      ["EPICERIE", "Petit commerce"],
-      ["PANIER", "Pour les courses"],
-    ],
-  },
-  {
-    "n": "Noël",
-    "w": [
-      ["SAPIN", "Arbre décoré"],
-      ["GUIRLANDE", "Elle scintille"],
-      ["BOULE", "Décoration ronde"],
-      ["ETOILE", "Au sommet du sapin"],
-      ["CADEAU", "Sous le sapin"],
-      ["TRAINEAU", "Tiré par des rennes"],
-      ["LUTIN", "Assistant du père Noël"],
-      ["CHAUSSETTE", "Accrochée à la cheminée"],
-      ["RENNE", "Rudolph en est un"],
-      ["CRECHE", "Scène de la Nativité"],
-    ],
-  },
-  {
-    "n": "Nouvel An",
-    "w": [
-      ["MINUIT", "Douze coups"],
-      ["FEUDARTIFICE", "Spectacle de lumière"],
-      ["RESOLUTION", "Bonne intention"],
-      ["CALENDRIER", "Il change"],
-      ["CHAMPAGNE", "Bulles de fête"],
-      ["COTILLON", "Accessoire de fête"],
-      ["VOEUX", "On les présente"],
-      ["DECOMPTE", "Dix, neuf, huit…"],
-      ["GUI", "On s’embrasse dessous"],
-      ["REVEILLON", "Repas de fête"],
-    ],
-  },
-  {
-    "n": "Chandeleur",
-    "w": [
-      ["CREPE", "On la fait sauter"],
-      ["POELE", "Pour cuire les crêpes"],
-      ["FARINE", "Ingrédient de la pâte"],
-      ["FEVRIER", "Mois de la fête"],
-      ["CHANDELLE", "Bougie de la fête"],
-      ["PIECE", "Dans la main en faisant sauter"],
-      ["SUCRE", "On en saupoudre"],
-      ["CONFITURE", "Garniture sucrée"],
-      ["PATE", "À crêpes"],
-      ["LOUCHE", "Pour verser la pâte"],
-    ],
-  },
-  {
-    "n": "Saint-Valentin",
-    "w": [
-      ["COEUR", "Symbole d’amour"],
-      ["ROSE", "Fleur des amoureux"],
-      ["CUPIDON", "Ange à l’arc"],
-      ["CHOCOLAT", "Douceur offerte"],
-      ["LETTRE", "D’amour"],
-      ["FEVRIER", "Mois de la fête"],
-      ["BAISER", "Geste tendre"],
-      ["CARTE", "On l’envoie"],
-      ["DINER", "Aux chandelles"],
-      ["TENDRESSE", "Douceur affectueuse"],
-    ],
-  },
-  {
-    "n": "Pâques",
-    "w": [
-      ["OEUF", "En chocolat"],
-      ["CLOCHES", "Elles reviennent de Rome"],
-      ["LAPIN", "Il cache les œufs"],
-      ["CHASSE", "Aux œufs"],
-      ["POUSSIN", "Petit de la poule"],
-      ["PANIER", "Pour ramasser"],
-      ["PRINTEMPS", "Saison de la fête"],
-      ["AGNEAU", "Repas traditionnel"],
-      ["FRITURE", "Petits poissons en chocolat"],
-      ["LUNDI", "De Pâques, férié"],
-    ],
-  },
-  {
-    "n": "Carnaval",
-    "w": [
-      ["MASQUE", "Il cache le visage"],
-      ["CONFETTIS", "Petits papiers colorés"],
-      ["CHAR", "Défilé décoré"],
-      ["DEGUISEMENT", "Costume"],
-      ["DEFILE", "Parade dans les rues"],
-      ["FANFARE", "Musique de rue"],
-      ["BEIGNETS", "Douceurs de carnaval"],
-      ["MARDIGRAS", "Jour de fête"],
-      ["SERPENTIN", "Ruban de papier lancé"],
-      ["NICE", "Carnaval célèbre en France"],
-    ],
-  },
-  {
-    "n": "Fête nationale",
-    "w": [
-      ["DRAPEAU", "Symbole du pays"],
-      ["FEUDARTIFICE", "Spectacle du soir"],
-      ["DEFILE", "Militaire ou populaire"],
-      ["BAL", "Danse populaire"],
-      ["HYMNE", "Chant national"],
-      ["LAMPION", "Lanterne de papier"],
-      ["JUILLET", "Mois du 14"],
-      ["PARADE", "Défilé"],
-      ["CELEBRATION", "Fête"],
-      ["PATRIE", "Pays natal"],
-    ],
-  },
-  {
-    "n": "Mariage",
-    "w": [
-      ["ALLIANCE", "Bague des mariés"],
-      ["BOUQUET", "La mariée le lance"],
-      ["VOILE", "Tulle sur la tête"],
-      ["TEMOIN", "Il signe le registre"],
-      ["PIECEMONTEE", "Gâteau en choux"],
-      ["VALSE", "Première danse"],
-      ["DRAGEES", "Amandes sucrées"],
-      ["CORTEGE", "Défilé des invités"],
-      ["MAIRIE", "Lieu de la cérémonie"],
-      ["LUNEDEMIEL", "Voyage des mariés"],
-    ],
-  },
-  {
-    "n": "Naissance",
-    "w": [
-      ["BEBE", "Nouveau-né"],
-      ["BERCEAU", "Petit lit"],
-      ["FAIREPART", "Annonce envoyée"],
-      ["PRENOM", "On le choisit"],
-      ["MATERNITE", "Lieu de naissance"],
-      ["LAYETTE", "Habits de bébé"],
-      ["BAPTEME", "Cérémonie d’accueil"],
-      ["MARRAINE", "Elle veille sur l’enfant"],
-      ["PARRAIN", "Il veille sur l’enfant"],
-      ["CIGOGNE", "Elle apporte les bébés"],
-    ],
-  },
-  {
-    "n": "Amitié",
-    "w": [
-      ["AMI", "Compagnon fidèle"],
-      ["CONFIANCE", "Elle unit les amis"],
-      ["SECRET", "On le partage"],
-      ["COMPLICITE", "Entente profonde"],
-      ["FIDELITE", "Constance"],
-      ["RIRE", "On le partage"],
-      ["SOUTIEN", "Aide dans l’épreuve"],
-      ["PARTAGE", "Mettre en commun"],
-      ["COPAIN", "Ami familier"],
-      ["RETROUVAILLES", "Joie de se revoir"],
-    ],
-  },
-  {
-    "n": "Politesse",
-    "w": [
-      ["MERCI", "Mot de gratitude"],
-      ["BONJOUR", "Salutation du matin"],
-      ["PARDON", "Pour s’excuser"],
-      ["SILVOUSPLAIT", "Formule de demande"],
-      ["BONSOIR", "Salutation du soir"],
-      ["AUREVOIR", "Formule de départ"],
-      ["EXCUSE", "Demande de pardon"],
-      ["SOURIRE", "Signe d’accueil"],
-      ["POLITESSE", "Bonnes manières"],
-      ["COURTOISIE", "Amabilité"],
-    ],
-  },
-  {
-    "n": "Qualités",
-    "w": [
-      ["GENTILLESSE", "Bonté naturelle"],
-      ["HONNETETE", "Franchise"],
-      ["GENEROSITE", "Elle donne sans compter"],
-      ["PATIENCE", "Elle sait attendre"],
-      ["COURAGE", "Il affronte la peur"],
-      ["HUMOUR", "Il fait rire"],
-      ["CURIOSITE", "Envie d’apprendre"],
-      ["BIENVEILLANCE", "Attention aux autres"],
-      ["HUMILITE", "Modestie"],
-      ["SAGESSE", "Jugement juste"],
-    ],
-  },
-  {
-    "n": "Cinq sens",
-    "w": [
-      ["VUE", "Sens des yeux"],
-      ["OUIE", "Sens des oreilles"],
-      ["ODORAT", "Sens du nez"],
-      ["GOUT", "Sens de la langue"],
-      ["TOUCHER", "Sens de la peau"],
-      ["REGARD", "Action de voir"],
-      ["ECOUTE", "Action d’entendre"],
-      ["PARFUM", "Il se sent"],
-      ["SAVEUR", "Elle se goûte"],
-      ["CARESSE", "Elle se sent sur la peau"],
-    ],
-  },
-  {
-    "n": "Sons",
-    "w": [
-      ["MURMURE", "Son très doux"],
-      ["CHUCHOTEMENT", "Paroles basses"],
-      ["CLAPOTIS", "Bruit de l’eau"],
-      ["BRUISSEMENT", "Bruit des feuilles"],
-      ["GRINCEMENT", "Bruit de porte"],
-      ["TINTEMENT", "Son de clochette"],
-      ["CREPITEMENT", "Bruit du feu"],
-      ["RONRONNEMENT", "Bruit du chat content"],
-      ["ECHO", "Son qui revient"],
-      ["SILENCE", "Absence de son"],
-    ],
-  },
-  {
-    "n": "Odeurs",
-    "w": [
-      ["PARFUM", "Odeur agréable"],
-      ["AROME", "Odeur du café"],
-      ["SENTEUR", "Odeur"],
-      ["EFFLUVE", "Émanation"],
-      ["FRAGRANCE", "Parfum délicat"],
-      ["BOUQUET", "Odeur du vin"],
-      ["PETRICHOR", "Odeur après la pluie"],
-      ["ENCENS", "Fumée parfumée"],
-      ["LAVANDE", "Odeur de linge propre"],
-      ["CANNELLE", "Odeur de Noël"],
-    ],
-  },
-  {
-    "n": "Bleus",
-    "w": [
-      ["AZUR", "Bleu du ciel"],
-      ["MARINE", "Bleu foncé"],
-      ["TURQUOISE", "Bleu-vert"],
-      ["CIEL", "Bleu clair"],
-      ["COBALT", "Bleu profond"],
-      ["INDIGO", "Bleu violet"],
-      ["SAPHIR", "Bleu précieux"],
-      ["PETROLE", "Bleu-vert sombre"],
-      ["LAVANDE", "Bleu mauve"],
-      ["OUTREMER", "Bleu intense"],
-    ],
-  },
-  {
-    "n": "Verts",
-    "w": [
-      ["EMERAUDE", "Vert précieux"],
-      ["OLIVE", "Vert kaki"],
-      ["SAPIN", "Vert foncé"],
-      ["MENTHE", "Vert frais"],
-      ["PISTACHE", "Vert tendre"],
-      ["KAKI", "Vert militaire"],
-      ["JADE", "Vert pierre"],
-      ["ANIS", "Vert pâle"],
-      ["CELADON", "Vert d’eau"],
-      ["BOUTEILLE", "Vert foncé du verre"],
-    ],
-  },
-  {
-    "n": "Rouges",
-    "w": [
-      ["CERISE", "Rouge vif"],
-      ["CARMIN", "Rouge intense"],
-      ["BORDEAUX", "Rouge foncé"],
-      ["VERMILLON", "Rouge orangé"],
-      ["GRENAT", "Rouge sombre"],
-      ["CORAIL", "Rouge rosé"],
-      ["RUBIS", "Rouge précieux"],
-      ["POURPRE", "Rouge violacé"],
-      ["FRAMBOISE", "Rouge rosé"],
-      ["ECARLATE", "Rouge éclatant"],
-    ],
-  },
-  {
-    "n": "Matériaux",
-    "w": [
-      ["BOIS", "Matériau des arbres"],
-      ["VERRE", "Matériau transparent"],
-      ["PIERRE", "Matériau minéral"],
-      ["METAL", "Matériau brillant"],
-      ["PLASTIQUE", "Matériau synthétique"],
-      ["CARTON", "Papier épais"],
-      ["BETON", "Matériau des immeubles"],
-      ["BRIQUE", "Bloc d’argile cuite"],
-      ["OSIER", "Branches tressées"],
-      ["LIEGE", "Écorce du chêne-liège"],
-    ],
-  },
-  {
-    "n": "Essences de bois",
-    "w": [
-      ["CHENE", "Bois dur et noble"],
-      ["PIN", "Bois résineux clair"],
-      ["HETRE", "Bois des meubles"],
-      ["NOYER", "Bois sombre précieux"],
-      ["ACAJOU", "Bois rouge exotique"],
-      ["EBENE", "Bois noir"],
-      ["TECK", "Bois des bateaux"],
-      ["BOULEAU", "Bois clair"],
-      ["MERISIER", "Bois de cerisier sauvage"],
-      ["BAMBOU", "Bois léger"],
-    ],
-  },
-  {
-    "n": "Motifs",
-    "w": [
-      ["RAYURES", "Lignes parallèles"],
-      ["POIS", "Petits ronds"],
-      ["CARREAUX", "Motif en damier"],
-      ["FLEURS", "Motif printanier"],
-      ["CHEVRONS", "Zigzags"],
-      ["PAISLEY", "Motif en goutte"],
-      ["VICHY", "Petits carreaux"],
-      ["ECOSSAIS", "Tartan"],
-      ["LIBERTY", "Petites fleurs"],
-      ["PIEDDEPOULE", "Motif en dents"],
-    ],
-  },
-  {
-    "n": "Accessoires",
-    "w": [
-      ["SAC", "On y met ses affaires"],
-      ["CEINTURE", "Elle tient le pantalon"],
-      ["FOULARD", "Carré de soie"],
-      ["LUNETTES", "Pour mieux voir"],
-      ["PARAPLUIE", "Contre la pluie"],
-      ["MONTRE", "Elle donne l’heure"],
-      ["PORTEFEUILLE", "Il contient l’argent"],
-      ["EVENTAIL", "Pour se rafraîchir"],
-      ["CHAPEAU", "Sur la tête"],
-      ["BRETELLES", "Elles tiennent le pantalon"],
-    ],
-  },
-  {
-    "n": "Chapeaux",
-    "w": [
-      ["BERET", "Chapeau plat basque"],
-      ["CASQUETTE", "Chapeau à visière"],
-      ["CANOTIER", "Chapeau de paille"],
-      ["BOB", "Chapeau de pêcheur"],
-      ["HAUTDEFORME", "Chapeau de magicien"],
-      ["FEUTRE", "Chapeau mou"],
-      ["CAPELINE", "Grand chapeau souple"],
-      ["TURBAN", "Tissu enroulé"],
-      ["CHAPKA", "Bonnet russe fourré"],
-      ["PANAMA", "Chapeau de paille fine"],
-    ],
-  },
-  {
-    "n": "Costumes traditionnels",
-    "w": [
-      ["KIMONO", "Japon"],
-      ["SARI", "Inde"],
-      ["KILT", "Écosse"],
-      ["HANBOK", "Corée"],
-      ["PONCHO", "Andes"],
-      ["DIRNDL", "Bavière"],
-      ["COIFFE", "Bretonne, en dentelle"],
-      ["DJELLABA", "Maroc"],
-      ["BOUBOU", "Afrique de l’Ouest"],
-      ["SOMBRERO", "Mexique"],
-    ],
-  },
-  {
-    "n": "Coiffure",
-    "w": [
-      ["TRESSE", "Cheveux entrelacés"],
-      ["CHIGNON", "Cheveux relevés"],
-      ["FRANGE", "Mèche sur le front"],
-      ["QUEUE", "De cheval"],
-      ["BOUCLE", "Mèche ondulée"],
-      ["CARRE", "Coupe courte droite"],
-      ["BARRETTE", "Elle tient les cheveux"],
-      ["PEIGNE", "Il démêle"],
-      ["BROSSE", "Elle coiffe"],
-      ["CHOUCHOU", "Élastique en tissu"],
-    ],
-  },
-  {
-    "n": "Poésie",
-    "w": [
-      ["VERS", "Ligne de poème"],
-      ["RIME", "Sons identiques en fin de vers"],
-      ["STROPHE", "Groupe de vers"],
-      ["ALEXANDRIN", "Vers de douze syllabes"],
-      ["HAIKU", "Poème japonais court"],
-      ["POETE", "Il écrit des poèmes"],
-      ["RECUEIL", "Livre de poèmes"],
-      ["SONNET", "Quatorze vers"],
-      ["MUSE", "Inspiratrice"],
-      ["QUATRAIN", "Strophe de quatre vers"],
-    ],
-  },
-  {
-    "n": "Dessin",
-    "w": [
-      ["CRAYON", "Il trace"],
-      ["FUSAIN", "Charbon à dessin"],
-      ["ESQUISSE", "Premier tracé"],
-      ["OMBRE", "Elle donne du volume"],
-      ["CARNET", "De croquis"],
-      ["PASTEL", "Bâtonnet de couleur"],
-      ["GOMME", "Elle corrige"],
-      ["PERSPECTIVE", "Illusion de profondeur"],
-      ["TRAIT", "Ligne dessinée"],
-      ["MODELE", "Ce qu’on dessine"],
-    ],
-  },
-  {
-    "n": "Sculpture",
-    "w": [
-      ["MARBRE", "Pierre noble"],
-      ["BRONZE", "Métal coulé"],
-      ["CISEAU", "Outil du sculpteur"],
-      ["GLAISE", "Argile à modeler"],
-      ["STATUE", "Œuvre en volume"],
-      ["BUSTE", "Sculpture du haut du corps"],
-      ["SOCLE", "Support de la statue"],
-      ["RODIN", "Auteur du Penseur"],
-      ["MOULAGE", "Copie par moule"],
-      ["BASRELIEF", "Sculpture sur un fond"],
-    ],
-  },
-  {
-    "n": "Poterie",
-    "w": [
-      ["ARGILE", "Terre à modeler"],
-      ["TOUR", "Il tourne la terre"],
-      ["EMAIL", "Vernis vitrifié"],
-      ["CUISSON", "Passage au four"],
-      ["FOUR", "Où l’on cuit la terre"],
-      ["VASE", "Objet tourné"],
-      ["BOL", "Pièce creuse"],
-      ["POTIER", "Artisan de la terre"],
-      ["FAIENCE", "Céramique émaillée"],
-      ["PORCELAINE", "Céramique fine blanche"],
-    ],
-  },
-  {
-    "n": "Origami",
-    "w": [
-      ["PAPIER", "Matière de l’origami"],
-      ["PLIAGE", "Action de plier"],
-      ["GRUE", "Oiseau plié célèbre"],
-      ["JAPON", "Pays d’origine"],
-      ["CARRE", "Forme de départ"],
-      ["GRENOUILLE", "Elle saute en papier"],
-      ["BATEAU", "Plié, il flotte"],
-      ["AVION", "Plié, il vole"],
-      ["FLEUR", "Lotus en papier"],
-      ["MODULE", "Pièce assemblée"],
-    ],
-  },
-  {
-    "n": "Broderie",
-    "w": [
-      ["AIGUILLE", "Elle pique le tissu"],
-      ["FIL", "Brin coloré"],
-      ["CANEVAS", "Toile à broder"],
-      ["TAMBOUR", "Cercle qui tend le tissu"],
-      ["POINTDECROIX", "Point en X"],
-      ["MOTIF", "Dessin brodé"],
-      ["ECHEVEAU", "Fil enroulé"],
-      ["DENTELLIERE", "Elle fait de la dentelle"],
-      ["PERLE", "On la coud"],
-      ["TOILE", "Support du brodeur"],
-    ],
-  },
-  {
-    "n": "Menuiserie",
-    "w": [
-      ["PLANCHE", "Morceau de bois plat"],
-      ["RABOT", "Il lisse"],
-      ["CIRE", "Pour faire briller"],
-      ["COLLE", "Pour assembler"],
-      ["TENON", "Partie qui s’emboîte"],
-      ["MORTAISE", "Trou d’assemblage"],
-      ["SCIURE", "Poussière de bois"],
-      ["COPEAU", "Fine lamelle de bois"],
-      ["VERNIS", "Protection brillante"],
-      ["ETABLI", "Table de travail"],
-    ],
-  },
-  {
-    "n": "Pêche de loisir",
-    "w": [
-      ["CANNE", "À pêche"],
-      ["HAMECON", "Crochet pour le poisson"],
-      ["APPAT", "Pour attirer"],
-      ["FLOTTEUR", "Il bouge quand ça mord"],
-      ["MOULINET", "Il enroule le fil"],
-      ["EPUISETTE", "Petit filet"],
-      ["TRUITE", "Poisson de rivière"],
-      ["GARDON", "Petit poisson blanc"],
-      ["WADERS", "Bottes-pantalon"],
-      ["PATIENCE", "Qualité du pêcheur"],
-    ],
-  },
-  {
-    "n": "Chasse au trésor",
-    "w": [
-      ["CARTE", "Elle mène au butin"],
-      ["INDICE", "Il aide à trouver"],
-      ["ENIGME", "Question à résoudre"],
-      ["COFFRE", "Contenant du trésor"],
-      ["CROIX", "Elle marque l’endroit"],
-      ["BOUSSOLE", "Elle oriente"],
-      ["PELLE", "Pour creuser"],
-      ["PARCHEMIN", "Vieux papier"],
-      ["CODE", "Combinaison secrète"],
-      ["BUTIN", "Ce qu’on trouve"],
-    ],
-  },
-  {
-    "n": "Randonnée",
-    "w": [
-      ["SAC", "À dos"],
-      ["BATONS", "De marche"],
-      ["CHAUSSURES", "De rando"],
-      ["BALISE", "Marque du sentier"],
-      ["GOURDE", "Pour boire"],
-      ["PANORAMA", "Vue d’ensemble"],
-      ["ETAPE", "Partie du parcours"],
-      ["DENIVELE", "Montée et descente"],
-      ["GITE", "Hébergement d’étape"],
-      ["SENTIER", "Chemin de rando"],
-    ],
-  },
-  {
-    "n": "Escalade",
-    "w": [
-      ["CORDE", "Elle assure"],
-      ["BAUDRIER", "Harnais du grimpeur"],
-      ["MOUSQUETON", "Anneau à fermoir"],
-      ["PRISE", "Où l’on s’accroche"],
-      ["MAGNESIE", "Poudre pour les mains"],
-      ["CHAUSSONS", "D’escalade"],
-      ["ASSUREUR", "Il tient la corde"],
-      ["PAROI", "Mur rocheux"],
-      ["VOIE", "Itinéraire d’ascension"],
-      ["RELAIS", "Point d’arrêt"],
-    ],
-  },
-  {
-    "n": "Ski",
-    "w": [
-      ["PISTE", "Parcours enneigé"],
-      ["FORFAIT", "Pass des remontées"],
-      ["TELESIEGE", "Remontée assise"],
-      ["TIREFESSES", "Remontée à perche"],
-      ["SLALOM", "Parcours entre portes"],
-      ["CHASSENEIGE", "Position en V"],
-      ["BATONS", "De ski"],
-      ["FARTAGE", "Préparation des skis"],
-      ["APRESSKI", "Botte ou moment de détente"],
-    ],
-  },
-  {
-    "n": "Patinage",
-    "w": [
-      ["PATIN", "Chaussure à lame"],
-      ["LAME", "Sous le patin"],
-      ["PATINOIRE", "Piste de glace"],
-      ["PIROUETTE", "Rotation"],
-      ["SAUT", "Axel ou lutz"],
-      ["GLISSE", "Mouvement sur la glace"],
-      ["COUPLE", "Patinage à deux"],
-      ["ARTISTIQUE", "Patinage avec figures"],
-      ["VITESSE", "Patinage de course"],
-      ["ZAMBONI", "Surfaceuse"],
-    ],
-  },
-  {
-    "n": "Course à pied",
-    "w": [
-      ["FOULEE", "Grand pas de course"],
-      ["CHRONO", "Il mesure le temps"],
-      ["DOSSARD", "Numéro du coureur"],
-      ["MARATHON", "42 kilomètres"],
-      ["JOGGING", "Course tranquille"],
-      ["ENDURANCE", "Capacité à durer"],
-      ["ECHAUFFEMENT", "Préparation"],
-      ["ARRIVEE", "Ligne finale"],
-      ["SPRINT", "Course rapide"],
-      ["BASKETS", "Chaussures de course"],
-    ],
-  },
-  {
-    "n": "Chant",
-    "w": [
-      ["VOIX", "Instrument du chanteur"],
-      ["SOPRANO", "Voix la plus aiguë"],
-      ["TENOR", "Voix masculine aiguë"],
-      ["BASSE", "Voix la plus grave"],
-      ["CHORALE", "Groupe de chanteurs"],
-      ["REFRAIN", "Partie répétée"],
-      ["COUPLET", "Partie de chanson"],
-      ["VOCALISE", "Exercice de voix"],
-      ["DUO", "Chanson à deux"],
-      ["AIR", "Mélodie d’opéra"],
-    ],
-  },
-  {
-    "n": "Instruments à cordes",
-    "w": [
-      ["VIOLON", "Joué à l’archet"],
-      ["ALTO", "Violon un peu plus grand"],
-      ["VIOLONCELLE", "Joué assis"],
-      ["CONTREBASSE", "La plus grave"],
-      ["GUITARE", "Six cordes"],
-      ["HARPE", "Cordes pincées"],
-      ["MANDOLINE", "Petit luth"],
-      ["BANJO", "Instrument country"],
-      ["LUTH", "Ancêtre de la guitare"],
-      ["CITHARE", "Cordes sur caisse plate"],
-    ],
-  },
-  {
-    "n": "Instruments à vent",
-    "w": [
-      ["FLUTE", "Traversière ou à bec"],
-      ["CLARINETTE", "Anche simple"],
-      ["SAXOPHONE", "Instrument du jazz"],
-      ["TROMPETTE", "Cuivre aigu"],
-      ["TROMBONE", "Cuivre à coulisse"],
-      ["TUBA", "Cuivre grave"],
-      ["COR", "Cuivre enroulé"],
-      ["HAUTBOIS", "Double anche"],
-      ["BASSON", "Grave du bois"],
-      ["HARMONICA", "Instrument de poche"],
-    ],
-  },
-  {
-    "n": "Percussions",
-    "w": [
-      ["TAMBOUR", "On frappe la peau"],
-      ["BATTERIE", "Ensemble de fûts"],
-      ["XYLOPHONE", "Lames de bois"],
-      ["MARIMBA", "Grand xylophone"],
-      ["TAMBOURIN", "Petit tambour à grelots"],
-      ["MARACAS", "Hochets de musique"],
-      ["CASTAGNETTES", "Claquettes espagnoles"],
-      ["GONG", "Grand disque de métal"],
-      ["DJEMBE", "Tambour africain"],
-      ["CAJON", "Caisse qu’on frappe"],
-    ],
-  },
-  {
-    "n": "Genres musicaux",
-    "w": [
-      ["JAZZ", "Musique improvisée"],
-      ["BLUES", "Musique mélancolique"],
-      ["ROCK", "Musique électrique"],
-      ["REGGAE", "Musique jamaïcaine"],
-      ["CLASSIQUE", "Mozart, Bach..."],
-      ["SOUL", "Musique de l’âme"],
-      ["FOLK", "Musique populaire acoustique"],
-      ["OPERA", "Théâtre chanté"],
-      ["ELECTRO", "Musique électronique"],
-      ["SWING", "Jazz dansant"],
-    ],
-  },
-  {
-    "n": "Opéra",
-    "w": [
-      ["DIVA", "Grande chanteuse"],
-      ["LIVRET", "Texte de l’opéra"],
-      ["ARIA", "Air chanté"],
-      ["ORCHESTRE", "Ensemble de musiciens"],
-      ["LOGE", "Place privée"],
-      ["BALCON", "Étage de la salle"],
-      ["OUVERTURE", "Début musical"],
-      ["CARMEN", "Opéra de Bizet"],
-      ["RIDEAU", "Il s’ouvre"],
-      ["MAESTRO", "Chef d’orchestre"],
-    ],
-  },
-  {
-    "n": "Animation",
-    "w": [
-      ["DESSINANIME", "Film dessiné"],
-      ["STOPMOTION", "Image par image"],
-      ["STORYBOARD", "Plan dessiné"],
-      ["PERSONNAGE", "Héros animé"],
-      ["DOUBLAGE", "Voix des personnages"],
-      ["IMAGE", "Unité du film"],
-      ["CRAYONNE", "Dessiné au crayon"],
-      ["STUDIO", "Lieu de création"],
-      ["SCENARIO", "Histoire"],
-      ["ANIMATEUR", "Il fait bouger les dessins"],
-    ],
-  },
-  {
-    "n": "Radio",
-    "w": [
-      ["ANTENNE", "Elle capte"],
-      ["ONDES", "Elles transportent le son"],
-      ["MICRO", "Il capte la voix"],
-      ["ANIMATEUR", "Il présente"],
-      ["EMISSION", "Programme"],
-      ["FREQUENCE", "Numéro de station"],
-      ["STUDIO", "Lieu d’enregistrement"],
-      ["AUDITEUR", "Celui qui écoute"],
-      ["DIRECT", "En temps réel"],
-      ["JINGLE", "Petit air de transition"],
-    ],
-  },
-  {
-    "n": "Jeux vidéo",
-    "w": [
-      ["MANETTE", "On la tient"],
-      ["CONSOLE", "Machine de jeu"],
-      ["NIVEAU", "Étape du jeu"],
-      ["SCORE", "Points obtenus"],
-      ["AVATAR", "Personnage joueur"],
-      ["QUETE", "Mission"],
-      ["BOSS", "Ennemi final"],
-      ["SAUVEGARDE", "On reprend plus tard"],
-      ["PIXEL", "Petit carré d’image"],
-      ["MANCHE", "Partie"],
-    ],
-  },
-  {
-    "n": "Jeux de cartes",
-    "w": [
-      ["COEUR", "Couleur rouge"],
-      ["PIQUE", "Couleur noire"],
-      ["TREFLE", "Couleur noire"],
-      ["CARREAU", "Couleur rouge"],
-      ["ROI", "Figure couronnée"],
-      ["DAME", "Figure féminine"],
-      ["VALET", "Figure du jeune homme"],
-      ["JOKER", "Carte spéciale"],
-      ["BELOTE", "Jeu de cartes français"],
-    ],
-  },
-  {
-    "n": "Jeux de lettres",
-    "w": [
-      ["ANAGRAMME", "Mot aux lettres mélangées"],
-      ["MOTSCROISES", "Grille et définitions"],
-      ["MOTSCACHES", "Mots dans une grille"],
-      ["ALPHABET", "Les lettres, de A à Z"],
-      ["PALINDROME", "Mot lisible dans les deux sens"],
-      ["PENDU", "Jeu de devinette"],
-      ["LETTRE", "Unité de l’alphabet"],
-      ["DEFINITION", "Sens d’un mot"],
-      ["VOCABULAIRE", "Ensemble des mots"],
-      ["CHARADE", "Devinette en syllabes"],
-    ],
-  },
-  {
-    "n": "Casse-tête",
-    "w": [
-      ["PUZZLE", "Pièces à assembler"],
-      ["LABYRINTHE", "Chemin à trouver"],
-      ["SUDOKU", "Grille de chiffres"],
-      ["TANGRAM", "Pièces géométriques chinoises"],
-      ["RUBIKSCUBE", "Cube à faces colorées"],
-      ["DEVINETTE", "Question à deviner"],
-      ["ENIGME", "Problème à résoudre"],
-      ["CODE", "Message chiffré"],
-      ["LOGIQUE", "Raisonnement"],
-      ["SOLUTION", "Réponse trouvée"],
-    ],
-  },
-  {
-    "n": "Collections",
-    "w": [
-      ["TIMBRE", "Collection de philatéliste"],
-      ["PIECE", "Collection de numismate"],
-      ["COQUILLAGE", "Trésor de plage"],
-      ["CARTEPOSTALE", "Souvenir illustré"],
-      ["FIGURINE", "Petit personnage"],
-      ["BILLE", "Petite boule de verre"],
-      ["VINYLE", "Disque ancien"],
-      ["AUTOGRAPHE", "Signature célèbre"],
-      ["ALBUM", "Pour ranger"],
-      ["VITRINE", "Pour exposer"],
-    ],
-  },
-  {
-    "n": "Astronomie amateur",
-    "w": [
-      ["TELESCOPE", "Instrument à miroir"],
-      ["LUNETTE", "Astronomique"],
-      ["CONSTELLATION", "Groupe d’étoiles"],
-      ["NEBULEUSE", "Nuage cosmique"],
-      ["GALAXIE", "Ensemble d’étoiles"],
-      ["ETOILEFILANTE", "Trait lumineux"],
-      ["PLANISPHERE", "Carte du ciel"],
-      ["OBSERVATOIRE", "Bâtiment à coupole"],
-      ["COMETE", "Astre chevelu"],
-      ["ORION", "Constellation du chasseur"],
-    ],
-  },
-  {
-    "n": "Ornithologie",
-    "w": [
-      ["JUMELLES", "Pour observer de loin"],
-      ["NICHOIR", "Abri pour oiseaux"],
-      ["MANGEOIRE", "Graines pour oiseaux"],
-      ["MIGRATION", "Grand voyage"],
-      ["PLUME", "Couverture de l’oiseau"],
-      ["CHANT", "Mélodie d’oiseau"],
-      ["BAGUAGE", "Identification des oiseaux"],
-      ["AFFUT", "Cachette d’observation"],
-      ["OISILLON", "Bébé oiseau"],
-      ["GUIDE", "Livre d’identification"],
-    ],
-  },
-  {
-    "n": "Modélisme",
-    "w": [
-      ["MAQUETTE", "Modèle réduit"],
-      ["ECHELLE", "Rapport de taille"],
-      ["COLLE", "Pour assembler"],
-      ["PEINTURE", "Pour décorer"],
-      ["DIORAMA", "Scène miniature"],
-      ["AVION", "En kit"],
-      ["VOILIER", "Dans une bouteille"],
-      ["FIGURINE", "Petit personnage"],
-      ["PINCETTE", "Pour les petites pièces"],
-    ],
-  },
-  {
-    "n": "Aquariophilie",
-    "w": [
-      ["AQUARIUM", "Bac à poissons"],
-      ["FILTRE", "Il nettoie l’eau"],
-      ["GUPPY", "Petit poisson coloré"],
-      ["NEON", "Poisson bleu fluo"],
-      ["SCALAIRE", "Poisson en triangle"],
-      ["COMBATTANT", "Poisson aux longues nageoires"],
-      ["PLANTE", "Aquatique"],
-      ["GRAVIER", "Fond du bac"],
-      ["BULLEUR", "Il oxygène"],
-      ["CREVETTE", "D’eau douce"],
-    ],
-  },
-  {
-    "n": "Croisière",
-    "w": [
-      ["PAQUEBOT", "Grand navire"],
-      ["CABINE", "Chambre à bord"],
-      ["PONT", "Étage extérieur"],
-      ["ESCALE", "Arrêt dans un port"],
-      ["HUBLOT", "Fenêtre ronde"],
-      ["CAPITAINE", "Commandant"],
-      ["EQUIPAGE", "Personnel du navire"],
-      ["SILLAGE", "Trace sur l’eau"],
-      ["BOUEE", "De sauvetage"],
-      ["COUCHER", "De soleil sur la mer"],
-    ],
-  },
-  {
-    "n": "Colonie de vacances",
-    "w": [
-      ["MONITEUR", "Animateur des enfants"],
-      ["DORTOIR", "Chambre commune"],
-      ["VEILLEE", "Soirée animée"],
-      ["FEUDECAMP", "Feu du soir"],
-      ["GRANDJEU", "Jeu en plein air"],
-      ["CHANSON", "On la chante en bus"],
-      ["CANTINE", "Où l’on mange"],
-      ["CARTEPOSTALE", "On l’envoie aux parents"],
-      ["BAIGNADE", "Moment dans l’eau"],
-      ["SOUVENIRS", "Ce qu’on rapporte"],
-    ],
-  },
-  {
-    "n": "Scoutisme",
-    "w": [
-      ["FOULARD", "Noué autour du cou"],
-      ["BADGE", "Insigne cousu"],
-      ["PATROUILLE", "Petit groupe"],
-      ["CAMP", "Séjour sous la tente"],
-      ["NOEUD", "Corde attachée"],
-      ["TOTEM", "Nom de scout"],
-      ["BOUSSOLE", "Pour s’orienter"],
-      ["UNIFORME", "Tenue du groupe"],
-      ["PROMESSE", "Engagement"],
-      ["JAMBOREE", "Grand rassemblement"],
-    ],
-  },
-  {
-    "n": "Bibliothèque",
-    "w": [
-      ["LIVRE", "On l’emprunte"],
-      ["RAYON", "Étagère thématique"],
-      ["FICHE", "Carte de lecteur"],
-      ["EMPRUNT", "Prêt de livre"],
-      ["SILENCE", "Il est demandé"],
-      ["CATALOGUE", "Liste des ouvrages"],
-      ["LECTEUR", "Celui qui lit"],
-      ["ALBUM", "Livre illustré"],
-      ["ENCYCLOPEDIE", "Livre de savoir"],
-    ],
-  },
-  {
-    "n": "Concert",
-    "w": [
-      ["SCENE", "Plateau des musiciens"],
-      ["PUBLIC", "Spectateurs"],
-      ["RAPPEL", "Bis demandé"],
-      ["GUITARISTE", "Musicien à cordes"],
-      ["BILLET", "Entrée"],
-      ["SONO", "Système de son"],
-      ["LUMIERES", "Projecteurs colorés"],
-      ["TOURNEE", "Série de concerts"],
-      ["ENCORE", "Cri pour un bis"],
-    ],
-  },
-  {
-    "n": "Festival",
-    "w": [
-      ["AFFICHE", "Programme illustré"],
-      ["CHAPITEAU", "Grande tente"],
-      ["BRACELET", "Accès au festival"],
-      ["PROGRAMME", "Liste des spectacles"],
-      ["ARTISTE", "Il se produit"],
-      ["PELOUSE", "Où l’on s’assoit"],
-      ["SCENE", "Plateau"],
-      ["BENEVOLE", "Il aide gratuitement"],
-      ["CAMPING", "Pour dormir sur place"],
-      ["ETE", "Saison des festivals"],
-    ],
-  },
-  {
-    "n": "Zoo",
-    "w": [
-      ["ENCLOS", "Espace des animaux"],
-      ["SOIGNEUR", "Il nourrit les animaux"],
-      ["GIRAFE", "Long cou"],
-      ["ELEPHANT", "Grande trompe"],
-      ["PINGOUIN", "Oiseau noir et blanc"],
-      ["OTARIE", "Elle fait des tours"],
-      ["SINGE", "Il grimpe"],
-      ["VOLIERE", "Grande cage à oiseaux"],
-      ["VIVARIUM", "Abri des reptiles"],
-      ["PLAN", "Pour visiter"],
-    ],
-  },
-  {
-    "n": "Jardin botanique",
-    "w": [
-      ["SERRE", "Bâtiment vitré"],
-      ["HERBIER", "Collection de plantes séchées"],
-      ["BOTANISTE", "Spécialiste des plantes"],
-      ["ROSERAIE", "Jardin de roses"],
-      ["ALLEE", "Chemin du jardin"],
-      ["BASSIN", "Pièce d’eau"],
-      ["ETIQUETTE", "Nom latin de la plante"],
-      ["ARBORETUM", "Collection d’arbres"],
-      ["CACTUS", "Plante du désert"],
-      ["ORCHIDEE", "Fleur rare"],
-    ],
-  },
-  {
-    "n": "Météorologie",
-    "w": [
-      ["BAROMETRE", "Il mesure la pression"],
-      ["THERMOMETRE", "Il mesure la température"],
-      ["ANEMOMETRE", "Il mesure le vent"],
-      ["PLUVIOMETRE", "Il mesure la pluie"],
-      ["PREVISION", "Annonce du temps"],
-      ["DEPRESSION", "Zone de basse pression"],
-      ["ANTICYCLONE", "Zone de beau temps"],
-      ["FRONT", "Froid ou chaud"],
-      ["SATELLITE", "Il observe la Terre"],
-      ["BULLETIN", "Météo du jour"],
-    ],
-  },
-  {
-    "n": "Physique",
-    "w": [
-      ["GRAVITE", "Elle fait tomber"],
-      ["ENERGIE", "Capacité à agir"],
-      ["LUMIERE", "Elle voyage vite"],
-      ["ATOME", "Brique de la matière"],
-      ["AIMANT", "Il attire le fer"],
-      ["FORCE", "Elle pousse ou tire"],
-      ["VITESSE", "Distance par temps"],
-      ["MASSE", "Quantité de matière"],
-      ["ONDE", "Vibration qui se propage"],
-      ["PRISME", "Il décompose la lumière"],
-    ],
-  },
-  {
-    "n": "Chimie",
-    "w": [
-      ["MOLECULE", "Assemblage d’atomes"],
-      ["ELEMENT", "Case du tableau"],
-      ["OXYGENE", "On le respire"],
-      ["HYDROGENE", "Élément le plus léger"],
-      ["CARBONE", "Base du vivant"],
-      ["AZOTE", "Principal gaz de l’air"],
-      ["EPROUVETTE", "Tube de verre"],
-      ["REACTION", "Transformation chimique"],
-      ["CRISTAL", "Solide ordonné"],
-      ["SOLUTION", "Mélange dissous"],
-    ],
-  },
-  {
-    "n": "Biologie",
-    "w": [
-      ["CELLULE", "Unité du vivant"],
-      ["ADN", "Molécule de l’hérédité"],
-      ["GENE", "Unité d’hérédité"],
-      ["MICROSCOPE", "Il grossit"],
-      ["ESPECE", "Groupe d’êtres semblables"],
-      ["EVOLUTION", "Changement des espèces"],
-      ["BACTERIE", "Être microscopique"],
-      ["PHOTOSYNTHESE", "Les plantes la font"],
-      ["ORGANISME", "Être vivant"],
-      ["ECOSYSTEME", "Milieu et êtres vivants"],
-    ],
-  },
-  {
-    "n": "Squelette",
-    "w": [
-      ["CRANE", "Os de la tête"],
-      ["COLONNE", "Vertébrale"],
-      ["COTE", "Os de la cage thoracique"],
-      ["FEMUR", "Os de la cuisse"],
-      ["TIBIA", "Os de la jambe"],
-      ["CLAVICULE", "Os de l’épaule"],
-      ["BASSIN", "Os de la hanche"],
-      ["ROTULE", "Os du genou"],
-      ["OMOPLATE", "Os du dos"],
-      ["VERTEBRE", "Os de la colonne"],
-    ],
-  },
-  {
-    "n": "Organes",
-    "w": [
-      ["COEUR", "Il pompe le sang"],
-      ["POUMON", "Il respire"],
-      ["CERVEAU", "Il pense"],
-      ["FOIE", "Il filtre"],
-      ["ESTOMAC", "Il digère"],
-      ["REIN", "Il filtre le sang"],
-      ["INTESTIN", "Long tube digestif"],
-      ["PEAU", "Plus grand organe"],
-      ["MUSCLE", "Il fait bouger"],
-      ["VEINE", "Elle ramène le sang"],
-    ],
-  },
-  {
-    "n": "Écologie",
-    "w": [
-      ["RECYCLAGE", "Seconde vie des déchets"],
-      ["COMPOST", "Engrais naturel"],
-      ["BIODIVERSITE", "Variété du vivant"],
-      ["CLIMAT", "Temps sur la durée"],
-      ["POLLUTION", "Ce qui salit"],
-      ["SOBRIETE", "Consommer moins"],
-      ["NATURE", "Ce qu’on protège"],
-      ["HABITAT", "Lieu de vie"],
-      ["PROTECTION", "Sauvegarde"],
-      ["POTAGER", "Jardin nourricier"],
-    ],
-  },
-  {
-    "n": "Énergies renouvelables",
-    "w": [
-      ["SOLAIRE", "Énergie du soleil"],
-      ["EOLIENNE", "Elle tourne au vent"],
-      ["HYDRAULIQUE", "Énergie de l’eau"],
-      ["GEOTHERMIE", "Chaleur de la Terre"],
-      ["BIOMASSE", "Énergie des végétaux"],
-      ["PANNEAU", "Solaire, sur le toit"],
-      ["BARRAGE", "Il retient l’eau"],
-      ["TURBINE", "Elle produit du courant"],
-      ["MAREMOTRICE", "Énergie des marées"],
-      ["BATTERIE", "Elle stocke"],
-    ],
-  },
-  {
-    "n": "Recyclage",
-    "w": [
-      ["POUBELLE", "Où l’on jette"],
-      ["TRI", "Séparation des déchets"],
-      ["VERRE", "Bac vert"],
-      ["COMPOSTEUR", "Pour les épluchures"],
-      ["EMBALLAGE", "Carton ou plastique"],
-      ["DECHETTERIE", "Centre de dépôt"],
-      ["BOUTEILLE", "En plastique ou verre"],
-      ["CANETTE", "En aluminium"],
-      ["PAPIER", "Il se recycle"],
-      ["REEMPLOI", "Utiliser à nouveau"],
-    ],
-  },
-  {
-    "n": "Inventions",
-    "w": [
-      ["ROUE", "Elle tourne"],
-      ["IMPRIMERIE", "Gutenberg"],
-      ["TELEPHONE", "Il porte la voix"],
-      ["AMPOULE", "Elle éclaire"],
-      ["BOUSSOLE", "Elle oriente"],
-      ["AVION", "Il vole"],
-      ["VACCIN", "Il protège"],
-      ["TELESCOPE", "Il voit loin"],
-      ["PHOTOGRAPHIE", "Elle fige l’instant"],
-      ["INTERNET", "Réseau mondial"],
-    ],
-  },
-  {
-    "n": "Scientifiques",
-    "w": [
-      ["CURIE", "Pionnière de la radioactivité"],
-      ["NEWTON", "La pomme et la gravité"],
-      ["EINSTEIN", "Relativité"],
-      ["PASTEUR", "Vaccin contre la rage"],
-      ["DARWIN", "Évolution des espèces"],
-      ["GALILEE", "Lunette et planètes"],
-      ["EDISON", "Ampoule électrique"],
-      ["MENDEL", "Lois de l’hérédité"],
-      ["LAVOISIER", "Rien ne se perd"],
-      ["TESLA", "Courant alternatif"],
-    ],
-  },
-  {
-    "n": "Peintres",
-    "w": [
-      ["MONET", "Nymphéas"],
-      ["VANGOGH", "Les Tournesols"],
-      ["CEZANNE", "Montagne Sainte-Victoire"],
-      ["RENOIR", "Bal du moulin de la Galette"],
-      ["MATISSE", "Papiers découpés"],
-      ["PICASSO", "Cubisme"],
-      ["DEGAS", "Danseuses"],
-      ["VERMEER", "Jeune fille à la perle"],
-      ["CHAGALL", "Couples volants"],
-      ["REMBRANDT", "Maître du clair-obscur"],
-    ],
-  },
-  {
-    "n": "Compositeurs",
-    "w": [
-      ["MOZART", "Flûte enchantée"],
-      ["BACH", "Toccata et fugue"],
-      ["BEETHOVEN", "Neuvième symphonie"],
-      ["CHOPIN", "Nocturnes pour piano"],
-      ["VIVALDI", "Quatre Saisons"],
-      ["DEBUSSY", "Clair de lune"],
-      ["RAVEL", "Boléro"],
-      ["SATIE", "Gymnopédies"],
-      ["TCHAIKOVSKI", "Casse-Noisette"],
-      ["BIZET", "Carmen"],
-    ],
-  },
-  {
-    "n": "Écrivains",
-    "w": [
-      ["HUGO", "Les Misérables"],
-      ["ZOLA", "Germinal"],
-      ["VERNE", "Vingt mille lieues sous les mers"],
-      ["COLETTE", "Claudine"],
-      ["PROUST", "La madeleine"],
-      ["SAND", "La Mare au diable"],
-      ["DUMAS", "Les Trois Mousquetaires"],
-      ["CAMUS", "L’Étranger"],
-      ["BALZAC", "La Comédie humaine"],
-      ["MOLIERE", "Le Bourgeois gentilhomme"],
-    ],
-  },
-  {
-    "n": "Mythologie grecque",
-    "w": [
-      ["ZEUS", "Roi des dieux"],
-      ["ATHENA", "Déesse de la sagesse"],
-      ["APOLLON", "Dieu du soleil et des arts"],
-      ["POSEIDON", "Dieu des mers"],
-      ["HERMES", "Messager aux sandales ailées"],
-      ["ARTEMIS", "Déesse de la chasse"],
-      ["HERCULE", "Héros aux douze travaux"],
-      ["ULYSSE", "Héros de l’Odyssée"],
-      ["MEDUSE", "Gorgone aux serpents"],
-      ["OLYMPE", "Montagne des dieux"],
-    ],
-  },
-  {
-    "n": "Mythologie nordique",
-    "w": [
-      ["ODIN", "Père des dieux"],
-      ["THOR", "Dieu au marteau"],
-      ["LOKI", "Dieu malicieux"],
-      ["FREYA", "Déesse de l’amour"],
-      ["VALHALLA", "Séjour des guerriers"],
-      ["YGGDRASIL", "Arbre du monde"],
-      ["RUNES", "Alphabet ancien"],
-      ["ASGARD", "Royaume des dieux"],
-      ["VALKYRIE", "Guerrière ailée"],
-      ["MJOLNIR", "Marteau de Thor"],
-    ],
-  },
-  {
-    "n": "Mythologie égyptienne",
-    "w": [
-      ["ISIS", "Déesse mère"],
-      ["OSIRIS", "Dieu des morts"],
-      ["ANUBIS", "Dieu à tête de chacal"],
-      ["HORUS", "Dieu faucon"],
-      ["BASTET", "Déesse chatte"],
-      ["THOT", "Dieu de l’écriture"],
-      ["SPHINX", "Gardien des pyramides"],
-      ["NIL", "Fleuve nourricier"],
-      ["SCARABEE", "Symbole du soleil"],
-    ],
-  },
-  {
-    "n": "Créatures fantastiques",
-    "w": [
-      ["ELFE", "Être des forêts aux oreilles pointues"],
-      ["NAIN", "Mineur barbu"],
-      ["GOBELIN", "Petit être malicieux"],
-      ["FARFADET", "Lutin espiègle"],
-      ["GARGOUILLE", "Créature de pierre"],
-      ["SPHINX", "Lion à tête humaine"],
-      ["CHIMERE", "Monstre composite"],
-      ["HYDRE", "Serpent à plusieurs têtes"],
-      ["BASILIC", "Serpent au regard mortel"],
-      ["FEE", "Elle exauce les vœux"],
-    ],
-  },
-  {
-    "n": "Antiquité romaine",
-    "w": [
-      ["CESAR", "Grand général romain"],
-      ["SENAT", "Assemblée romaine"],
-      ["TOGE", "Vêtement romain"],
-      ["AQUEDUC", "Il transporte l’eau"],
-      ["THERMES", "Bains publics"],
-      ["ARENE", "Lieu des jeux"],
-      ["LEGION", "Armée romaine"],
-      ["FORUM", "Place publique"],
-      ["AMPHORE", "Jarre à huile"],
-      ["LATIN", "Langue de Rome"],
-    ],
-  },
-  {
-    "n": "Renaissance",
-    "w": [
-      ["LEONARD", "De Vinci"],
-      ["JOCONDE", "Portrait au sourire"],
-      ["MICHELANGE", "Chapelle Sixtine"],
-      ["FLORENCE", "Ville des Médicis"],
-      ["HUMANISME", "Courant de pensée"],
-      ["FRESQUE", "Peinture murale"],
-      ["IMPRIMERIE", "Diffusion des livres"],
-      ["CHAMBORD", "Château de François Ier"],
-      ["MECENE", "Protecteur des artistes"],
-      ["PERSPECTIVE", "Profondeur en peinture"],
-    ],
-  },
-  {
-    "n": "Explorateurs",
-    "w": [
-      ["MAGELLAN", "Premier tour du monde"],
-      ["COLOMB", "Amérique en 1492"],
-      ["CARTIER", "Découverte du Saint-Laurent"],
-      ["CHAMPLAIN", "Fondateur de Québec"],
-      ["COOK", "Explorateur du Pacifique"],
-      ["POLO", "Voyage en Chine"],
-      ["AMUNDSEN", "Premier au pôle Sud"],
-      ["COUSTEAU", "Explorateur des mers"],
-      ["BOUGAINVILLE", "Navigateur français"],
-      ["LIVINGSTONE", "Explorateur de l’Afrique"],
-    ],
-  },
-  {
-    "n": "Navigation ancienne",
-    "w": [
-      ["CARAVELLE", "Navire des découvertes"],
-      ["ASTROLABE", "Instrument des étoiles"],
-      ["SEXTANT", "Il mesure la hauteur des astres"],
-      ["GOUVERNAIL", "Il dirige"],
-      ["VOILURE", "Ensemble des voiles"],
-      ["MOUSSE", "Jeune marin"],
-      ["VIGIE", "Guetteur en haut du mât"],
-      ["CARTE", "Marine"],
-      ["ESTUAIRE", "Embouchure"],
-      ["LONGUEVUE", "Lunette du marin"],
-    ],
-  },
-  {
-    "n": "Architecture",
-    "w": [
-      ["COLONNE", "Pilier rond"],
-      ["VOUTE", "Plafond courbe"],
-      ["COUPOLE", "Dôme"],
-      ["ARCADE", "Arc sur colonnes"],
-      ["FACADE", "Devant du bâtiment"],
-      ["FRONTON", "Triangle au-dessus de l’entrée"],
-      ["CHARPENTE", "Structure du toit"],
-      ["ARCHITECTE", "Il dessine les bâtiments"],
-      ["PLAN", "Dessin du bâtiment"],
-      ["BALCON", "Plateforme en façade"],
-    ],
-  },
-  {
-    "n": "Châteaux de la Loire",
-    "w": [
-      ["CHAMBORD", "Le plus grand"],
-      ["CHENONCEAU", "Château des Dames"],
-      ["AMBOISE", "Où repose Léonard de Vinci"],
-      ["BLOIS", "Château royal"],
-      ["VILLANDRY", "Château aux jardins"],
-      ["CHEVERNY", "Château blanc du Loir-et-Cher"],
-      ["AZAYLERIDEAU", "Château sur l’eau"],
-      ["LOIRE", "Fleuve royal"],
-      ["TOURELLE", "Petite tour"],
-      ["DOUVES", "Fossés remplis d’eau"],
-    ],
-  },
-  {
-    "n": "Ponts célèbres",
-    "w": [
-      ["PONTNEUF", "Le plus vieux de Paris"],
-      ["GOLDENGATE", "Pont rouge de San Francisco"],
-      ["RIALTO", "Pont de Venise"],
-      ["GARD", "Pont romain"],
-      ["MILLAU", "Viaduc géant"],
-      ["CHARLES", "Pont de Prague"],
-      ["AVIGNON", "Sur le pont on y danse"],
-      ["TOWERBRIDGE", "Pont de Londres"],
-      ["VECCHIO", "Pont de Florence"],
-      ["ARCHE", "Partie courbe du pont"],
-    ],
-  },
-  {
-    "n": "Merveilles du monde",
-    "w": [
-      ["PYRAMIDE", "De Khéops"],
-      ["PHARE", "D’Alexandrie"],
-      ["COLOSSE", "De Rhodes"],
-      ["JARDINS", "Suspendus de Babylone"],
-      ["MAUSOLEE", "D’Halicarnasse"],
-      ["TEMPLE", "D’Artémis"],
-      ["STATUE", "De Zeus"],
-      ["PETRA", "Cité rose de Jordanie"],
-      ["CHICHENITZA", "Pyramide maya"],
-      ["CHRIST", "Rédempteur de Rio"],
-    ],
-  },
-  {
-    "n": "Grammaire",
-    "w": [
-      ["NOM", "Il désigne"],
-      ["VERBE", "Il exprime l’action"],
-      ["ADJECTIF", "Il qualifie"],
-      ["ADVERBE", "Il modifie le verbe"],
-      ["PRONOM", "Il remplace le nom"],
-      ["ARTICLE", "Le, la, les"],
-      ["SUJET", "Celui qui fait l’action"],
-      ["COMPLEMENT", "Il complète"],
-      ["PHRASE", "Suite de mots"],
-      ["ACCORD", "Genre et nombre"],
-    ],
-  },
-  {
-    "n": "Conjugaison",
-    "w": [
-      ["PRESENT", "Temps d’aujourd’hui"],
-      ["PASSE", "Temps d’hier"],
-      ["FUTUR", "Temps de demain"],
-      ["IMPARFAIT", "Temps du récit"],
-      ["INFINITIF", "Forme de base"],
-      ["PARTICIPE", "Passé ou présent"],
-      ["SUBJONCTIF", "Mode du souhait"],
-      ["CONDITIONNEL", "Mode de l’hypothèse"],
-      ["IMPERATIF", "Mode de l’ordre"],
-      ["AUXILIAIRE", "Être ou avoir"],
-    ],
-  },
-  {
-    "n": "Ponctuation",
-    "w": [
-      ["POINT", "Fin de phrase"],
-      ["VIRGULE", "Petite pause"],
-      ["GUILLEMETS", "Ils encadrent une citation"],
-      ["PARENTHESES", "Pour une précision"],
-      ["TIRET", "Dans un dialogue"],
-      ["APOSTROPHE", "Elle remplace une voyelle"],
-      ["POINTVIRGULE", "Pause moyenne"],
-      ["DEUXPOINTS", "Avant une explication"],
-      ["INTERROGATION", "Point de question"],
-      ["EXCLAMATION", "Point de surprise"],
-    ],
-  },
-  {
-    "n": "Figures de style",
-    "w": [
-      ["METAPHORE", "Comparaison sans comme"],
-      ["COMPARAISON", "Avec comme"],
-      ["HYPERBOLE", "Exagération"],
-      ["LITOTE", "Dire moins pour suggérer plus"],
-      ["ALLITERATION", "Répétition de consonnes"],
-      ["OXYMORE", "Obscure clarté"],
-      ["ANAPHORE", "Répétition en début de phrase"],
-      ["IRONIE", "Dire le contraire"],
-      ["ONOMATOPEE", "Mot qui imite un son"],
-    ],
-  },
-  {
-    "n": "Nombres",
-    "w": [
-      ["DEUX", "Paire"],
-      ["TROIS", "Trio"],
-      ["DIX", "Dizaine"],
-      ["CENT", "Centaine"],
-      ["MILLE", "Millier"],
-      ["ZERO", "Rien"],
-      ["DOUZE", "Douzaine"],
-      ["PAIR", "Divisible par deux"],
-      ["IMPAIR", "Non divisible par deux"],
-    ],
-  },
-  {
-    "n": "Mesures",
-    "w": [
-      ["METRE", "Unité de longueur"],
-      ["GRAMME", "Unité de masse"],
-      ["LITRE", "Unité de volume"],
-      ["SECONDE", "Unité de temps"],
-      ["DEGRE", "Unité de température"],
-      ["KILOMETRE", "Mille mètres"],
-      ["CENTIMETRE", "Centième de mètre"],
-      ["TONNE", "Mille kilos"],
-      ["HECTARE", "Surface agricole"],
-      ["BALANCE", "Elle pèse"],
-    ],
-  },
-  {
-    "n": "Heure",
-    "w": [
-      ["HORLOGE", "Elle sonne les heures"],
-      ["AIGUILLE", "Elle tourne sur le cadran"],
-      ["CADRAN", "Face de l’horloge"],
-      ["MINUTE", "Soixante secondes"],
-      ["SECONDE", "Fraction de minute"],
-      ["QUART", "Quinze minutes"],
-      ["DEMIE", "Trente minutes"],
-      ["SABLIER", "Il mesure avec du sable"],
-      ["CHRONOMETRE", "Il mesure une durée"],
-      ["PENDULE", "Horloge à balancier"],
-    ],
-  },
-  {
-    "n": "Argent",
-    "w": [
-      ["PIECE", "Monnaie métallique"],
-      ["BILLET", "Monnaie en papier"],
-      ["TIRELIRE", "Pour économiser"],
-      ["BANQUE", "Elle garde l’argent"],
-      ["EPARGNE", "Argent mis de côté"],
-      ["BUDGET", "Prévision des dépenses"],
-      ["PORTEMONNAIE", "Petite pochette"],
-      ["MONNAIE", "Rendue après achat"],
-      ["CHEQUE", "Paiement écrit"],
-      ["CARTE", "Bancaire"],
-    ],
-  },
-  {
-    "n": "Métiers d'art",
-    "w": [
-      ["EBENISTE", "Menuisier d’art"],
-      ["VERRIER", "Souffleur de verre"],
-      ["TAPISSIER", "Il recouvre les sièges"],
-      ["RELIEUR", "Il habille les livres"],
-      ["VITRAILLISTE", "Il crée des vitraux"],
-      ["DOREUR", "Il pose la feuille d’or"],
-      ["LUTHIER", "Il fabrique des violons"],
-      ["JOAILLIER", "Il crée des bijoux"],
-      ["SELLIER", "Il travaille le cuir"],
-      ["FERRONNIER", "Il forge le fer"],
-    ],
-  },
-  {
-    "n": "Métiers de la mer",
-    "w": [
-      ["MARIN", "Il navigue"],
-      ["PECHEUR", "Il pêche"],
-      ["CAPITAINE", "Il commande"],
-      ["GARDIEN", "De phare"],
-      ["OSTREICULTEUR", "Éleveur d’huîtres"],
-      ["DOCKER", "Il charge les navires"],
-      ["PLONGEUR", "Il travaille sous l’eau"],
-      ["SAUVETEUR", "En mer"],
-      ["MAREYEUR", "Vendeur de poisson en gros"],
-      ["CHARPENTIER", "De marine"],
-    ],
-  },
-  {
-    "n": "Métiers de la santé",
-    "w": [
-      ["MEDECIN", "Il soigne"],
-      ["INFIRMIER", "Il fait les soins"],
-      ["DENTISTE", "Il soigne les dents"],
-      ["PHARMACIEN", "Il délivre les médicaments"],
-      ["KINE", "Il rééduque"],
-      ["SAGEFEMME", "Elle accompagne les naissances"],
-      ["PEDIATRE", "Médecin des enfants"],
-      ["OPTICIEN", "Il vend des lunettes"],
-      ["CHIRURGIEN", "Il opère"],
-      ["AMBULANCIER", "Il transporte les malades"],
-    ],
-  },
-  {
-    "n": "Métiers de la terre",
-    "w": [
-      ["AGRICULTEUR", "Il cultive les champs"],
-      ["MARAICHER", "Il cultive les légumes"],
-      ["VITICULTEUR", "Il cultive la vigne"],
-      ["APICULTEUR", "Il élève les abeilles"],
-      ["ELEVEUR", "Il élève les animaux"],
-      ["ARBORICULTEUR", "Il cultive les arbres fruitiers"],
-      ["HORTICULTEUR", "Il cultive les fleurs"],
-      ["BUCHERON", "Il coupe les arbres"],
-      ["FORESTIER", "Il gère la forêt"],
-      ["PAYSAGISTE", "Il crée des jardins"],
-    ],
-  },
-  {
-    "n": "Métiers du spectacle",
-    "w": [
-      ["COMEDIEN", "Il joue un rôle"],
-      ["DANSEUR", "Il danse"],
-      ["MUSICIEN", "Il joue de la musique"],
-      ["CLOWN", "Il fait rire"],
-      ["MAGICIEN", "Il fait des tours"],
-      ["COSTUMIER", "Il crée les costumes"],
-      ["REGISSEUR", "Il gère la technique"],
-      ["MAQUILLEUR", "Il maquille les artistes"],
-      ["ACROBATE", "Il fait des figures"],
-    ],
-  },
-  {
-    "n": "Métiers anciens",
-    "w": [
-      ["FORGERON", "Il bat le fer"],
-      ["MEUNIER", "Il moud le grain"],
-      ["TONNELIER", "Il fabrique des tonneaux"],
-      ["RAMONEUR", "Il nettoie les cheminées"],
-      ["CHARRON", "Il fabrique les roues"],
-      ["LAVANDIERE", "Elle lave le linge au lavoir"],
-      ["ALLUMEUR", "De réverbères"],
-      ["CORDONNIER", "Il répare les chaussures"],
-      ["TISSERAND", "Il tisse"],
-      ["CRIEUR", "Public, il annonce les nouvelles"],
-    ],
-  },
-  {
-    "n": "Outils du jardin",
-    "w": [
-      ["SECATEUR", "Il taille"],
-      ["BINETTE", "Elle désherbe"],
-      ["FOURCHE", "Pour le foin"],
-      ["BROUETTE", "Pour transporter"],
-      ["TONDEUSE", "Pour la pelouse"],
-      ["SERFOUETTE", "Pour biner"],
-      ["TUYAU", "D’arrosage"],
-      ["PLANTOIR", "Pour faire des trous"],
-      ["GANTS", "De jardinage"],
-      ["SCARIFICATEUR", "Pour aérer la pelouse"],
-    ],
-  },
-  {
-    "n": "Aviation",
-    "w": [
-      ["AVION", "Il vole"],
-      ["PILOTE", "Il pilote"],
-      ["HOTESSE", "De l’air"],
-      ["AEROPORT", "Lieu des vols"],
-      ["PISTE", "De décollage"],
-      ["COCKPIT", "Poste de pilotage"],
-      ["AILE", "Elle porte l’avion"],
-      ["HELICE", "Elle tourne"],
-      ["HUBLOT", "Fenêtre d’avion"],
-      ["DECOLLAGE", "Départ en l’air"],
-    ],
-  },
-  {
-    "n": "Espace",
-    "w": [
-      ["FUSEE", "Elle décolle"],
-      ["ASTRONAUTE", "Voyageur spatial"],
-      ["STATION", "Spatiale"],
-      ["SCAPHANDRE", "Combinaison spatiale"],
-      ["APESANTEUR", "Absence de poids"],
-      ["ORBITE", "Trajectoire"],
-      ["LUNE", "Premier pas en 1969"],
-      ["NAVETTE", "Véhicule réutilisable"],
-      ["SONDE", "Robot explorateur"],
-      ["COSMOS", "L’univers"],
-    ],
-  },
-  {
-    "n": "Transports en commun",
-    "w": [
-      ["BUS", "Grand véhicule urbain"],
-      ["TRAMWAY", "Train de ville"],
-      ["METRO", "Train souterrain"],
-      ["ARRET", "Où l’on attend"],
-      ["TICKET", "Titre de transport"],
-      ["CHAUFFEUR", "Il conduit"],
-      ["HORAIRE", "Heure de passage"],
-      ["LIGNE", "Itinéraire"],
-      ["NAVETTE", "Va-et-vient"],
-    ],
-  },
-  {
-    "n": "Véhicules de chantier",
-    "w": [
-      ["GRUE", "Elle soulève"],
-      ["PELLETEUSE", "Elle creuse"],
-      ["BULLDOZER", "Il pousse la terre"],
-      ["BETONNIERE", "Elle mélange le béton"],
-      ["ROULEAU", "Compresseur"],
-      ["CAMION", "Benne"],
-      ["CHARIOT", "Élévateur"],
-      ["NACELLE", "Plateforme élévatrice"],
-      ["CASQUE", "Protection du chantier"],
-    ],
-  },
-  {
-    "n": "Véhicules d'urgence",
-    "w": [
-      ["AMBULANCE", "Elle transporte les blessés"],
-      ["CAMIONPOMPIER", "Rouge, avec une échelle"],
-      ["SIRENE", "Elle prévient"],
-      ["GYROPHARE", "Lumière tournante"],
-      ["HELICOPTERE", "De secours"],
-      ["ECHELLE", "Grande, des pompiers"],
-      ["LANCE", "À incendie"],
-      ["BRANCARD", "Pour porter un blessé"],
-      ["URGENCE", "Situation pressante"],
-      ["SECOURISTE", "Il porte secours"],
-    ],
-  },
-  {
-    "n": "Deux-roues",
-    "w": [
-      ["VELO", "À pédales"],
-      ["SCOOTER", "Petite moto"],
-      ["MOTO", "Deux-roues à moteur"],
-      ["TROTTINETTE", "À pousser"],
-      ["CASQUE", "Protection obligatoire"],
-      ["GUIDON", "Pour diriger"],
-      ["BEQUILLE", "Elle tient le deux-roues"],
-      ["SELLE", "Pour s’asseoir"],
-      ["MOBYLETTE", "Ancien cyclomoteur"],
-      ["SIDECAR", "Panier latéral"],
-    ],
-  },
-  {
-    "n": "Signalisation",
-    "w": [
-      ["FEU", "Rouge, orange ou vert"],
-      ["PANNEAU", "Il informe"],
-      ["STOP", "Arrêt obligatoire"],
-      ["PASSAGE", "Piéton"],
-      ["ROND", "Point, carrefour giratoire"],
-      ["FLECHE", "Elle indique la direction"],
-      ["LIMITATION", "De vitesse"],
-      ["SENSUNIQUE", "Une seule direction"],
-      ["PRIORITE", "Elle se respecte"],
-      ["BORNE", "Kilométrique"],
-    ],
-  },
-  {
-    "n": "Quartier",
-    "w": [
-      ["VOISIN", "Il habite à côté"],
-      ["BOULANGERIE", "Pain frais"],
-      ["SQUARE", "Petit jardin public"],
-      ["KIOSQUE", "À journaux"],
-      ["FONTAINE", "Point d’eau"],
-      ["MARCHE", "Du samedi"],
-      ["ECOLE", "Où vont les enfants"],
-      ["BIBLIOTHEQUE", "Livres à emprunter"],
-      ["PHARMACIE", "Croix verte"],
-    ],
-  },
-  {
-    "n": "Commerces",
-    "w": [
-      ["BOULANGERIE", "Pain et viennoiseries"],
-      ["BOUCHERIE", "Viande"],
-      ["FROMAGERIE", "Fromages"],
-      ["LIBRAIRIE", "Livres"],
-      ["FLEURISTE", "Fleurs"],
-      ["QUINCAILLERIE", "Clous et outils"],
-      ["PATISSERIE", "Gâteaux"],
-      ["EPICERIE", "Produits variés"],
-      ["POISSONNERIE", "Poissons"],
-      ["MERCERIE", "Fils et boutons"],
-    ],
-  },
-  {
-    "n": "Matières scolaires",
-    "w": [
-      ["FRANCAIS", "Langue et littérature"],
-      ["MATHEMATIQUES", "Calcul et géométrie"],
-      ["HISTOIRE", "Le passé"],
-      ["GEOGRAPHIE", "Les lieux du monde"],
-      ["SCIENCES", "Expériences"],
-      ["MUSIQUE", "Chant et instruments"],
-      ["DESSIN", "Arts plastiques"],
-      ["SPORT", "Éducation physique"],
-      ["ANGLAIS", "Langue étrangère"],
-      ["LECTURE", "Apprendre à lire"],
-    ],
-  },
-  {
-    "n": "Université",
-    "w": [
-      ["AMPHITHEATRE", "Grande salle de cours"],
-      ["ETUDIANT", "Il étudie"],
-      ["PROFESSEUR", "Il enseigne"],
-      ["DIPLOME", "On l’obtient"],
-      ["EXAMEN", "Épreuve"],
-      ["MEMOIRE", "Travail de recherche"],
-      ["CAMPUS", "Lieu universitaire"],
-      ["LICENCE", "Premier diplôme"],
-      ["BIBLIOTHEQUE", "Universitaire"],
-      ["COLOCATION", "Logement partagé"],
-    ],
-  },
-  {
-    "n": "Internet",
-    "w": [
-      ["SITE", "Page web"],
-      ["LIEN", "On clique dessus"],
-      ["NAVIGATEUR", "Logiciel de navigation"],
-      ["MOTDEPASSE", "Il protège le compte"],
-      ["WIFI", "Connexion sans fil"],
-      ["EMOJI", "Petit visage"],
-      ["RECHERCHE", "Sur un moteur"],
-      ["BLOG", "Journal en ligne"],
-      ["NUAGE", "Stockage en ligne"],
-    ],
-  },
-  {
-    "n": "Téléphone",
-    "w": [
-      ["SMARTPHONE", "Téléphone intelligent"],
-      ["ECRAN", "Tactile"],
-      ["APPLICATION", "Programme du téléphone"],
-      ["SONNERIE", "Elle annonce l’appel"],
-      ["TEXTO", "Message court"],
-      ["CHARGEUR", "Il recharge"],
-      ["REPONDEUR", "Messagerie"],
-      ["VIBREUR", "Mode silencieux"],
-      ["CONTACT", "Personne enregistrée"],
-      ["APPEL", "Coup de fil"],
-    ],
-  },
-  {
-    "n": "Robots",
-    "w": [
-      ["ROBOT", "Machine automatique"],
-      ["CAPTEUR", "Il détecte"],
-      ["MOTEUR", "Il fait bouger"],
-      ["PROGRAMME", "Suite d’instructions"],
-      ["BRAS", "Articulé"],
-      ["ANDROIDE", "Robot humanoïde"],
-      ["CIRCUIT", "Électronique"],
-      ["AUTOMATE", "Ancêtre du robot"],
-      ["DRONE", "Robot volant"],
-      ["ALGORITHME", "Méthode de calcul"],
-    ],
-  },
-  {
-    "n": "Toundra",
-    "w": [
-      ["LICHEN", "Nourriture du renne"],
-      ["PERGELISOL", "Sol gelé en permanence"],
-      ["RENARDPOLAIRE", "Renard blanc"],
-      ["HARFANG", "Chouette des neiges"],
-      ["LEMMING", "Petit rongeur du Nord"],
-      ["BOEUFMUSQUE", "Bovin laineux"],
-      ["INUIT", "Peuple du Grand Nord"],
-      ["KAYAK", "Embarcation inuite"],
-    ],
-  },
-  {
-    "n": "Forêt tropicale",
-    "w": [
-      ["EPIPHYTE", "Plante qui pousse sur une autre"],
-      ["BROMELIACEE", "Plante en rosette tropicale"],
-      ["GRENOUILLE", "Venimeuse et colorée"],
-      ["PAPILLON", "Morpho bleu"],
-      ["HUMIDITE", "Air saturé"],
-      ["MOUSSON", "Pluies abondantes"],
-      ["CANOPEE", "Étage supérieur"],
-      ["SINGE", "Hurleur"],
-    ],
-  },
-  {
-    "n": "Récif corallien",
-    "w": [
-      ["CORAIL", "Animal bâtisseur"],
-      ["POISSONCLOWN", "Dans l’anémone"],
-      ["ANEMONE", "Abri du poisson clown"],
-      ["MURENE", "Poisson serpent des récifs"],
-      ["TORTUE", "Imbriquée"],
-      ["LAGON", "Eau turquoise"],
-      ["PLANCTON", "Nourriture minuscule"],
-      ["PLONGEUR", "Il observe les poissons"],
-    ],
-  },
-  {
-    "n": "Marais",
-    "w": [
-      ["ROSEAU", "Plante des berges"],
-      ["HERON", "Il pêche patiemment"],
-      ["TOURBE", "Sol de marais"],
-      ["BARQUE", "Pour circuler"],
-      ["GRENOUILLE", "Elle coasse"],
-      ["MOUSTIQUE", "Il pique"],
-      ["LOUTRE", "Elle nage"],
-      ["NENUPHAR", "Il flotte"],
-    ],
-  },
-  {
-    "n": "Prairie",
-    "w": [
-      ["HERBE", "Elle couvre le sol"],
-      ["FOIN", "Herbe coupée séchée"],
-      ["COQUELICOT", "Fleur rouge"],
-      ["VACHE", "Elle broute"],
-      ["SAUTERELLE", "Elle saute"],
-      ["ALOUETTE", "Elle chante en volant"],
-      ["TREFLE", "Petite plante à trois feuilles"],
-      ["BOTTE", "De paille"],
-    ],
-  },
-  {
-    "n": "Bord de mer",
-    "w": [
-      ["DIGUE", "Promenade le long de la mer"],
-      ["JETEE", "Avancée dans la mer"],
-      ["CABINE", "De plage"],
-      ["CERFVOLANT", "Il vole au vent"],
-      ["CHATEAU", "De sable"],
-      ["EMBRUNS", "Gouttes d’eau salée"],
-      ["GOELAND", "Grand oiseau marin"],
-      ["ESTRAN", "Zone découverte à marée basse"],
-    ],
-  },
-  {
-    "n": "Vergers",
-    "w": [
-      ["POMME", "Fruit croquant"],
-      ["POIRE", "Fruit fondant"],
-      ["CUEILLETTE", "Récolte des fruits"],
-      ["ECHELLE", "Pour atteindre les branches"],
-      ["PANIER", "Pour la récolte"],
-      ["GREFFE", "Technique d’arboriculteur"],
-      ["FLORAISON", "Arbres en fleurs"],
-      ["COMPOTE", "Fruits cuits"],
-    ],
-  },
-  {
-    "n": "Vignobles",
-    "w": [
-      ["VIGNE", "Elle donne le raisin"],
-      ["RAISIN", "Grappes de fruits"],
-      ["VENDANGES", "Récolte du raisin"],
-      ["CEP", "Pied de vigne"],
-      ["GRAPPE", "Ensemble de grains"],
-      ["TONNEAU", "Fût en bois"],
-      ["PRESSOIR", "Il presse le raisin"],
-      ["COTEAU", "Pente plantée"],
-    ],
-  },
-  {
-    "n": "Fermes d'Asie",
-    "w": [
-      ["RIZIERE", "Champ inondé"],
-      ["BUFFLE", "Il laboure"],
-      ["THE", "Plantation en terrasses"],
-      ["BAMBOU", "Plante géante"],
-      ["CANARD", "Il nage dans la rizière"],
-      ["TERRASSE", "Champ en escalier"],
-      ["CHAPEAU", "Conique"],
-      ["MOUSSON", "Saison des pluies"],
-    ],
-  },
-  {
-    "n": "Animaux d'Afrique",
-    "w": [
-      ["ZEBRE", "Rayé noir et blanc"],
-      ["GNOU", "Migrateur"],
-      ["PHACOCHERE", "Sanglier africain"],
-      ["SURICATE", "Guetteur debout"],
-      ["OKAPI", "Girafe des forêts"],
-      ["LYCAON", "Chien sauvage"],
-      ["HIPPOPOTAME", "Il vit dans l’eau"],
-      ["CROCODILE", "Du Nil"],
-    ],
-  },
-  {
-    "n": "Animaux d'Asie",
-    "w": [
-      ["PANDA", "Mange du bambou"],
-      ["TIGRE", "Du Bengale"],
-      ["YAK", "Bovin des montagnes"],
-      ["ORANGOUTAN", "Singe roux"],
-      ["GIBBON", "Singe aux longs bras"],
-      ["ELEPHANT", "D’Asie"],
-      ["PAON", "Oiseau d’Inde"],
-    ],
-  },
-  {
-    "n": "Animaux d'Amérique",
-    "w": [
-      ["BISON", "Bovin des plaines"],
-      ["GRIZZLY", "Grand ours brun"],
-      ["RATONLAVEUR", "Masqué"],
-      ["MOUFETTE", "Elle sent mauvais"],
-      ["COYOTE", "Chien des prairies"],
-      ["TATOU", "Animal à carapace"],
-      ["LAMA", "Des Andes"],
-      ["COLIBRI", "Minuscule oiseau"],
-    ],
-  },
-  {
-    "n": "Animaux d'Europe",
-    "w": [
-      ["CHEVREUIL", "Petit cervidé"],
-      ["SANGLIER", "Cochon sauvage"],
-      ["BLAIREAU", "Rayé noir et blanc"],
-      ["HERMINE", "Blanche en hiver"],
-      ["BELETTE", "Petit carnivore"],
-      ["LYNX", "Félin d’Europe"],
-      ["BOUQUETIN", "Chèvre des Alpes"],
-      ["CIGOGNE", "Oiseau migrateur"],
-    ],
-  },
-  {
-    "n": "Glaciers",
-    "w": [
-      ["CREVASSE", "Fente dans la glace"],
-      ["MORAINE", "Débris rocheux"],
-      ["SERAC", "Bloc de glace"],
-      ["ICEBERG", "Glace flottante"],
-      ["FONTE", "Recul du glacier"],
-      ["CORDEE", "Alpinistes reliés"],
-      ["PIOLET", "Outil d’alpiniste"],
-      ["CRAMPONS", "Pointes sous les chaussures"],
-    ],
-  },
-  {
-    "n": "Animaux rigolos",
-    "w": [
-      ["AXOLOTL", "Il sourit toujours"],
-      ["PARESSEUX", "Très lent"],
-      ["ORNITHORYNQUE", "Bec de canard"],
-      ["TAPIR", "Petite trompe"],
-      ["QUOKKA", "Animal souriant"],
-      ["CAPYBARA", "Gros rongeur paisible"],
-      ["FENNEC", "Renard aux grandes oreilles"],
-      ["PANGOLIN", "Couvert d’écailles"],
-    ],
-  },
-  {
-    "n": "Petites bêtes du sol",
-    "w": [
-      ["VERDETERRE", "Il aère la terre"],
-      ["CLOPORTE", "Il se roule en boule"],
-      ["MILLEPATTES", "Beaucoup de pattes"],
-      ["LIMACE", "Sans coquille"],
-      ["FOURMI", "Ouvrière"],
-      ["SCARABEE", "Coléoptère"],
-      ["LARVE", "Insecte jeune"],
-      ["COLLEMBOLE", "Petit sauteur du sol"],
-    ],
-  },
-  {
-    "n": "Papillons",
-    "w": [
-      ["MONARQUE", "Grand migrateur orange"],
-      ["MACHAON", "Papillon jaune à queues"],
-      ["PAON", "Du jour, aux ocelles"],
-      ["PIERIDE", "Papillon blanc du chou"],
-      ["CITRON", "Papillon jaune"],
-      ["VULCAIN", "Papillon noir et rouge"],
-      ["SPHINX", "Papillon de nuit"],
-      ["CHRYSALIDE", "Étape de la métamorphose"],
-    ],
-  },
-  {
-    "n": "Arbres d'Afrique",
-    "w": [
-      ["BAOBAB", "Arbre bouteille"],
-      ["ACACIA", "Arbre en parasol"],
-      ["FROMAGER", "Arbre géant"],
-      ["PALMIER", "À huile"],
-      ["KARITE", "Arbre au beurre"],
-      ["EBENE", "Bois noir"],
-      ["FLAMBOYANT", "Arbre aux fleurs rouges"],
-      ["MANGUIER", "Arbre à mangues"],
-    ],
-  },
-  {
-    "n": "Plantes médicinales",
-    "w": [
-      ["CAMOMILLE", "Calmante"],
-      ["VERVEINE", "Tisane du soir"],
-      ["TILLEUL", "Apaisant"],
-      ["SAUGE", "Plante aux vertus nombreuses"],
-      ["ECHINACEE", "Fleur pourpre"],
-      ["MILLEPERTUIS", "Fleur jaune"],
-      ["ALOEVERA", "Gel apaisant"],
-      ["VALERIANE", "Aide au sommeil"],
-    ],
-  },
-  {
-    "n": "Céramique",
-    "w": [
-      ["VAISSELLE", "Assiettes et bols"],
-      ["EMAIL", "Couche brillante"],
-      ["BISCUIT", "Céramique non émaillée"],
-      ["TERRECUITE", "Argile cuite"],
-      ["GRES", "Céramique dure"],
-      ["RAKU", "Technique japonaise"],
-      ["FOUR", "Il cuit"],
-      ["MOSAIQUE", "Carreaux assemblés"],
-    ],
-  },
-  {
-    "n": "Verre",
-    "w": [
-      ["SOUFFLEUR", "Il façonne le verre"],
-      ["VITRAIL", "Fenêtre colorée"],
-      ["CRISTAL", "Verre fin"],
-      ["MIROIR", "Verre réfléchissant"],
-      ["BOCAL", "Récipient en verre"],
-      ["FLACON", "Petite bouteille"],
-      ["PERLE", "De verre"],
-      ["SABLE", "Matière première du verre"],
-    ],
-  },
-  {
-    "n": "Cuir et tissage",
-    "w": [
-      ["CUIR", "Peau travaillée"],
-      ["METIER", "À tisser"],
-      ["NAVETTE", "Elle passe le fil"],
-      ["TRAME", "Fils horizontaux"],
-      ["CHAINE", "Fils verticaux"],
-      ["TAPIS", "Tissé à la main"],
-      ["OSIER", "Branches tressées"],
-      ["VANNERIE", "Art de tresser"],
-    ],
-  },
-  {
-    "n": "Bricolage",
-    "w": [
-      ["PERCEUSE", "Elle perce"],
-      ["CHEVILLE", "Pour fixer au mur"],
-      ["ECROU", "Avec un boulon"],
-      ["NIVEAU", "À bulle"],
-      ["METRE", "Ruban"],
-      ["PONCAGE", "Lissage"],
-      ["ESCABEAU", "Petite échelle"],
-      ["PEINTURE", "Couleur des murs"],
-    ],
-  },
-  {
-    "n": "Papeterie fine",
-    "w": [
-      ["PLUME", "Pour écrire"],
-      ["ENCRIER", "Pot d’encre"],
-      ["CACHET", "De cire"],
-      ["PAPIERKRAFT", "Papier brun"],
-      ["CARNET", "De notes"],
-      ["ENVELOPPE", "Pour la lettre"],
-      ["CALLIGRAPHIE", "Belle écriture"],
-      ["BUVARD", "Il absorbe l’encre"],
-    ],
-  },
-  {
-    "n": "Fêtes du monde",
-    "w": [
-      ["DIWALI", "Fête des lumières"],
-      ["HANOUKA", "Fête juive des lumières"],
-      ["AID", "Fête musulmane"],
-      ["NOUVELAN", "Chinois, lunaire"],
-      ["THANKSGIVING", "Action de grâce"],
-      ["HOLI", "Fête des couleurs"],
-      ["HALLOWEEN", "Nuit des citrouilles"],
-      ["CARNAVAL", "Fête masquée"],
-    ],
-  },
-  {
-    "n": "Jeux de cour",
-    "w": [
-      ["ELASTIQUE", "Jeu de saut"],
-      ["MARELLE", "On saute de case en case"],
-      ["BILLES", "Petites boules"],
-      ["CORDE", "À sauter"],
-      ["CACHECACHE", "On se cache"],
-      ["CHAT", "Perché"],
-      ["BALLON", "Prisonnier"],
-      ["TOUPIE", "Elle tourne"],
-    ],
-  },
-  {
-    "n": "Jeux de société",
-    "w": [
-      ["DAMES", "Jeu de pions"],
-      ["ECHECS", "Jeu de stratégie"],
-      ["DOMINOS", "Pièces à points"],
-      ["DES", "Petits cubes"],
-      ["PLATEAU", "Support du jeu"],
-      ["PION", "Pièce qu’on avance"],
-      ["TOUR", "À chacun son tour"],
-      ["JETON", "Pièce de jeu"],
-    ],
-  },
-  {
-    "n": "Peluches",
-    "w": [
-      ["OURSON", "Nounours"],
-      ["LAPIN", "Aux longues oreilles"],
-      ["DOUDOU", "Compagnon du coucher"],
-      ["LICORNE", "En peluche"],
-      ["CHIEN", "Fidèle peluche"],
-      ["ELEPHANT", "À trompe douce"],
-      ["PINGOUIN", "Tout doux"],
-      ["PANDA", "Noir et blanc"],
-    ],
-  },
-  {
-    "n": "Contes de fées",
-    "w": [
-      ["PRINCESSE", "Héroïne"],
-      ["CENDRILLON", "Pantoufle de verre"],
-      ["BLANCHENEIGE", "Sept nains"],
-      ["CHAPERON", "Rouge, dans la forêt"],
-      ["POUCET", "Petit, avec ses cailloux"],
-      ["CITROUILLE", "Devient carrosse"],
-      ["BAGUETTE", "Magique"],
-      ["PANTOUFLE", "De vair"],
-    ],
-  },
-  {
-    "n": "Fables",
-    "w": [
-      ["CIGALE", "Elle chante tout l’été"],
-      ["FOURMI", "Elle n’est pas prêteuse"],
-      ["CORBEAU", "Fromage au bec"],
-      ["RENARD", "Flatteur"],
-      ["LIEVRE", "Il perd la course"],
-      ["TORTUE", "Elle gagne la course"],
-      ["LAFONTAINE", "Auteur des fables"],
-      ["MORALE", "Leçon de la fable"],
-    ],
-  },
-  {
-    "n": "Héros de contes",
-    "w": [
-      ["PINOCCHIO", "Son nez s’allonge"],
-      ["ALADIN", "Lampe merveilleuse"],
-      ["PETERPAN", "Ne veut pas grandir"],
-      ["HEIDI", "Petite fille des montagnes"],
-      ["ALICE", "Au pays des merveilles"],
-      ["SINBAD", "Le marin"],
-      ["GULLIVER", "Voyageur chez les Lilliputiens"],
-      ["OLIVERTWIST", "Orphelin de Dickens"],
-    ],
-  },
-  {
-    "n": "Chevalerie",
-    "w": [
-      ["EPEE", "Arme du chevalier"],
-      ["BOUCLIER", "Il protège"],
-      ["HEAUME", "Casque fermé"],
-      ["LANCE", "Pour la joute"],
-      ["ADOUBEMENT", "Cérémonie du chevalier"],
-      ["DESTRIER", "Cheval de bataille"],
-      ["HONNEUR", "Valeur du chevalier"],
-      ["QUETE", "Du Graal"],
-    ],
-  },
-  {
-    "n": "Rois et reines",
-    "w": [
-      ["COURONNE", "Sur la tête du roi"],
-      ["SCEPTRE", "Bâton royal"],
-      ["TRONE", "Siège du roi"],
-      ["PALAIS", "Demeure royale"],
-      ["PRINCE", "Fils du roi"],
-      ["DUCHESSE", "Femme noble"],
-      ["COUR", "Entourage du roi"],
-      ["DYNASTIE", "Famille royale"],
-    ],
-  },
-  {
-    "n": "Pirates et corsaires",
-    "w": [
-      ["SURCOUF", "Célèbre corsaire malouin"],
-      ["BARBENOIRE", "Pirate redouté"],
-      ["SABRE", "Arme courbe"],
-      ["BOUSSOLE", "Pour naviguer"],
-      ["TONNEAU", "De rhum"],
-      ["HAMAC", "Lit de marin"],
-      ["MOUSSAILLON", "Jeune marin"],
-      ["GALION", "Navire espagnol"],
-    ],
-  },
-  {
-    "n": "Savoir-vivre à table",
-    "w": [
-      ["SERVIETTE", "Sur les genoux"],
-      ["COUTEAU", "Pour couper"],
-      ["FOURCHETTE", "Pour piquer"],
-      ["CUILLERE", "Pour la soupe"],
-      ["NAPPE", "Couvre la table"],
-      ["CHANDELIER", "Porte-bougies"],
-      ["MENU", "Liste du repas"],
-      ["CONVIVE", "Invité à table"],
-    ],
-  },
-  {
-    "n": "Goûter",
-    "w": [
-      ["TARTINE", "Pain et chocolat"],
-      ["COMPOTE", "Purée de fruits"],
-      ["JUS", "De fruits"],
-      ["BISCUIT", "Sec ou fourré"],
-      ["GAUFRE", "Quadrillée"],
-      ["MADELEINE", "Petit gâteau en coquille"],
-      ["QUATREHEURES", "Autre nom du goûter"],
-    ],
-  },
-  {
-    "n": "Brunch",
-    "w": [
-      ["OEUFS", "Brouillés"],
-      ["PANCAKES", "Petites crêpes épaisses"],
-      ["AVOCAT", "Sur toast"],
-      ["JUS", "D’orange pressé"],
-      ["GRANOLA", "Céréales croustillantes"],
-      ["BACON", "Lard grillé"],
-      ["SMOOTHIE", "Fruits mixés"],
-      ["CAFE", "Pour se réveiller"],
-    ],
-  },
-  {
-    "n": "Barbecue",
-    "w": [
-      ["GRILLE", "Pour cuire"],
-      ["BRAISES", "Charbons rouges"],
-      ["BROCHETTE", "Morceaux sur pic"],
-      ["CHARBON", "Combustible"],
-      ["PINCE", "Pour retourner"],
-      ["MARINADE", "Pour parfumer"],
-      ["MAIS", "Épi grillé"],
-      ["FUMEE", "Elle monte"],
-    ],
-  },
-  {
-    "n": "Épicerie fine",
-    "w": [
-      ["TRUFFE", "Champignon précieux"],
-      ["CAVIAR", "Œufs d’esturgeon"],
-      ["FOIEGRAS", "Spécialité festive"],
-      ["SAFRAN", "Épice chère"],
-      ["HUILE", "D’olive extra vierge"],
-      ["VINAIGRE", "Balsamique"],
-      ["CONFIT", "Cuit dans la graisse"],
-      ["TAPENADE", "Purée d’olives"],
-    ],
-  },
-  {
-    "n": "Fruits secs",
-    "w": [
-      ["RAISIN", "Sec"],
-      ["ABRICOT", "Sec et orangé"],
-      ["PRUNEAU", "Prune séchée"],
-      ["DATTE", "Fruit du palmier"],
-      ["FIGUE", "Sèche"],
-      ["CRANBERRY", "Canneberge séchée"],
-      ["MANGUE", "Séchée"],
-      ["BANANE", "Chips"],
-    ],
-  },
-  {
-    "n": "Desserts du monde",
-    "w": [
-      ["TIRAMISU", "Italie"],
-      ["BAKLAVA", "Orient"],
-      ["CHEESECAKE", "États-Unis"],
-      ["BROWNIE", "Gâteau chocolat américain"],
-      ["PAVLOVA", "Meringue d’Océanie"],
-      ["MOCHI", "Japon"],
-      ["CHURROS", "Espagne"],
-      ["STRUDEL", "Autriche"],
-    ],
-  },
-  {
-    "n": "Fromages du monde",
-    "w": [
-      ["CHEDDAR", "Angleterre"],
-      ["GOUDA", "Pays-Bas"],
-      ["MANCHEGO", "Espagne"],
-      ["FETA", "Grèce"],
-      ["PARMESAN", "Italie"],
-      ["HALLOUMI", "Chypre"],
-      ["GRUYERE", "Suisse"],
-      ["RICOTTA", "Italie"],
-    ],
-  },
-  {
-    "n": "Pains français",
-    "w": [
-      ["BAGUETTE", "Pain long"],
-      ["BATARD", "Pain moyen"],
-      ["FICELLE", "Pain fin"],
-      ["COURONNE", "Pain en anneau"],
-      ["CAMPAGNE", "Pain rustique"],
-      ["BRIOCHE", "Pain au beurre"],
-      ["FOUGASSE", "Pain plat ajouré"],
-      ["PAINDEMIE", "Pain moelleux"],
-    ],
-  },
-  {
-    "n": "Sports de raquette",
-    "w": [
-      ["TENNIS", "Sur terre battue"],
-      ["BADMINTON", "Avec un volant"],
-      ["PINGPONG", "Tennis de table"],
-      ["SQUASH", "Contre un mur"],
-      ["PADEL", "Tennis en cage"],
-      ["RAQUETTE", "On la tient"],
-      ["FILET", "Au milieu du terrain"],
-      ["SERVICE", "Premier coup"],
-    ],
-  },
-  {
-    "n": "Arts martiaux",
-    "w": [
-      ["JUDO", "Voie de la souplesse"],
-      ["KARATE", "Main vide"],
-      ["AIKIDO", "Art de l’harmonie"],
-      ["KUNGFU", "Art martial chinois"],
-      ["TAICHI", "Gymnastique lente"],
-      ["KIMONO", "Tenue d’entraînement"],
-      ["CEINTURE", "Couleur du niveau"],
-      ["TATAMI", "Tapis"],
-    ],
-  },
-  {
-    "n": "Gymnastique",
-    "w": [
-      ["POUTRE", "Équilibre en hauteur"],
-      ["BARRES", "Asymétriques"],
-      ["ANNEAUX", "Suspendus"],
-      ["CHEVAL", "D’arçons"],
-      ["SOL", "Enchaînement au tapis"],
-      ["SALTO", "Saut périlleux"],
-      ["ROUE", "Figure acrobatique"],
-      ["TRAMPOLINE", "Toile rebondissante"],
-    ],
-  },
-  {
-    "n": "Sports d'hiver",
-    "w": [
-      ["SKI", "Alpin ou de fond"],
-      ["SNOWBOARD", "Planche à neige"],
-      ["LUGE", "Petit traîneau"],
-      ["BIATHLON", "Ski et tir"],
-      ["CURLING", "Pierres sur la glace"],
-      ["BOBSLEIGH", "Engin sur piste glacée"],
-      ["RAQUETTES", "Pour marcher sur la neige"],
-      ["SAUT", "À ski"],
-    ],
-  },
-  {
-    "n": "Équipe de football",
-    "w": [
-      ["GARDIEN", "Il protège le but"],
-      ["DEFENSEUR", "Il défend"],
-      ["MILIEU", "Joueur central"],
-      ["ATTAQUANT", "Il marque"],
-      ["ARBITRE", "Il siffle"],
-      ["CORNER", "Coup de coin"],
-      ["PENALTY", "Tir au but"],
-      ["VESTIAIRE", "Où l’on se change"],
-    ],
-  },
-  {
-    "n": "Tour de France",
-    "w": [
-      ["MAILLOT", "Jaune du leader"],
-      ["PELOTON", "Groupe de coureurs"],
-      ["ETAPE", "Course du jour"],
-      ["COL", "Montée en montagne"],
-      ["SPRINT", "Final rapide"],
-      ["CARAVANE", "Publicitaire"],
-      ["GRIMPEUR", "Bon en montagne"],
-      ["CHAMPSELYSEES", "Arrivée finale"],
-    ],
-  },
-  {
-    "n": "Navigation de plaisance",
-    "w": [
-      ["VOILIER", "Bateau à voiles"],
-      ["SPI", "Grande voile colorée"],
-      ["FOC", "Voile avant"],
-      ["BOME", "Barre de la grand-voile"],
-      ["BARRE", "Pour diriger"],
-      ["REGATE", "Course de voiliers"],
-      ["MOUILLAGE", "Arrêt à l’ancre"],
-      ["PONTON", "Quai flottant"],
-    ],
-  },
-  {
-    "n": "Plongée",
-    "w": [
-      ["MASQUE", "Pour voir sous l’eau"],
-      ["TUBA", "Pour respirer en surface"],
-      ["PALMES", "Pour nager vite"],
-      ["BOUTEILLE", "D’air"],
-      ["COMBINAISON", "En néoprène"],
-      ["PALIER", "Arrêt de décompression"],
-      ["EPAVE", "Bateau coulé"],
-      ["CORAIL", "Récif"],
-    ],
-  },
-  {
-    "n": "Surf",
-    "w": [
-      ["PLANCHE", "On glisse dessus"],
-      ["VAGUE", "On la prend"],
-      ["SPOT", "Lieu de surf"],
-      ["WAX", "Cire antidérapante"],
-      ["TUBE", "Vague enroulée"],
-      ["LEASH", "Cordon de la planche"],
-      ["HOULE", "Mouvement de la mer"],
-      ["SURFEUR", "Il glisse"],
-    ],
-  },
-  {
-    "n": "Pique-nique en forêt",
-    "w": [
-      ["CLAIRIERE", "Endroit ensoleillé"],
-      ["SOUCHE", "Siège naturel"],
-      ["FRAMBOISES", "Cueillies au bord du chemin"],
-      ["FOURMIS", "Invitées surprises"],
-      ["COUVERTURE", "À carreaux"],
-      ["GOURDE", "Eau fraîche"],
-      ["OMBRE", "Fraîcheur des arbres"],
-      ["GLANDS", "Au sol"],
-    ],
-  },
-  {
-    "n": "Nuit étoilée",
-    "w": [
-      ["ETOILE", "Point brillant"],
-      ["LUNE", "Croissant ou pleine"],
-      ["VOIELACTEE", "Notre galaxie"],
-      ["CONSTELLATION", "Dessin d’étoiles"],
-      ["CHOUETTE", "Elle veille"],
-      ["SILENCE", "Calme de la nuit"],
-      ["LUCIOLE", "Petite lumière"],
-      ["REVE", "Il commence"],
-    ],
-  },
-  {
-    "n": "Lever de soleil",
-    "w": [
-      ["AUBE", "Première lumière"],
-      ["AURORE", "Ciel rose"],
-      ["ROSEE", "Gouttes du matin"],
-      ["HORIZON", "Ligne lointaine"],
-      ["CHANT", "Des oiseaux"],
-      ["BRUME", "Elle se dissipe"],
-      ["DORE", "Couleur du ciel"],
-      ["REVEIL", "Début du jour"],
-    ],
-  },
-  {
-    "n": "Coucher de soleil",
-    "w": [
-      ["CREPUSCULE", "Tombée du jour"],
-      ["ORANGE", "Couleur du ciel"],
-      ["SILHOUETTE", "Ombre découpée"],
-      ["HORIZON", "Où le soleil disparaît"],
-      ["ROSE", "Nuages colorés"],
-      ["VEILLEE", "Soirée qui commence"],
-      ["LUEUR", "Dernière lumière"],
-      ["SOIR", "Fin de journée"],
-    ],
-  },
-  {
-    "n": "Pluie",
-    "w": [
-      ["GOUTTE", "D’eau"],
-      ["FLAQUE", "On saute dedans"],
-      ["PARAPLUIE", "On l’ouvre"],
-      ["BOTTES", "En caoutchouc"],
-      ["CIRE", "Manteau imperméable"],
-      ["AVERSE", "Pluie soudaine"],
-      ["BRUINE", "Pluie fine"],
-      ["ARCENCIEL", "Après la pluie"],
-    ],
-  },
-  {
-    "n": "Neige",
-    "w": [
-      ["FLOCON", "Cristal de glace"],
-      ["BONHOMME", "De neige"],
-      ["BOULE", "Bataille de neige"],
-      ["LUGE", "Pour glisser"],
-      ["CONGERE", "Amas de neige"],
-      ["POUDREUSE", "Neige légère"],
-      ["SKI", "Sport de neige"],
-      ["TRACE", "Empreinte dans la neige"],
-    ],
-  },
-  {
-    "n": "Vent",
-    "w": [
-      ["BRISE", "Vent léger"],
-      ["RAFALE", "Coup de vent"],
-      ["GIROUETTE", "Elle tourne"],
-      ["EOLIENNE", "Elle produit de l’énergie"],
-      ["CERFVOLANT", "Il danse dans le ciel"],
-      ["MOULIN", "À vent"],
-      ["VOILE", "Elle se gonfle"],
-      ["TOURBILLON", "Vent qui tourne"],
-    ],
-  },
-  {
-    "n": "Feu de camp",
-    "w": [
-      ["BRAISE", "Charbon rouge"],
-      ["ETINCELLE", "Petite lumière qui saute"],
-      ["FLAMME", "Elle danse"],
-      ["BUCHE", "Bois à brûler"],
-      ["GUIMAUVE", "Grillée au bout d’un bâton"],
-      ["CHANSON", "Autour du feu"],
-      ["CENDRES", "Restes du feu"],
-      ["FUMEE", "Elle monte vers le ciel"],
-    ],
-  },
-  {
-    "n": "Bibliothèque intime",
-    "w": [
-      ["ROMAN", "Long récit"],
-      ["POLAR", "Roman policier"],
-      ["BIOGRAPHIE", "Récit d’une vie"],
-      ["ESSAI", "Réflexion écrite"],
-      ["NOUVELLE", "Court récit"],
-      ["ATLAS", "Livre de cartes"],
-      ["DICTIONNAIRE", "Livre de mots"],
-    ],
-  },
-  {
-    "n": "Instruments du monde",
-    "w": [
-      ["SITAR", "Inde"],
-      ["KORA", "Afrique de l’Ouest"],
-      ["BALALAIKA", "Russie"],
-      ["DIDGERIDOO", "Australie"],
-      ["UKULELE", "Hawaï"],
-      ["CORNEMUSE", "Écosse"],
-      ["BANDONEON", "Argentine"],
-      ["KOTO", "Japon"],
-    ],
-  },
-  {
-    "n": "Danses du monde",
-    "w": [
-      ["VALSE", "Vienne"],
-      ["TANGO", "Buenos Aires"],
-      ["FLAMENCO", "Andalousie"],
-      ["SAMBA", "Rio"],
-      ["SIRTAKI", "Grèce"],
-      ["SALSA", "Cuba"],
-      ["POLKA", "Bohême"],
-      ["HULA", "Hawaï"],
-    ],
-  },
-  {
-    "n": "Plats du monde",
-    "w": [
-      ["PAELLA", "Espagne"],
-      ["SUSHI", "Japon"],
-      ["PIZZA", "Italie"],
-      ["TACOS", "Mexique"],
-      ["COUSCOUS", "Maghreb"],
-      ["PHO", "Vietnam"],
-      ["GOULASH", "Hongrie"],
-      ["FONDUE", "Suisse"],
-    ],
-  },
-  {
-    "n": "Boissons chaudes",
-    "w": [
-      ["THE", "Infusion de feuilles"],
-      ["CAFE", "Grains torréfiés"],
-      ["CHOCOLAT", "Cacao et lait"],
-      ["TISANE", "Plantes infusées"],
-      ["CHAI", "Thé épicé"],
-      ["VINCHAUD", "Boisson de Noël"],
-      ["LAITCHAUD", "Au miel"],
-      ["GROG", "Boisson chaude au citron"],
-    ],
-  },
-  {
-    "n": "Nature en ville",
-    "w": [
-      ["ARBRE", "D’alignement"],
-      ["PARC", "Espace vert"],
-      ["JARDINIER", "Municipal"],
-      ["ABEILLE", "Ruches sur les toits"],
-      ["MOINEAU", "Oiseau des villes"],
-      ["POTAGER", "Partagé"],
-      ["COMPOST", "De quartier"],
-      ["TOITURE", "Végétalisée"],
-    ],
-  },
-  {
-    "n": "Jardin japonais",
-    "w": [
-      ["BONSAI", "Arbre miniature"],
-      ["CARPEKOI", "Poisson coloré du bassin"],
-      ["LANTERNE", "En pierre"],
-      ["ERABLE", "Rouge à l’automne"],
-      ["GRAVIER", "Ratissé en vagues"],
-      ["PONT", "Arrondi au-dessus de l’eau"],
-      ["BAMBOU", "Fontaine qui bascule"],
-      ["MOUSSE", "Tapis vert"],
-    ],
-  },
-  {
-    "n": "Jardin anglais",
-    "w": [
-      ["ROSIER", "Grimpant sur l’arche"],
-      ["PELOUSE", "Bien tondue"],
-      ["TONNELLE", "Abri fleuri"],
-      ["PIVOINE", "Grosse fleur"],
-      ["GLORIETTE", "Petit pavillon"],
-      ["BANC", "Pour se reposer"],
-      ["MASSIF", "De fleurs"],
-      ["ALLEE", "Chemin sinueux"],
-    ],
-  },
-  {
-    "n": "Jardin d'hiver",
-    "w": [
-      ["VERANDA", "Pièce vitrée"],
-      ["AGRUMES", "Citronniers en pot"],
-      ["FOUGERE", "Plante d’ombre"],
-      ["FAUTEUIL", "En rotin"],
-      ["SOLEIL", "Il réchauffe la pièce"],
-      ["ORCHIDEE", "Fleur exotique"],
-      ["THE", "Servi entre les plantes"],
-      ["LUMIERE", "Douce et filtrée"],
-    ],
-  },
-  {
-    "n": "Balcon",
-    "w": [
-      ["JARDINIERE", "Bac à fleurs"],
-      ["GERANIUM", "Fleur des balcons"],
-      ["TOMATE", "Cerise en pot"],
-      ["TRANSAT", "Pour se détendre"],
-      ["GUIRLANDE", "Lumineuse"],
-      ["RAMBARDE", "Garde-corps"],
-      ["VUE", "Sur la ville"],
-      ["FRAISIER", "En suspension"],
-    ],
-  },
-  {
-    "n": "Grenier",
-    "w": [
-      ["MALLE", "Coffre ancien"],
-      ["POUSSIERE", "Elle recouvre tout"],
-      ["LUCARNE", "Petite fenêtre"],
-      ["POUTRE", "En bois"],
-      ["SOUVENIR", "Objet du passé"],
-      ["ARAIGNEE", "Toile dans un coin"],
-      ["CARTON", "De vieux jouets"],
-      ["ESCALIER", "Raide pour monter"],
-    ],
-  },
-  {
-    "n": "Cave",
-    "w": [
-      ["BOCAL", "De conserves"],
-      ["POMMES", "Stockées pour l’hiver"],
-      ["ETAGERE", "Pour ranger"],
-      ["FRAICHEUR", "Température constante"],
-      ["VOUTE", "Plafond de pierre"],
-      ["LAMPE", "Torche"],
-      ["CHAUDIERE", "Au sous-sol"],
-      ["OUTILS", "Rangés au mur"],
-    ],
-  },
-  {
-    "n": "Cabane dans les arbres",
-    "w": [
-      ["ECHELLE", "Pour monter"],
-      ["PLANCHES", "Pour construire"],
-      ["CORDE", "Pour hisser"],
-      ["FEUILLAGE", "Il cache la cabane"],
-      ["LONGUEVUE", "Pour observer"],
-      ["DRAPEAU", "Sur le toit"],
-      ["TRAPPE", "Pour entrer"],
-      ["SECRET", "Code d’accès"],
-    ],
-  },
-  {
-    "n": "Château de sable",
-    "w": [
-      ["SEAU", "Moule à tours"],
-      ["PELLE", "Pour creuser"],
-      ["DOUVES", "Fossé rempli d’eau"],
-      ["TOUR", "En forme de seau"],
-      ["COQUILLAGE", "Décoration"],
-      ["DRAPEAU", "Sur le sommet"],
-      ["VAGUE", "Elle détruit tout"],
-      ["SABLE", "Mouillé, il tient"],
-    ],
-  },
-  {
-    "n": "Atelier d'artiste",
-    "w": [
-      ["CHEVALET", "Support de toile"],
-      ["PALETTE", "Mélange des couleurs"],
-      ["TABLIER", "Taché de peinture"],
-      ["VERRIERE", "Grande fenêtre de lumière"],
-      ["TUBE", "De peinture"],
-      ["PINCEAUX", "Dans un pot"],
-      ["TOILE", "Vierge ou peinte"],
-      ["MODELE", "Il pose"],
-    ],
-  },
-  {
-    "n": "Boîte à couture",
-    "w": [
-      ["BOBINE", "De fil"],
-      ["EPINGLE", "Elle tient le tissu"],
-      ["METRE", "Ruban de couturière"],
-      ["CISEAUX", "À tissu"],
-      ["PELOTE", "À épingles"],
-      ["BOUTONS", "De toutes les couleurs"],
-      ["CRAIE", "De tailleur"],
-    ],
-  },
-  {
-    "n": "Fournitures d'école",
-    "w": [
-      ["ARDOISE", "Pour écrire à la craie"],
-      ["CRAYONS", "De couleur"],
-      ["TAILLECRAYON", "Pour l’aiguiser"],
-      ["EQUERRE", "Angle droit"],
-      ["RAPPORTEUR", "Pour les angles"],
-      ["FEUTRES", "Pour colorier"],
-      ["AGENDA", "Pour les devoirs"],
-      ["PROTEGECAHIER", "Couverture de cahier"],
-    ],
-  },
-  {
-    "n": "Récréation",
-    "w": [
-      ["MARELLE", "Craie au sol"],
-      ["BALLON", "On joue avec"],
-      ["CORDE", "À sauter"],
-      ["CHAT", "Jeu de poursuite"],
-      ["PREAU", "Abri de la cour"],
-      ["SONNERIE", "Fin de récré"],
-      ["GOUTER", "Petite collation"],
-      ["COPAINS", "Amis de jeu"],
-    ],
-  },
-  {
-    "n": "Sortie scolaire",
-    "w": [
-      ["CAR", "Bus scolaire"],
-      ["MUSEE", "Visite culturelle"],
-      ["PIQUENIQUE", "Repas dehors"],
-      ["GUIDE", "Il explique"],
-      ["GROUPE", "Ensemble d’élèves"],
-      ["AUTORISATION", "Signée par les parents"],
-      ["SOUVENIR", "De la journée"],
-    ],
-  },
-  {
-    "n": "Atelier pâtisserie",
-    "w": [
-      ["FOUET", "Pour battre"],
-      ["MOULE", "Pour cuire"],
-      ["POCHE", "À douille"],
-      ["DOUILLE", "Embout décoratif"],
-      ["TAMIS", "Pour la farine"],
-      ["SPATULE", "Pour lisser"],
-      ["BALANCE", "Pour peser"],
-      ["MINUTEUR", "Pour la cuisson"],
-    ],
-  },
-  {
-    "n": "Potager d'été",
-    "w": [
-      ["TOMATE", "Rouge et juteuse"],
-      ["COURGETTE", "Elle pousse vite"],
-      ["HARICOT", "Vert ou beurre"],
-      ["AUBERGINE", "Violette"],
-      ["POIVRON", "Rouge, jaune ou vert"],
-      ["CONCOMBRE", "Frais"],
-      ["BASILIC", "Aromatique"],
-      ["ARROSOIR", "Indispensable l’été"],
-    ],
-  },
-  {
-    "n": "Serre",
-    "w": [
-      ["SEMIS", "Jeunes pousses"],
-      ["VITRE", "Laisse passer la lumière"],
-      ["CHALEUR", "Elle s’accumule"],
-      ["GODET", "Petit pot"],
-      ["ARROSAGE", "Goutte à goutte"],
-      ["TERREAU", "Terre riche"],
-      ["BOUTURE", "Morceau de plante replanté"],
-      ["HUMIDITE", "Air chargé d’eau"],
-    ],
-  },
-  {
-    "n": "Abécédaire des animaux",
-    "w": [
-      ["ANTILOPE", "A comme..."],
-      ["BALEINE", "B comme..."],
-      ["CHAMEAU", "C comme..."],
-      ["DAUPHIN", "D comme..."],
-      ["ELEPHANT", "E comme..."],
-      ["FURET", "F comme..."],
-      ["GIRAFE", "G comme..."],
-      ["HERISSON", "H comme..."],
-    ],
-  },
-  {
-    "n": "Bruits de la ferme",
-    "w": [
-      ["MEUGLEMENT", "Cri de la vache"],
-      ["BELEMENT", "Cri du mouton"],
-      ["HENNISSEMENT", "Cri du cheval"],
-      ["CAQUETAGE", "Cri de la poule"],
-      ["COCORICO", "Chant du coq"],
-      ["GROGNEMENT", "Cri du cochon"],
-      ["ABOIEMENT", "Cri du chien"],
-      ["MIAULEMENT", "Cri du chat"],
-    ],
-  },
-  {
-    "n": "Bébés animaux",
-    "w": [
-      ["POULAIN", "Bébé cheval"],
-      ["VEAU", "Bébé vache"],
-      ["AGNEAU", "Bébé mouton"],
-      ["CHATON", "Bébé chat"],
-      ["CHIOT", "Bébé chien"],
-      ["FAON", "Bébé biche"],
-      ["OURSON", "Bébé ours"],
-      ["LIONCEAU", "Bébé lion"],
-    ],
-  },
-  {
-    "n": "Couleurs des animaux",
-    "w": [
-      ["FLAMANT", "Rose"],
-      ["CORBEAU", "Noir"],
-      ["CYGNE", "Blanc"],
-      ["CANARI", "Jaune"],
-      ["ECUREUIL", "Roux"],
-      ["GRENOUILLE", "Verte"],
-      ["ZEBRE", "Rayé"],
-      ["COCCINELLE", "Rouge à points noirs"],
-    ],
-  },
-  {
-    "n": "Animaux et vitesse",
-    "w": [
-      ["GUEPARD", "Le plus rapide sur terre"],
-      ["FAUCON", "Le plus rapide en piqué"],
-      ["ESCARGOT", "Très lent"],
-      ["TORTUE", "Lente mais sûre"],
-      ["LIEVRE", "Rapide coureur"],
-      ["ESPADON", "Poisson très rapide"],
-      ["PARESSEUX", "Le plus lent"],
-      ["AUTRUCHE", "Grande coureuse"],
-    ],
-  },
-  {
-    "n": "Records de la nature",
-    "w": [
-      ["BALEINE", "Plus grand animal"],
-      ["GIRAFE", "Plus grand animal terrestre en hauteur"],
-      ["SEQUOIA", "Arbre géant"],
-      ["EVEREST", "Plus haut sommet"],
-      ["NIL", "Long fleuve"],
-      ["PACIFIQUE", "Plus grand océan"],
-      ["SAHARA", "Grand désert chaud"],
-      ["COLIBRI", "Plus petit oiseau"],
-    ],
-  },
-  {
-    "n": "Les quatre éléments",
-    "w": [
-      ["EAU", "Élément liquide"],
-      ["FEU", "Élément brûlant"],
-      ["AIR", "Élément invisible"],
-      ["TERRE", "Élément solide"],
-      ["VAGUE", "Mouvement de l’eau"],
-      ["FLAMME", "Langue de feu"],
-      ["SOUFFLE", "Mouvement de l’air"],
-      ["ARGILE", "Terre à modeler"],
-    ],
-  },
-  {
-    "n": "Le temps qui passe",
-    "w": [
-      ["SECONDE", "Instant bref"],
-      ["JOURNEE", "Du matin au soir"],
-      ["SEMAINE", "Sept jours"],
-      ["SAISON", "Trois mois"],
-      ["ANNEE", "Douze mois"],
-      ["SIECLE", "Cent ans"],
-      ["MILLENAIRE", "Mille ans"],
-      ["INSTANT", "Moment présent"],
-    ],
-  },
-  {
-    "n": "Instants de bonheur",
-    "w": [
-      ["SOURIRE", "Signe de joie"],
-      ["CALIN", "Câlin chaleureux"],
-      ["FOURIRE", "Rire incontrôlable"],
-      ["SIESTE", "Petit repos"],
-      ["LECTURE", "Moment calme"],
-      ["BALADE", "Promenade"],
-      ["RETROUVAILLES", "Joie de se revoir"],
-      ["SURPRISE", "Bonne nouvelle"],
-    ],
-  },
-  {
-    "n": "Rituels du soir",
-    "w": [
-      ["PYJAMA", "Tenue de nuit"],
-      ["HISTOIRE", "Avant de dormir"],
-      ["BROSSEADENTS", "Avant le coucher"],
-      ["VEILLEUSE", "Petite lumière"],
-      ["TISANE", "Boisson du soir"],
-      ["BERCEUSE", "Chanson douce"],
-      ["BISOU", "De bonne nuit"],
-      ["COUETTE", "Pour se blottir"],
-    ],
-  },
-  {
-    "n": "Voyage en train de nuit",
-    "w": [
-      ["COUCHETTE", "Lit étroit"],
-      ["COMPARTIMENT", "Petite cabine"],
-      ["CONTROLEUR", "Il passe la nuit"],
-      ["PAYSAGE", "Qui défile"],
-      ["GARE", "Arrivée au matin"],
-      ["VALISE", "Sous la banquette"],
-      ["RAILS", "Bercement régulier"],
-      ["LAMPE", "De lecture"],
-    ],
-  },
-  {
-    "n": "Road trip",
-    "w": [
-      ["CARTE", "Routière"],
-      ["COFFRE", "Plein de bagages"],
-      ["AUTOROUTE", "Voie rapide"],
-      ["AIRE", "De repos"],
-      ["PLAYLIST", "Musique du voyage"],
-      ["MOTEL", "Hôtel de bord de route"],
-      ["PANORAMA", "Point de vue"],
-      ["ESSENCE", "Plein du réservoir"],
-    ],
-  },
-  {
-    "n": "Vacances à la montagne",
-    "w": [
-      ["CHALET", "En bois"],
-      ["RANDONNEE", "Balade en altitude"],
-      ["TELEPHERIQUE", "Cabine suspendue"],
-      ["LAC", "D’altitude"],
-      ["FROMAGE", "De montagne"],
-      ["MARMOTTE", "Elle siffle"],
-      ["SOMMET", "Point culminant"],
-      ["REFUGE", "Abri de montagne"],
-    ],
-  },
-  {
-    "n": "Vacances à la campagne",
-    "w": [
-      ["FERME", "Lieu de séjour"],
-      ["TRACTEUR", "Engin agricole"],
-      ["POTAGER", "Légumes frais"],
-      ["CHEMIN", "De terre"],
-      ["VELO", "Pour se balader"],
-      ["GITE", "Logement rural"],
-      ["VERGER", "Arbres fruitiers"],
-      ["MARCHE", "Du village"],
-    ],
-  },
-  {
-    "n": "Vacances en ville",
-    "w": [
-      ["MUSEE", "Visite culturelle"],
-      ["TERRASSE", "De café"],
-      ["METRO", "Pour se déplacer"],
-      ["MONUMENT", "À visiter"],
-      ["PLAN", "De la ville"],
-      ["BOUTIQUE", "Pour flâner"],
-      ["QUARTIER", "À découvrir"],
-      ["SPECTACLE", "Le soir"],
-    ],
-  },
-  {
-    "n": "Brocante",
-    "w": [
-      ["VIDEGRENIER", "Vente entre particuliers"],
-      ["CHINER", "Chercher des trésors"],
-      ["ANTIQUAIRE", "Marchand d’objets anciens"],
-      ["VAISSELLE", "Ancienne"],
-      ["DISQUE", "Vinyle"],
-      ["BIBELOT", "Petit objet"],
-      ["MARCHANDER", "Négocier le prix"],
-      ["TROUVAILLE", "Objet déniché"],
-    ],
-  },
-  {
-    "n": "Vieux objets",
-    "w": [
-      ["GRAMOPHONE", "Ancien tourne-disque"],
-      ["MACHINE", "À écrire"],
-      ["LAMPEAPETROLE", "Ancien éclairage"],
-      ["CADRAN", "Téléphone à..."],
-      ["MALLE", "Coffre de voyage"],
-      ["HORLOGE", "Comtoise"],
-      ["MOULIN", "À café"],
-      ["DIAPOSITIVE", "Photo projetée"],
-    ],
-  },
-  {
-    "n": "Calligraphie",
-    "w": [
-      ["PLUME", "Outil d’écriture"],
-      ["ENCRE", "De Chine"],
-      ["LETTRINE", "Grande lettre décorée"],
-      ["PAPIER", "Épais et doux"],
-      ["ONCIALE", "Écriture médiévale"],
-      ["TRAIT", "Plein et délié"],
-      ["PINCEAU", "Calligraphie chinoise"],
-      ["PATIENCE", "Qualité nécessaire"],
-    ],
-  },
-  {
-    "n": "Comètes et astéroïdes",
-    "w": [
-      ["COMETE", "Astre à queue"],
-      ["HALLEY", "Comète célèbre"],
-      ["QUEUE", "Traînée lumineuse"],
-      ["NOYAU", "Cœur glacé"],
-      ["METEORITE", "Pierre tombée du ciel"],
-      ["CRATERE", "Trou d’impact"],
-      ["CEINTURE", "D’astéroïdes"],
-      ["ETOILEFILANTE", "Trait dans la nuit"],
-    ],
-  },
-  {
-    "n": "Lune",
-    "w": [
-      ["CROISSANT", "Phase en forme de C"],
-      ["PLEINE", "Lune toute ronde"],
-      ["NOUVELLE", "Lune invisible"],
-      ["CRATERE", "Trou à la surface"],
-      ["MAREE", "Influencée par la lune"],
-      ["ECLIPSE", "Ombre de la Terre"],
-      ["APOLLO", "Missions lunaires"],
-      ["QUARTIER", "Moitié éclairée"],
-    ],
-  },
-  {
-    "n": "Soleil",
-    "w": [
-      ["RAYON", "De lumière"],
-      ["ETOILE", "Le Soleil en est une"],
-      ["ECLIPSE", "Soleil caché"],
-      ["TACHE", "Solaire"],
-      ["CHALEUR", "Elle nous réchauffe"],
-      ["LEVER", "Du soleil"],
-      ["COUCHER", "Du soleil"],
-      ["SOLSTICE", "Jour le plus long"],
-    ],
-  },
-  {
-    "n": "Cristaux de neige",
-    "w": [
-      ["FLOCON", "Cristal de neige"],
-      ["HEXAGONE", "Forme à six côtés"],
-      ["SYMETRIE", "Équilibre parfait"],
-      ["GIVRE", "Fins cristaux"],
-      ["GELEE", "Blanche"],
-      ["FRIMAS", "Brouillard glacé"],
-      ["CRISTAL", "Forme géométrique"],
-      ["DENDRITE", "Branche du flocon"],
-    ],
-  },
-  {
-    "n": "Bonbons d'antan",
-    "w": [
-      ["COQUELICOT", "Bonbon de Nemours"],
-      ["VIOLETTE", "Bonbon de Toulouse"],
-      ["BETISE", "De Cambrai"],
-      ["BERLINGOT", "De Carpentras"],
-      ["CALISSON", "D’Aix"],
-      ["NOUGAT", "De Montélimar"],
-      ["CARAMBAR", "Barre au caramel"],
-      ["ROUDOUDOU", "Bonbon dans un coquillage"],
-    ],
-  },
-  {
-    "n": "Bord de rivière",
-    "w": [
-      ["BERGE", "Rive"],
-      ["SAULE", "Pleureur"],
-      ["PECHEUR", "Avec sa canne"],
-      ["BARQUE", "Amarrée"],
-      ["LIBELLULE", "Elle survole l’eau"],
-      ["GALET", "Pierre ronde"],
-      ["CLAPOTIS", "Bruit de l’eau"],
-      ["GUE", "Passage peu profond"],
-    ],
-  },
-  {
-    "n": "Vie au phare",
-    "w": [
-      ["GARDIEN", "Il veille"],
-      ["LANTERNE", "Elle tourne"],
-      ["ESCALIER", "En colimaçon"],
-      ["TEMPETE", "Les vagues frappent"],
-      ["CORNE", "De brume"],
-      ["REGISTRE", "Journal de bord"],
-      ["ILOT", "Rocher isolé"],
-      ["SIGNAL", "Lumineux"],
-    ],
-  },
-  {
-    "n": "Vie en mer",
-    "w": [
-      ["NAVIRE", "Grand bateau"],
-      ["EQUIPAGE", "Marins à bord"],
-      ["QUART", "Tour de garde"],
-      ["ROULIS", "Balancement"],
-      ["BOUSSOLE", "Pour s’orienter"],
-      ["HORIZON", "Ligne lointaine"],
-      ["GOUVERNAIL", "Pour diriger"],
-      ["MOUETTE", "Elle suit le bateau"],
-    ],
-  },
-  {
-    "n": "Atelier du Père Noël",
-    "w": [
-      ["LUTIN", "Assistant"],
-      ["JOUET", "Fabriqué avec soin"],
-      ["TRAINEAU", "Prêt pour le 24"],
-      ["RENNE", "Attelé au traîneau"],
-      ["LISTE", "Des enfants sages"],
-      ["HOTTE", "Sac de jouets"],
-      ["CHEMINEE", "Pour descendre"],
-      ["POLE", "Nord, adresse de l’atelier"],
-    ],
-  },
-  {
-    "n": "Fête de la musique",
-    "w": [
-      ["JUIN", "Le 21"],
-      ["RUE", "Scène improvisée"],
-      ["CONCERT", "Gratuit"],
-      ["GUITARE", "Instrument populaire"],
-      ["CHORALE", "Chant collectif"],
-      ["DANSE", "Dans les rues"],
-      ["AMATEUR", "Musicien du dimanche"],
-      ["SOLSTICE", "D’été"],
-    ],
-  },
-  {
-    "n": "Kermesse",
-    "w": [
-      ["STAND", "De jeux"],
-      ["CHAMBOULETOUT", "Jeu de boîtes"],
-      ["PECHE", "Aux canards"],
-      ["TOMBOLA", "Jeu de lots"],
-      ["LOT", "À gagner"],
-      ["GATEAUX", "Faits maison"],
-      ["MAQUILLAGE", "Pour enfants"],
-      ["CREPES", "Vendues sur place"],
-    ],
-  },
-  {
-    "n": "Cuisine mexicaine",
-    "w": [
-      ["TORTILLA", "Galette de maïs"],
-      ["GUACAMOLE", "Purée d’avocat"],
-      ["BURRITO", "Tortilla roulée garnie"],
-      ["NACHOS", "Chips de maïs"],
-      ["SALSA", "Sauce tomate pimentée"],
-      ["PIMENT", "Jalapeño"],
-      ["ENCHILADA", "Tortilla nappée de sauce"],
-      ["HARICOTS", "Noirs ou rouges"],
-    ],
-  },
-  {
-    "n": "Cuisine bretonne",
-    "w": [
-      ["GALETTE", "De sarrasin"],
-      ["CIDRE", "Boisson de pomme"],
-      ["KOUIGNAMANN", "Gâteau au beurre"],
-      ["FARBRETON", "Flan aux pruneaux"],
-      ["SARRASIN", "Blé noir"],
-      ["CRAMPOUZ", "Crêpe en breton"],
-      ["BEURRESALE", "Spécialité bretonne"],
-      ["CARAMEL", "Au beurre salé"],
-    ],
-  },
-  {
-    "n": "Cuisine provençale",
-    "w": [
-      ["RATATOUILLE", "Légumes mijotés"],
-      ["BOUILLABAISSE", "Soupe de poissons"],
-      ["AIOLI", "Mayonnaise à l’ail"],
-      ["PISSALADIERE", "Tarte aux oignons"],
-      ["NAVETTE", "Biscuit de Marseille"],
-      ["SOCCA", "Galette de pois chiches"],
-      ["PISTOU", "Sauce au basilic"],
-      ["HERBES", "De Provence"],
-    ],
-  },
-  {
-    "n": "Cuisine italienne",
-    "w": [
-      ["RISOTTO", "Riz crémeux"],
-      ["LASAGNES", "Pâtes en couches"],
-      ["GNOCCHI", "Boulettes de pomme de terre"],
-      ["PESTO", "Sauce au basilic"],
-      ["CARBONARA", "Pâtes aux œufs"],
-      ["POLENTA", "Semoule de maïs"],
-      ["FOCACCIA", "Pain plat à l’huile"],
-      ["GELATO", "Glace italienne"],
-    ],
-  },
-  {
-    "n": "Journalisme",
-    "w": [
-      ["REPORTER", "Il enquête sur le terrain"],
-      ["REDACTION", "Équipe du journal"],
-      ["UNE", "Première page"],
-      ["EDITORIAL", "Article d’opinion"],
-      ["INTERVIEW", "Questions-réponses"],
-      ["SCOOP", "Information exclusive"],
-      ["SOURCE", "Origine de l’info"],
-      ["BOUCLAGE", "Fin de la mise en page"],
-    ],
-  },
-  {
-    "n": "Cinéma de quartier",
-    "w": [
-      ["AFFICHE", "Annonce du film"],
-      ["SEANCE", "Horaire de projection"],
-      ["FAUTEUIL", "Rouge et moelleux"],
-      ["PROJECTEUR", "Machine à images"],
-      ["ECRAN", "Grand et blanc"],
-      ["POPCORN", "Grignotage"],
-      ["OUVREUSE", "Elle place les spectateurs"],
-      ["BANDEANNONCE", "Avant-goût du film"],
-    ],
-  },
-  {
-    "n": "Métiers du bois",
-    "w": [
-      ["MENUISIER", "Il fait des meubles"],
-      ["CHARPENTIER", "Il fait les toits"],
-      ["EBENISTE", "Meubles précieux"],
-      ["TONNELIER", "Il fabrique des tonneaux"],
-      ["SCULPTEUR", "Il taille le bois"],
-      ["BUCHERON", "Il abat les arbres"],
-      ["RABOT", "Pour aplanir"],
-      ["SCIERIE", "Où l’on débite les troncs"],
-    ],
-  },
-  {
-    "n": "Océan profond",
-    "w": [
-      ["ABYSSES", "Grandes profondeurs"],
-      ["CALMAR", "Géant"],
-      ["BAUDROIE", "Poisson lanterne"],
-      ["PRESSION", "Écrasante au fond"],
-      ["SOUSMARIN", "Engin d’exploration"],
-      ["FOSSE", "Des Mariannes"],
-      ["OBSCURITE", "Noir complet"],
-    ],
-  },
-  {
-    "n": "Animaux d'Australie",
-    "w": [
-      ["KANGOUROU", "Il saute avec sa poche"],
-      ["KOALA", "Mange de l’eucalyptus"],
-      ["WOMBAT", "Marsupial fouisseur"],
-      ["EMEU", "Grand oiseau coureur"],
-      ["DINGO", "Chien sauvage"],
-      ["OPOSSUM", "Marsupial nocturne"],
-      ["KOOKABURRA", "Oiseau rieur"],
-      ["ECHIDNE", "Fourmilier épineux"],
-    ],
-  },
-  {
-    "n": "Insectes du jardin",
-    "w": [
-      ["COCCINELLE", "Mangeuse de pucerons"],
-      ["BOURDON", "Gros et velu"],
-      ["SAUTERELLE", "Bonne sauteuse"],
-      ["PUCERON", "Sur les rosiers"],
-      ["PERCEOREILLE", "Pinces au bout du corps"],
-      ["GUEPE", "Rayée jaune et noir"],
-      ["CRIQUET", "Il stridule"],
-      ["SYRPHE", "Mouche déguisée en guêpe"],
-    ],
-  },
-  {
-    "n": "Musique classique",
-    "w": [
-      ["SYMPHONIE", "Œuvre pour orchestre"],
-      ["CONCERTO", "Soliste et orchestre"],
-      ["SONATE", "Pour un ou deux instruments"],
-      ["OPERA", "Théâtre chanté"],
-      ["CHEF", "D’orchestre"],
-      ["PARTITION", "Musique écrite"],
-      ["MOZART", "Compositeur autrichien"],
-      ["BACH", "Compositeur allemand"],
-    ],
-  },
-  {
-    "n": "Jeux de mots",
-    "w": [
-      ["CHARADE", "Mon premier..."],
-      ["REBUS", "Dessins à déchiffrer"],
-      ["ANAGRAMME", "Lettres mélangées"],
-      ["PALINDROME", "Se lit dans les deux sens"],
-      ["CONTREPETERIE", "Inversion de sons"],
-      ["CALEMBOUR", "Jeu sur les sons"],
-      ["DEVINETTE", "Question amusante"],
-      ["ACROSTICHE", "Poème aux initiales"],
-    ],
-  },
-  {
-    "n": "Calendrier",
-    "w": [
-      ["JANVIER", "Premier mois"],
-      ["FEVRIER", "Mois le plus court"],
-      ["MARS", "Arrivée du printemps"],
-      ["AVRIL", "Poisson d’avril"],
-      ["MAI", "Muguet"],
-      ["JUIN", "Début de l’été"],
-      ["JUILLET", "Fête nationale"],
-      ["AOUT", "Grandes vacances"],
-    ],
-  },
-  {
-    "n": "Fin d'année",
-    "w": [
-      ["SEPTEMBRE", "Rentrée"],
-      ["OCTOBRE", "Feuilles mortes"],
-      ["NOVEMBRE", "Brouillard"],
-      ["DECEMBRE", "Fêtes"],
-      ["CALENDRIER", "Pour compter les jours"],
-      ["AGENDA", "Rendez-vous notés"],
-      ["SAISON", "Il y en a quatre"],
-      ["REVEILLON", "Dernier soir de l’année"],
-    ],
-  },
-  {
-    "n": "Cuisine grecque",
-    "w": [
-      ["MOUSSAKA", "Gratin d’aubergines"],
-      ["TZATZIKI", "Yaourt au concombre"],
-      ["FETA", "Fromage de brebis"],
-      ["SOUVLAKI", "Brochette"],
-      ["OLIVES", "De Kalamata"],
-      ["DOLMAS", "Feuilles de vigne farcies"],
-      ["GYROS", "Viande en pita"],
-      ["SPANAKOPITA", "Feuilleté aux épinards"],
-    ],
-  },
-  {
-    "n": "Studio de radio",
-    "w": [
-      ["MICROPHONE", "Il capte la voix"],
-      ["CASQUE", "Pour s’entendre"],
-      ["CONSOLE", "Table de mixage"],
-      ["DIRECT", "Émission en..."],
-      ["REGIE", "Derrière la vitre"],
-      ["CHRONIQUEUR", "Il tient une rubrique"],
-      ["FLASHINFO", "Bref bulletin"],
-      ["PODCAST", "Émission à réécouter"],
-    ],
-  },
-  {
-    "n": "Mercerie",
-    "w": [
-      ["RUBAN", "Bande de tissu"],
-      ["GALON", "Bordure décorative"],
-      ["DENTELLE", "Tissu ajouré"],
-      ["PRESSION", "Bouton qui claque"],
-      ["VELCRO", "Bande auto-agrippante"],
-      ["BIAIS", "Bande coupée en diagonale"],
-      ["ELASTIQUE", "Il s’étire"],
-      ["APPLIQUE", "Motif à coudre"],
-    ],
-  },
-  {
-    "n": "Fils et pelotes",
-    "w": [
-      ["MOHAIR", "Laine de chèvre"],
-      ["ALPAGA", "Laine douce des Andes"],
-      ["COTON", "Fil d’été"],
-      ["ANGORA", "Laine de lapin"],
-      ["CACHEMIRE", "Laine précieuse"],
-      ["CROCHET", "Aiguille à bout recourbé"],
-      ["PELOTE", "Boule de laine"],
-      ["ECHEVEAU", "Fil enroulé"],
-    ],
-  },
-];
-const GENC = {};
-function lvB(g) {
-  return "caches" === g && caOn() ? CANL : NLS[g];
-}
-function lvD(g, a) {
-  return ((a = void 0 === a ? lv : a), a >= 1e9 ? lvB(g) + a - 1e9 : a);
-}
-function LVX(A, g, f) {
-  if (lv >= 1e9) {
-    const d = lvD(g);
-    if (A[d]) return A[d];
+    e.zone("hook", e.qR(a - 0.1, s + 0.1, n - 1.8, n + 0.4), null, "c");
+  } else {
+    e.pg(e.qL(a, s, n - 0.12, n + 0.22), o, dSh(o, 0.7));
+    for (let t = 0; t < i; t++) {
+      const o = a + ((t + 0.5) * (s - a)) / i,
+        r = e.P(0.05, o, n),
+        l = e.P(0.35, o, n - 0.1);
+      e.ln(r, l, "#d9c08a", 2);
+    }
+    e.zone("hook", e.qL(a - 0.1, s + 0.1, n - 1.8, n + 0.4), null, "c");
   }
-  const k = g + ":" + lv;
-  return GENC[k] || (GENC[k] = f(lv));
-}
-function lvMA(e) {
-  const k0 = ckey(e),
-    d = (t) => st.get(k0 + ":" + t, !1) || st.get("k:" + k0.slice(2) + ":" + t, !1);
-  let k = 10;
-  for (; [...Array(10).keys()].some((t) => d(k - 10 + t));) k += 10;
-  return k;
-}
-const lvShuf = (a, R) => {
-  a = a.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = (R() * (i + 1)) | 0;
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 };
-let WV0 = null;
-function wfV() {
-  if (WV0) return WV0;
-  WV0 = WFR.map((w, i) => ({ w: w, k: nk(w), i: i })).filter(
-    (x) =>
-      x.k.length >= 3 &&
-      !/^(CONNERIES?|CHIANTE?S?|FOUTUE?S?|MERDIQUE|NUL|NULLE|CRETINS?|IDIOTE?S?|DEBILES?|STUPIDES?|HAINE|HAIR|TUE|TUES|TUER|MORTE?S?|NEO|LET|EUT|ETC)$/.test(
-        x.k,
-      ),
+const dBench = (e, t, a, s, n, o = "#b98a5a") => {
+  (e.box(t, a, 0, s, 0.15, 1.3, dSh(o, 0.85)), e.box(t, a + n - 0.15, 0, s, 0.15, 1.3, dSh(o, 0.85)));
+  const i = e.box(t, a + 0.15, 0.12, s, n - 0.3, 0.1, dSh(o, 0.95)),
+    r = [
+      e.P(t + s, a + 0.2, 0.22),
+      e.P(t + s, a + n - 0.2, 0.22),
+      e.P(t + s, a + n - 0.2, 0.95),
+      e.P(t + s, a + 0.2, 0.95),
+    ];
+  e.zone("shoes", r, dHull([...i.hull, ...r]), "b");
+  const l = e.box(t, a, 1.3, s, n, 0.16, o);
+  (e.box(t, a, 1.46, 0.25, n, 1.4, dSh(o, 0.9)), e.zone("bench", l.top, l.hull));
+};
+const dConsole = (e, t, a, s, n, o = "#8a5a36") => {
+  ([
+    [0.05, 0.05],
+    [s - 0.2, 0.05],
+    [0.05, n - 0.2],
+    [s - 0.2, n - 0.2],
+  ].forEach(([s, n]) => e.box(t + s, a + n, 0, 0.15, 0.15, 1.9, dSh(o, 0.8))),
+    e.box(t + 0.05, a + 0.05, 0.5, s - 0.1, n - 0.1, 0.08, dSh(o, 0.9)));
+  const i = e.box(t, a, 1.9, s, n, 0.16, o);
+  e.zone("console", i.top, i.hull);
+};
+const dUStand = (e, t, a, s = "#5f86a8") => {
+  e.cyl(t, a, 0, 0.32, 1.3, s);
+  const n = e.P(t, a, 1.3),
+    o = 9.4752;
+  e.zone(
+    "ustand",
+    [
+      [n[0] - o, n[1] - 28],
+      [n[0] + o, n[1] - 28],
+      [n[0] + o, n[1] + 4],
+      [n[0] - o, n[1] + 4],
+    ],
+    [
+      [n[0] - o - 2, n[1] - 34],
+      [n[0] + o + 2, n[1] - 34],
+      [n[0] + o + 2, n[1] + 1.3 * 24 + 8],
+      [n[0] - o - 2, n[1] + 1.3 * 24 + 8],
+    ],
+    "b",
   );
-  return WV0;
-}
-const WBC = {};
-const WCV = {};
-function wfCand(n, top, need, a) {
-  const key = n + ":" + top,
-    L0 =
-      WBC[key] ||
-      (WBC[key] = lvShuf(
-        wfV().filter((x) => x.k.length === n && x.i < top),
-        rng(1009 * n + top),
-      )),
-    V = WCV[key + ":" + need] || (WCV[key + ":" + need] = { l: [], p: 0, S: null });
-  V.S ||
-    (V.S = wfV().filter(
-      (x) =>
-        x.k.length <= n &&
-        x.i < (n <= 5 ? 5e3 : 8e3) &&
-        !/^(ETC|LEU|ACE|TAC|FIA|LAI|ACES|ETAT|ETATS)$/.test(x.k),
+};
+const dChanging = (e, t, a, s, n, o = "#f4efe6", i = "L") => {
+  const r = e.box(t, a, 0, s, n, 2, o),
+    l = e.box(t + 0.1, a + 0.1, 2, s - 0.2, n - 0.2, 0.18, "#bfe6da", { t: "#d4f2e8" });
+  (e.zone("change", l.top, dHull([...r.hull, ...l.hull])),
+    dStore(e, t, a, s, n, i, o, [
+      { t: "drawer", k: "bdrawer", a: 0.05, b: 0.95, z0: 1.05, z1: 1.92, cap: 2 },
+      { t: "drawer", k: "bdrawer", a: 0.05, b: 0.95, z0: 0.1, z1: 0.95, cap: 2 },
+    ]));
+};
+const dToyBox = (e, t, a, s, n, o = "#7fc0ee") => {
+  const i = e.box(t, a, 0, s, n, 1, o),
+    r = [
+      e.P(t + 0.1, a + 0.1, 1),
+      e.P(t + s - 0.1, a + 0.1, 1),
+      e.P(t + s - 0.1, a + n - 0.1, 1),
+      e.P(t + 0.1, a + n - 0.1, 1),
+    ];
+  e.pg(r, dSh(o, 0.55));
+  const l = e.P(t + 0.5 * s, a + n, 0.5);
+  ((e.s += `<circle cx="${l[0].toFixed(1)}" cy="${l[1].toFixed(1)}" r="5" fill="#ffd36b"/><circle cx="${(l[0] + 9).toFixed(1)}" cy="${(l[1] + 4).toFixed(1)}" r="3.4" fill="#ff9ab8"/>`),
+    e.zone("toybox", r, i.hull));
+};
+const dRocker = (e, t, a, s = "#e8c9a0") => {
+  ((e.s += `<path d="M${e.P(t, a, 0)[0].toFixed(1)} ${e.P(t, a, 0)[1].toFixed(1)}Q${e.P(t + 0.6, a + 0.6, -0.3)[0].toFixed(1)} ${e.P(t + 0.6, a + 0.6, -0.3)[1].toFixed(1)} ${e.P(t + 1.2, a + 1.2, 0)[0].toFixed(1)} ${e.P(t + 1.2, a + 1.2, 0)[1].toFixed(1)}" stroke="${dSh(s, 0.6)}" stroke-width="2.4" fill="none"/>`),
+    e.box(t + 0.1, a + 0.1, 0.2, 1, 1, 0.7, dSh(s, 0.9)),
+    e.box(t + 0.1, a + 0.1, 0.9, 1, 1, 0.22, s),
+    e.box(t + 0.1, a + 0.1, 1.12, 0.22, 1, 1.3, dSh(s, 0.95)));
+};
+const dFiling = (e, t, a, s, n, o = "#9aa6b8", i = "R") => {
+  const r = e.box(t, a, 0, s, n, 2.7, o);
+  (e.zone("side", r.top, r.hull),
+    dStore(
+      e,
+      t,
+      a,
+      s,
+      n,
+      i,
+      o,
+      [2, 1, 0].map((e) => ({
+        t: "drawer",
+        k: "files",
+        a: 0.06,
+        b: 0.94,
+        z0: (2.7 * e) / 3 + 0.08,
+        z1: (2.7 * (e + 1)) / 3 - 0.08,
+        cap: 2,
+      })),
     ));
-  while (V.l.length <= Math.min(a, 500) && V.p < L0.length) {
-    const b = L0[V.p++],
-      s = V.S.filter((w) => w.k !== b.k && fits(w.k, b.k));
-    s.length >= need && V.l.push({ b: b, s: s });
+};
+const dDeskO = (e, t, a, s, n, o = dWood) => {
+  (e.box(t + 0.05, a, 0, 0.22, n, 2, dSh(o, 0.8)), e.box(t + s - 1.1, a, 0, 1.05, n, 2, dSh(o, 0.92)));
+  const i = e.box(t, a, 2, s, n, 0.2, o);
+  (e.zone("desk", i.top, dHull([...i.hull, e.P(t + 0.05, a + n, 0)])),
+    dStore(e, t + s - 1.1, a, 1.05, n, "L", dSh(o, 0.92), [
+      { t: "drawer", k: "odrawer", a: 0.06, b: 0.94, z0: 1.05, z1: 1.92, cap: 2 },
+      { t: "drawer", k: "odrawer", a: 0.06, b: 0.94, z0: 0.1, z1: 0.97, cap: 2 },
+    ]));
+};
+const dUpperC = (e, t, a, s = "#e8e4da") => {
+  e.box(t, 0, 3.2, a - t, 0.8, 1.4, s);
+  const n = Math.max(1, Math.round((a - t) / 0.95));
+  dStore(
+    e,
+    t,
+    0,
+    a - t,
+    0.8,
+    "L",
+    s,
+    [...Array(n)].map((e, t) => ({
+      t: "door",
+      k: "ucab",
+      a: t / n + 0.02,
+      b: (t + 1) / n - 0.02,
+      z0: 3.28,
+      z1: 4.52,
+      hg: t % 2 ? "r" : "l",
+      cap: 2,
+    })),
+  );
+};
+const dCounterF = (e, t, a, s, n, o = "L", i = "#e8e4da", r = "#7a8896") => {
+  const l = 1.9,
+    c = e.box(t, a, 0, s, n, l, r, { t: i });
+  e.box(t - 0.03, a - 0.03, l, s + 0.06, n + 0.06, 0.18, i);
+  const d = [e.P(t, a, 2.08), e.P(t + s, a, 2.08), e.P(t + s, a + n, 2.08), e.P(t, a + n, 2.08)];
+  (e.zone("counter", d, c.hull),
+    dStore(e, t, a, s, n, o, r, [
+      { t: "drawer", k: "kdrawer", a: 0.04, b: 0.96, z0: 1.4, z1: l - 0.06, cap: 2 },
+      ...(("L" === o ? s : n) >= 1.7
+        ? [
+            { t: "door", k: "cab", a: 0.04, b: 0.5, z0: 0.1, z1: l - 0.6, hg: "l", cap: 2 },
+            { t: "door", k: "cab", a: 0.5, b: 0.96, z0: 0.1, z1: l - 0.6, hg: "r", cap: 2 },
+          ]
+        : [{ t: "door", k: "cab", a: 0.04, b: 0.96, z0: 0.1, z1: l - 0.6, hg: "l", cap: 2 }]),
+    ]));
+};
+const dVanityC = (e, t, a, s, n, o, i = "#f1f2f7") => {
+  (dVanity(e, t, a, s, n, o, i),
+    dStore(e, t, a, s, n, "R", o, [
+      { t: "door", k: "bcab", a: 0.05, b: 0.5, z0: 0.12, z1: 1.65, hg: "l", cap: 2 },
+      { t: "door", k: "bcab", a: 0.5, b: 0.95, z0: 0.12, z1: 1.65, hg: "r", cap: 2 },
+    ]));
+};
+const dHamper = (e, t, a, s = "#d9c08a") => {
+  const n = e.box(t, a, 0, 0.9, 0.9, 1.3, s);
+  for (let t = 1; t < 4; t++) {
+    const a = t / 4;
+    (e.ln(dMx(n.L[0], n.L[3], a), dMx(n.L[1], n.L[2], a), dSh(s, 0.7), 1),
+      e.ln(dMx(n.R[0], n.R[3], a), dMx(n.R[1], n.R[2], a), dSh(s, 0.6), 1));
   }
-  return V.l.length ? V.l[a % V.l.length] : null;
-}
-function wfPick(e, N, R) {
-  const s = e.s
-    .slice()
-    .sort((x, y) => x.i - y.i)
-    .slice(0, Math.max(N + 3, Math.ceil(1.6 * N)));
-  return lvShuf(s, R)
-    .slice(0, N)
-    .sort((x, y) => x.k.length - y.k.length || x.i - y.i);
-}
-function wfLen(a, ana) {
-  const R = rng(3571 * a + 11),
-    x = R();
-  return a < 1e3
-    ? ana
-      ? 5
-      : a < 20
-        ? 4
-        : x < 0.7
-          ? 5
-          : 4
-    : a < 5e3
-      ? x < 0.5
-        ? 5
-        : 6
-      : a < 1e4
-        ? x < 0.34
-          ? 5
-          : x < 0.67
-            ? 6
-            : 7
-        : x < 0.34
-          ? 6
-          : x < 0.67
-            ? 7
-            : 8;
-}
-function wfN(a, n) {
-  return Math.min({ 4: 5, 5: 6, 6: 8, 7: 10, 8: 12 }[n], 3 + Math.floor(Math.log2(a + 2)));
-}
-function lvLay(W, R, mx, tg) {
-  const G = new Map(),
-    D = new Map(),
-    P = [],
-    K = (r, c) => r + "," + c;
-  let r0 = 0,
-    r1 = 0,
-    c0 = 0,
-    c1 = 0;
-  const ok = (k, r, c, h) => {
-      const dr = h ? 0 : 1,
-        dc = h ? 1 : 0;
-      if (G.has(K(r - dr, c - dc)) || G.has(K(r + dr * k.length, c + dc * k.length))) return -1;
-      let x = 0;
-      for (let i = 0; i < k.length; i++) {
-        const a = r + dr * i,
-          b = c + dc * i,
-          q = K(a, b),
-          g = G.get(q);
-        if (g) {
-          if (g !== k[i] || D.get(q).includes(h ? "h" : "v")) return -1;
-          x++;
-        } else if (G.has(K(a + dc, b + dr)) || G.has(K(a - dc, b - dr))) return -1;
-      }
-      return x;
+  (e.pg(
+    [
+      e.P(t + 0.08, a + 0.08, 1.3),
+      e.P(t + 0.82, a + 0.08, 1.3),
+      e.P(t + 0.82, a + 0.82, 1.3),
+      e.P(t + 0.08, a + 0.82, 1.3),
+    ],
+    dSh(s, 0.5),
+  ),
+    e.zone("hamper", n.top, n.hull));
+};
+const dBase = (e, t) => {
+  (e.ln(e.P(0, 0, 0.12), e.P(0, e.D, 0.12), dSh(t, 0.8), 2.2),
+    e.ln(e.P(0, 0, 0.12), e.P(e.W, 0, 0.12), dSh(t, 0.8), 2.2));
+};
+const dArtR = (e, t, a, s, n, o) => {
+  (e.pg(e.qR(t - 0.1, a + 0.1, s - 0.1, n + 0.1), "#f4efe6", "#c9bfae"),
+    e.pg(e.qR(t, a, s, n), o[0]),
+    e.pg(
+      [
+        e.P(t, 0, s),
+        e.P(a, 0, s),
+        e.P(a, 0, s + 0.45 * (n - s)),
+        e.P((t + a) / 2, 0, s + 0.7 * (n - s)),
+        e.P(t, 0, s + 0.4 * (n - s)),
+      ],
+      o[1],
+    ));
+  const i = e.P(t + 0.72 * (a - t), 0, s + 0.75 * (n - s));
+  e.s += `<circle cx="${i[0].toFixed(1)}" cy="${i[1].toFixed(1)}" r="2.4" fill="${o[2]}"/>`;
+};
+const dArtL = (e, t, a, s, n, o) => {
+  (e.pg(e.qL(t - 0.1, a + 0.1, s - 0.1, n + 0.1), "#f4efe6", "#c9bfae"),
+    e.pg(e.qL(t, a, s, n), o[0]),
+    e.pg(
+      [
+        e.P(0, t, s),
+        e.P(0, a, s),
+        e.P(0, a, s + 0.4 * (n - s)),
+        e.P(0, (t + a) / 2, s + 0.7 * (n - s)),
+        e.P(0, t, s + 0.45 * (n - s)),
+      ],
+      o[1],
+    ));
+  const i = e.P(0, t + 0.3 * (a - t), s + 0.75 * (n - s));
+  e.s += `<circle cx="${i[0].toFixed(1)}" cy="${i[1].toFixed(1)}" r="2.4" fill="${o[2]}"/>`;
+};
+const dPotPlant = (e, t, a, s = 1, n = "#d98c63") => {
+  (e.cyl(t, a, 0, 0.32 * s, 0.7 * s, n), (e.ch[e.ch.length - 1].h = 2.2 * s));
+  const o = e.P(t, a, 0.7 * s);
+  e.s += `<g transform="translate(${o[0].toFixed(1)} ${o[1].toFixed(1)}) scale(${s})"><path d="M0 0C-12 -6-14-22-4-30C-6-18 0-10 0 0Z" fill="#5fae6a"/><path d="M0 0C12 -6 16-20 6-30C8-18 2-10 0 0Z" fill="#4f9a5a"/><path d="M0 0C-3-12 0-24 2-36C6-24 4-10 0 0Z" fill="#6fc07a"/></g>`;
+};
+const dCurtR = (e, t, a, s, n, o) => {
+  ([
+    [t - 0.45, t + 0.05],
+    [a - 0.05, a + 0.45],
+  ].forEach(([t, a]) => {
+    (e.pg(e.qR(t, a, s - 0.6, n + 0.25), o, dSh(o, 0.8)),
+      e.ln(e.P((t + a) / 2, 0, s - 0.5), e.P((t + a) / 2, 0, n + 0.2), dSh(o, 0.85), 1));
+  }),
+    e.ln(e.P(t - 0.6, 0.04, n + 0.35), e.P(a + 0.6, 0.04, n + 0.35), "#8a6a4a", 2));
+};
+const dCurtL = (e, t, a, s, n, o) => {
+  ([
+    [t - 0.45, t + 0.05],
+    [a - 0.05, a + 0.45],
+  ].forEach(([t, a]) => {
+    (e.pg(e.qL(t, a, s - 0.6, n + 0.25), o, dSh(o, 0.8)),
+      e.ln(e.P(0, (t + a) / 2, s - 0.5), e.P(0, (t + a) / 2, n + 0.2), dSh(o, 0.85), 1));
+  }),
+    e.ln(e.P(0.04, t - 0.6, n + 0.35), e.P(0.04, a + 0.6, n + 0.35), "#8a6a4a", 2));
+};
+const dLampF = (e, t, a) => {
+  (e.box(t + 0.15, a + 0.15, 0, 0.3, 0.3, 0.08, "#7a6a5a"),
+    e.box(t + 0.27, a + 0.27, 0.08, 0.06, 0.06, 3.1, "#8a7a6a", { noL: 0 }),
+    e.cyl(t + 0.3, a + 0.3, 3, 0.38, 0.6, "#ffe2a8"));
+};
+const dClockW = (e, t, a, s) => {
+  const n = "R" === t ? e.P(a, 0, s) : e.P(0, a, s);
+  e.s += `<circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r="7" fill="#f4efe6" stroke="#8a6a4a" stroke-width="1.6"/><path d="M${n[0].toFixed(1)} ${(n[1] - 4.5).toFixed(1)}V${n[1].toFixed(1)}h3.4" stroke="#5a4a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/>`;
+};
+const dSlide = (e, t, a) => {
+  (e.box(t, a, 0, 0.15, 0.15, 2.6, "#e86a6a"),
+    e.box(t + 0.85, a, 0, 0.15, 0.15, 2.6, "#e86a6a"),
+    e.box(t, a, 2.4, 1, 0.9, 0.15, "#ffd36b"),
+    e.pg(
+      [e.P(t, a + 0.9, 2.45), e.P(t + 1, a + 0.9, 2.45), e.P(t + 1, a + 3, 0), e.P(t, a + 3, 0)],
+      "#7fc0ee",
+      "#5fa2d4",
+    ));
+};
+const dShower = (e, t, a, s, n) => {
+  const o = e.box(t, a, 0, s, n, 0.22, "#f4f6fa"),
+    i = [
+      e.P(t + 0.12, a + 0.12, 0.22),
+      e.P(t + s - 0.12, a + 0.12, 0.22),
+      e.P(t + s - 0.12, a + n - 0.12, 0.22),
+      e.P(t + 0.12, a + n - 0.12, 0.22),
+    ];
+  e.pg(i, "#dfe9f2", "#b8c6d4");
+  for (let o = 1; o < 6; o++)
+    e.ln(
+      e.P(t + 0.12 + (o * (s - 0.24)) / 6, a + 0.12, 0.23),
+      e.P(t + 0.12 + (o * (s - 0.24)) / 6, a + n - 0.12, 0.23),
+      "#c9d6e2",
+      0.8,
+    );
+  const r = e.P(t + 0.15, a + 0.5 * n, 3.9);
+  (e.ln(e.P(0.04, a + 0.5 * n, 3.1), e.P(0.04, a + 0.5 * n, 3.95), "#aab4c4", 2),
+    (e.s += `<ellipse cx="${(r[0] + 5).toFixed(1)}" cy="${(r[1] + 1).toFixed(1)}" rx="5" ry="2.4" fill="#aab4c4"/>`),
+    e.zone("tub", i, dHull([...o.hull, e.P(t, a + n, 2.2), e.P(t + s, a, 2.2), e.P(t + s, a + n, 2.2)])));
+  const l = (t) => {
+    e.pg(t, "rgba(190,225,245,.32)", "#9fb3c4", 1.2);
+  };
+  (l([e.P(t, a + n, 0.22), e.P(t + s, a + n, 0.22), e.P(t + s, a + n, 3.9), e.P(t, a + n, 3.9)]),
+    l([e.P(t + s, a, 0.22), e.P(t + s, a + n, 0.22), e.P(t + s, a + n, 3.9), e.P(t + s, a, 3.9)]),
+    e.ln(e.P(t + s, a + n, 0.22), e.P(t + s, a + n, 3.9), "#9fb3c4", 2.2),
+    e.ln(e.P(t, a + n, 3.9), e.P(t + s, a + n, 3.9), "#9fb3c4", 1.6),
+    e.ln(e.P(t + s, a, 3.9), e.P(t + s, a + n, 3.9), "#9fb3c4", 1.6),
+    e.ln(e.P(t + 0.55 * s, a + n, 1.6), e.P(t + 0.55 * s, a + n, 2.4), "#e8eef4", 2.4),
+    e.ch.push({ at: e.s.length, x: t, y: a, z: 0, w: s, d: n, h: 3.9 }));
+};
+const dVanityL = (e, t, a, s, n, o, i = "#f4f4f6") => {
+  const r = e.box(t, a, 0, s, n, 1.9, o, { t: i });
+  ([0.28, 0.72].forEach((o) => {
+    const i = e.P(t + s * o, a + 0.5 * n, 1.9);
+    e.s += `<ellipse cx="${i[0].toFixed(1)}" cy="${i[1].toFixed(1)}" rx="9" ry="4.4" fill="#dfe7ee" stroke="#b8c6d4"/>`;
+    const r = e.P(t + s * o, a + 0.12, 1.9);
+    e.s += `<rect x="${(r[0] - 1.5).toFixed(1)}" y="${(r[1] - 8).toFixed(1)}" width="3" height="8" rx="1.2" fill="#aab4c4"/>`;
+  }),
+    e.zone("sink", [e.P(t, a, 1.9), e.P(t + s, a, 1.9), e.P(t + s, a + n, 1.9), e.P(t, a + n, 1.9)], r.hull),
+    dStore(e, t, a, s, n, "L", o, [
+      { t: "door", k: "bcab", a: 0.03, b: 0.26, z0: 0.12, z1: 1.7, hg: "l", cap: 1 },
+      { t: "door", k: "bcab", a: 0.26, b: 0.5, z0: 0.12, z1: 1.7, hg: "r", cap: 1 },
+      { t: "door", k: "bcab", a: 0.5, b: 0.74, z0: 0.12, z1: 1.7, hg: "l", cap: 1 },
+      { t: "door", k: "bcab", a: 0.74, b: 0.97, z0: 0.12, z1: 1.7, hg: "r", cap: 1 },
+    ]));
+};
+const dSwing = (e, t, a, s) => {
+  const n = 2.6,
+    o = "#e86a6a";
+  (e.ch.push({ at: e.s.length, x: t, y: a, z: 0, w: 1, d: s, h: n }),
+    [[a], [a + s]].forEach(([a]) => {
+      (e.ln(e.P(t, a, 0), e.P(t + 0.5, a, n), dSh(o, 0.8), 4),
+        e.ln(e.P(t + 1, a, 0), e.P(t + 0.5, a, n), o, 4));
+    }),
+    e.box(t + 0.44, a - 0.05, 2.52, 0.12, s + 0.1, 0.14, "#c9523f"),
+    [a + 0.3 * s, a + 0.7 * s].forEach((a) => {
+      (e.ln(e.P(t + 0.5, a - 0.2, n - 0.05), e.P(t + 0.5, a - 0.2, 0.75), "#8a8f9a", 1.2),
+        e.ln(e.P(t + 0.5, a + 0.2, n - 0.05), e.P(t + 0.5, a + 0.2, 0.75), "#8a8f9a", 1.2),
+        e.box(t + 0.3, a - 0.28, 0.62, 0.4, 0.56, 0.1, "#ffd36b"));
+    }),
+    e.ln(e.P(t, a, 0), e.P(t, a, 0), o, 1));
+};
+const dYard2 = (e) => {
+  for (let t = 0.35; t < 7; t += 0.5)
+    (e.ln(e.P(0, t, 0.05), e.P(0, t, 2), "#b9a782", 1.2),
+      e.ln(e.P(t, 0, 0.05), e.P(t, 0, 2), "#b9a782", 1.2));
+  (e.ln(e.P(0, 0, 1.75), e.P(0, 7, 1.75), "#a8966f", 2),
+    e.ln(e.P(0, 0, 1.75), e.P(7, 0, 1.75), "#a8966f", 2),
+    [
+      [2.6, 1.8],
+      [3.3, 2.5],
+      [3.9, 3.3],
+      [4.3, 4.2],
+      [4.5, 5.2],
+      [4.6, 6.2],
+    ].forEach(([t, a]) => {
+      e.pg([e.P(t, a), e.P(t + 0.5, a), e.P(t + 0.5, a + 0.42), e.P(t, a + 0.42)], "#d9d2c2", "#bdb4a0", 0.8);
+    }));
+  for (let t = 0; t < 26; t++) {
+    const a = 0.3 + ((37 * t) % 63) / 10,
+      s = 0.3 + ((53 * t) % 65) / 10,
+      n = e.P(a, s);
+    e.s += `<path d="M${n[0].toFixed(1)} ${n[1].toFixed(1)}l-2-5M${n[0].toFixed(1)} ${n[1].toFixed(1)}l0-6M${n[0].toFixed(1)} ${n[1].toFixed(1)}l2-5" stroke="#6fb46a" stroke-width="1.2" stroke-linecap="round"/>`;
+  }
+  const t = e.box(0.4, 0.15, 0, 3.2, 1.1, 0.6, "#8a5a3a", { t: "#7a4e32" }),
+    a = [e.P(0.5, 0.25, 0.6), e.P(3.5, 0.25, 0.6), e.P(3.5, 1.15, 0.6), e.P(0.5, 1.15, 0.6)];
+  (e.pg(a, "#5a3d2a"),
+    [
+      [0.9, 0.5],
+      [1.4, 0.9],
+      [1.9, 0.5],
+      [2.4, 0.9],
+      [2.9, 0.55],
+      [3.2, 0.9],
+    ].forEach(([t, a], s) => {
+      const n = e.P(t, a, 0.6);
+      e.s += `<path d="M${n[0].toFixed(1)} ${n[1].toFixed(1)}v-7" stroke="#4f9a5a" stroke-width="1.4"/><circle cx="${n[0].toFixed(1)}" cy="${(n[1] - 8).toFixed(1)}" r="3.2" fill="${["#f08aa8", "#f4c24a", "#fff", "#a98fe0", "#ff9a5a", "#f08aa8"][s]}"/>`;
+    }),
+    e.zone("flowerbed", a, t.hull));
+  const s = 4.3,
+    n = 1.7,
+    o = 2.5;
+  e.box(s, 0, 0, 2.5, n, o, "#c9a06a");
+  for (let t = 1; t < 9; t++) {
+    const a = s + (2.5 * t) / 9;
+    e.ln(e.P(a, n, 0.05), e.P(a, n, o), "#b08a58", 1);
+  }
+  (e.pg(
+    [e.P(s - 0.15, -0.1, o), e.P(6.95, -0.1, o), e.P(6.95, 0.85, 3.4), e.P(s - 0.15, 0.85, 3.4)],
+    "#8a4a3a",
+    "#6a3a2a",
+  ),
+    e.pg(
+      [e.P(s - 0.15, 0.85, 3.4), e.P(6.95, 0.85, 3.4), e.P(6.95, n + 0.15, o), e.P(s - 0.15, n + 0.15, o)],
+      "#a85a46",
+      "#6a3a2a",
+    ),
+    e.pg(
+      [
+        e.P(6.8, -0.1, o),
+        e.P(6.8, n + 0.15, o),
+        e.P(6.95, n + 0.15, o),
+        e.P(6.95, 0.85, 3.4),
+        e.P(6.95, -0.1, o),
+      ],
+      "#7a3e30",
+    ));
+  const i = e.P(6.8, 0.85, 1.7);
+  ((e.s += `<rect x="${(i[0] - 4).toFixed(1)}" y="${(i[1] - 9).toFixed(1)}" width="8" height="8" fill="#bfe3ff" stroke="#8a6a4a" transform="skewY(-26.6)" transform-origin="${i[0].toFixed(1)} ${i[1].toFixed(1)}"/>`),
+    dStore(e, s, 0, 2.5, n, "L", "#c9a06a", [
+      { t: "door", k: "shed", a: 0.1, b: 0.5, z0: 0.05, z1: 2.1, hg: "l", cap: 2 },
+      { t: "door", k: "shed", a: 0.5, b: 0.9, z0: 0.05, z1: 2.1, hg: "r", cap: 2 },
+    ]),
+    e.box(0.7, 3, 0, 1.8, 0.35, 0.8, "#a8784a"),
+    dTable(e, 0.7, 3.5, 1.8, 1.3, 1.5, "#b98a5a", "ptable"),
+    e.box(0.7, 5, 0, 1.8, 0.35, 0.8, "#a8784a"));
+  const r = e.box(4.9, 4.5, 0, 1.9, 1.9, 0.5, "#c9a36a"),
+    l = [e.P(5.05, 4.65, 0.5), e.P(6.65, 4.65, 0.5), e.P(6.65, 6.25, 0.5), e.P(5.05, 6.25, 0.5)];
+  (e.pg(l, "#f0d9a0"), e.zone("sandbox", l, r.hull));
+};
+const dYardOld = DRM[DRM.length - 1].b;
+((DRM.length = 0),
+  DRM.push(
+    {
+      h: "Condo",
+      n: "La chambre",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#c9d3f0", "#b7c3ea", "#d8b58a", "#d1ad80"],
+      b: (e) => {
+        (dBase(e, "#b7c3ea"),
+          dWinR(e, 0.9, 2.5, 2.4, 4.4),
+          dCurtR(e, 0.9, 2.5, 2.4, 4.4, "#f4c7d4"),
+          dArtL(e, 2.3, 3.9, 3, 4.2, ["#f6e1b8", "#8fb0c9", "#e8946c"]),
+          dWallShelf(e, "R", 3.1, 5.1, 3.5),
+          dRug(e, 2.9, 2.6, 3, 2.8, "#b9a6e0"),
+          dSide(e, 0, 0.1, 0.9, 0.9),
+          dDesk(e, 3, 0, 2.2, 1.3),
+          dWard(e, 5.4, 0, 1.6, 1.3, 4.2, "#e2d3b8", "L"),
+          dBed(e, 0, 1.2, 2.6, 4.2, "#8f7fe0"),
+          dChairOf(e, 3.7, 1.7),
+          dDresser(e, 0, 5.6, 1.1, 1.3, 1.7, dWood, "R"),
+          dPotPlant(e, 6.4, 2.2, 0.9));
+      },
+      items: [
+        "pillow",
+        "teddy",
+        "lamp",
+        "clock",
+        "books",
+        "computer",
+        "shirt",
+        "dress",
+        "sweater",
+        "socks",
+        "poster",
+        "plant",
+      ],
     },
-    put = (w, r, c, h) => {
-      const dr = h ? 0 : 1,
-        dc = h ? 1 : 0;
-      for (let i = 0; i < w.k.length; i++) {
-        const q = K(r + dr * i, c + dc * i);
-        (G.set(q, w.k[i]), D.set(q, (D.get(q) || "") + (h ? "h" : "v")));
-      }
-      (P.push({ w: w, r: r, c: c, h: h }),
-        (r0 = Math.min(r0, r)),
-        (c0 = Math.min(c0, c)),
-        (r1 = Math.max(r1, r + dr * (w.k.length - 1))),
-        (c1 = Math.max(c1, c + dc * (w.k.length - 1))));
-    };
-  put(W[0], 0, 0, !0);
-  for (const w of W.slice(1)) {
-    if (P.length >= tg) break;
-    let B = null,
-      S = -1e9;
-    for (const [q, ch] of G) {
-      const [a, b] = q.split(",").map(Number);
-      for (let i = 0; i < w.k.length; i++) {
-        if (w.k[i] !== ch) continue;
-        for (const h of [!0, !1]) {
-          const r = h ? a : a - i,
-            c = h ? b - i : b,
-            x = ok(w.k, r, c, h);
-          if (x < 1) continue;
-          const R0 = Math.min(r0, r),
-            C0 = Math.min(c0, c),
-            R1 = Math.max(r1, r + (h ? 0 : w.k.length - 1)),
-            C1 = Math.max(c1, c + (h ? w.k.length - 1 : 0));
-          if (R1 - R0 + 1 > mx || C1 - C0 + 1 > mx) continue;
-          const s = 10 * x - (R1 - R0 + 1) * (C1 - C0 + 1) * 0.3 + 3 * R();
-          s > S && ((S = s), (B = [r, c, h]));
-        }
-      }
-    }
-    B && put(w, B[0], B[1], B[2]);
+    {
+      h: "Condo",
+      n: "La salle de bain",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#cfe6ee", "#bcd9e4", "#e6eef2", "#cfdde4"],
+      b: (e) => {
+        (dBase(e, "#bcd9e4"),
+          dWinR(e, 3.3, 5.3, 2.4, 4.5),
+          dWallShelf(e, "R", 5.7, 6.9, 3.3, "#f4efe6"),
+          dVanityC(e, 0, 0.3, 1.6, 2.2, "#a9825a"),
+          dTub(e, 2.2, 0, 4.6, 2.2),
+          dRail(e, 3.4, 5.2, 3),
+          dToilet(e, 0, 3.6),
+          dRug(e, 2.6, 3, 2.4, 1.4, "#9ad0e0"),
+          dHamper(e, 5.8, 5.6, "#d9c08a"),
+          dPotPlant(e, 0.45, 6.45, 0.7, "#7fc0ee"));
+      },
+      items: [
+        "toothbrush",
+        "toothpaste",
+        "soap",
+        "towel",
+        "shampoo",
+        "paper",
+        "duck",
+        "mirror",
+        "bathmat",
+        "hairdryer",
+        "cream",
+      ],
+    },
+    {
+      h: "Condo",
+      n: "La cuisine",
+      stk: 1,
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#efe6d2", "#e2d8c2", "#b98a5a", "#b0814f"],
+      b: (e) => {
+        (dBase(e, "#e2d8c2"),
+          dWinL(e, 2.3, 4.5, 2, 4.3),
+          dCurtL(e, 2.3, 4.5, 2, 4.3, "#f2c79a"),
+          dUpperC(e, 0.4, 3.3),
+          dUpperC(e, 3.3, 5.2),
+          dRug(e, 1.6, 3, 3.6, 3.2, "#e9c9b0"),
+          dCounter(e, 0.4, 0, 1.5, 1.3),
+          dStove(e, 1.9, 0, 1.4, 1.3),
+          dCounter(e, 3.3, 0, 1.9, 1.3),
+          dFridge(e, 5.4, 0, 1.4, 1.3),
+          dChairOf(e, 1.3, 3.6, "#e8946c"),
+          dTable(e, 2.5, 3.3, 2, 1.8, 1.7),
+          dChairOf(e, 4.9, 3.6, "#e8946c"));
+      },
+      items: [
+        "pot",
+        "pan",
+        "plate",
+        "mug",
+        "bowl",
+        "cutlery",
+        "spatula",
+        "kettle",
+        "toaster",
+        "fruit",
+        "magnet",
+        "plant",
+      ],
+    },
+    {
+      h: "Condo",
+      n: "Le salon",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#e8d9c4", "#dccbb2", "#b08e6a", "#a8865f"],
+      b: (e) => {
+        (dBase(e, "#dccbb2"),
+          dWinR(e, 2.9, 4.9, 2.4, 4.4),
+          dCurtR(e, 2.9, 4.9, 2.4, 4.4, "#a9c6d9"),
+          dWallShelf(e, "L", 2.2, 4.2, 3.6),
+          dRug(e, 2.4, 2, 3.6, 3.4, "#8fb0c9"),
+          dSide(e, 0, 0.2, 1, 1),
+          dTV(e, 2.4, 0, 2.8, 1.2),
+          dShelf(e, 5.6, 0, 1.4, 1, 3.4, dWood, "L"),
+          dSofa(e, 0, 1.8, 2.1, 3.8, "#6f86a8"),
+          dTable(e, 3.3, 2.7, 1.6, 1.7, 0.9, dWood, "coffee"),
+          dLampF(e, 0.3, 5.9));
+      },
+      items: [
+        "tv",
+        "gamepad",
+        "remote",
+        "books",
+        "book",
+        "cushion",
+        "blanket",
+        "vase",
+        "frame",
+        "lamp",
+        "plant",
+      ],
+    },
+    {
+      h: "Condo",
+      n: "La chambre de bébé",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#f8ead0", "#f0dfbe", "#e6cfa8", "#dfc69c"],
+      b: (e) => {
+        (dBase(e, "#f0dfbe"),
+          dWinR(e, 3, 4.6, 2.4, 4.3),
+          dCurtR(e, 3, 4.6, 2.4, 4.3, "#bfe6da"),
+          dArtL(e, 1.4, 2.8, 3.2, 4.3, ["#fff6e0", "#ffc9d6", "#ffd36b"]),
+          dWallShelf(e, "L", 4.4, 6.2, 3.1, "#f4efe6"),
+          dRug(e, 2.4, 2.6, 3.2, 3.2, "#cfe8f6"),
+          dChanging(e, 2.9, 0, 2, 1.2),
+          dShelf(e, 5.3, 0, 1.5, 1, 2.8, "#f1e6d4", "L"),
+          dCrib(e, 0, 0.6, 2, 3.2),
+          dRocker(e, 1, 4.9, "#e8c9a0"),
+          dToyBox(e, 4.6, 5, 1.6, 1.2, "#7fc0ee"));
+      },
+      items: [
+        "blanket",
+        "teddy",
+        "bottle",
+        "diapers",
+        "onesie",
+        "rattle",
+        "blocks",
+        "nightlight",
+        "book",
+        "duck",
+        "horse",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "La nouvelle salle de bain",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#dde9e2", "#cfe0d6", "#f4f6f4", "#e2ebe5"],
+      b: (e) => {
+        (dBase(e, "#cfe0d6"),
+          dWinL(e, 4.9, 6.3, 2.6, 4.4),
+          dCurtL(e, 4.9, 6.3, 2.6, 4.4, "#b9d8c6"),
+          dShower(e, 0, 0, 1.7, 1.7),
+          dWallShelf(e, "L", 2.9, 4.4, 3.7, "#f4efe6"),
+          dRailR(e, 5.3, 6.8, 3.1),
+          dVanityL(e, 2.1, 0, 2.8, 1.25, "#7fa38f"),
+          dToilet(e, 0, 3),
+          dRug(e, 2.4, 2.4, 2.6, 1.6, "#a8ccb6"),
+          dHamper(e, 5.9, 2, "#e8d2a8"),
+          dPotPlant(e, 0.5, 6.4, 0.85, "#e8d2a8"));
+      },
+      items: [
+        "toothbrush",
+        "toothpaste",
+        "soap",
+        "towel",
+        "shampoo",
+        "perfume",
+        "plant",
+        "bathmat",
+        "cream",
+        "hairdryer",
+        "laundry",
+        "duck",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "L’entrée",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#f2e2cc", "#e8d4b8", "#c9a77e", "#c19f76"],
+      b: (e) => {
+        (dBase(e, "#e8d4b8"),
+          dDoorR(e, 4.4, 6, 3.7, "#a87a52"),
+          dHooks(e, "R", 0.9, 3.7, 3.4),
+          dArtL(e, 4.6, 6, 3.1, 4.2, ["#e9f2f6", "#9ac2a0", "#f2b84a"]),
+          dRug(e, 4.2, 0.9, 2, 1.6, "#c98a6a"),
+          dUStand(e, 6.45, 0.5),
+          dBench(e, 0, 0.8, 1.1, 2.8),
+          dConsole(e, 0, 4.5, 1, 2),
+          dPotPlant(e, 6.2, 6.2, 1.1));
+      },
+      items: [
+        "coat",
+        "hat",
+        "scarf",
+        "boots",
+        "sneakers",
+        "umbrella",
+        "keys",
+        "bag",
+        "mirror",
+        "plant",
+        "frame",
+        "letters",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "La chambre des parents",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#f0dccd", "#e6cdb9", "#c9a27e", "#c19a76"],
+      b: (e) => {
+        (dBase(e, "#e6cdb9"),
+          dWinL(e, 2.4, 4.2, 2.6, 4.5),
+          dCurtL(e, 2.4, 4.2, 2.6, 4.5, "#d98c6a"),
+          dArtR(e, 2.7, 4.6, 3.2, 4.3, ["#fbefe2", "#e8946c", "#f2c24a"]),
+          dRug(e, 2, 2.6, 3.6, 3.2, "#d9b8a0"),
+          dWard(e, 0, 0.2, 1.3, 2, 4.2, "#e8d8c0", "R"),
+          dChairOf(e, 0.2, 2.9, "#c98a6a"),
+          dSide(e, 1.4, 0.1, 0.9, 0.9, 1.25, "#a8724a"),
+          dSide(e, 5, 0.1, 0.9, 0.9, 1.25, "#a8724a"),
+          dBed(e, 2.3, 0.2, 2.6, 4.2, "#e8a28a", "#8a5236", "#fbf6ee"),
+          dDresser(e, 0, 4.6, 1.1, 1.9, 1.7, "#a8724a", "R"),
+          dPotPlant(e, 6.4, 6.3, 1));
+      },
+      items: [
+        "pillow",
+        "quilt",
+        "lamp",
+        "clock",
+        "perfume",
+        "jewel",
+        "shirt",
+        "cshirt",
+        "dress",
+        "sweater",
+        "socks",
+        "frame",
+        "book",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "Le bureau",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#dfe6ee", "#cfd9e4", "#b9956c", "#b08c64"],
+      b: (e) => {
+        (dBase(e, "#cfd9e4"),
+          dWinL(e, 2.2, 4.4, 2.2, 4.4),
+          dCurtL(e, 2.2, 4.4, 2.2, 4.4, "#9fb7d9"),
+          dWallShelf(e, "R", 1.5, 4.2, 3.7),
+          dClockW(e, "R", 0.8, 4.2),
+          dRug(e, 1.8, 2.4, 3.2, 2.8, "#c9a6a0"),
+          dPotPlant(e, 0.5, 0.6, 1),
+          dDeskO(e, 1.3, 0, 3.1, 1.3),
+          dShelf(e, 5, 0, 1.9, 1.1, 4.4, dWood, "L"),
+          dChairOf(e, 2.3, 1.6, "#5f6f8a"),
+          dFiling(e, 0, 5.4, 1.1, 1.2));
+      },
+      items: [
+        "computer",
+        "lamp",
+        "books",
+        "book",
+        "pens",
+        "folder",
+        "notebook",
+        "earth",
+        "clock",
+        "plant",
+        "mug",
+        "frame",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "La petite cour",
+      W: 7,
+      D: 7,
+      Hh: 2.2,
+      yard: 1,
+      c: ["#d9c8a6", "#cdbb98", "#8fcf8a"],
+      b: (e) => dYard2(e),
+      items: [
+        "ball",
+        "bucket",
+        "shovel",
+        "truck",
+        "can",
+        "flowerpot",
+        "bike",
+        "scooter",
+        "kite",
+        "chair",
+        "train",
+      ],
+    },
+    {
+      h: "Maison",
+      n: "La nouvelle cuisine",
+      W: 7,
+      D: 7,
+      Hh: 5.2,
+      c: ["#f3e4c6", "#e8d6b0", "#c59a68", "#bd9262"],
+      b: (e) => {
+        (dBase(e, "#e8d6b0"),
+          dWinL(e, 2.6, 4.6, 2, 4.3),
+          dCurtL(e, 2.6, 4.6, 2, 4.3, "#e8946c"),
+          dWallShelf(e, "L", 0.9, 2.1, 3.4, "#8a6a4a"),
+          dUpperC(e, 0.3, 2.2, "#8a6a4a"),
+          dUpperC(e, 3.6, 5.5, "#8a6a4a"),
+          dRug(e, 2, 3, 3.8, 3, "#d98c63"),
+          dCounterF(e, 0.3, 0, 1.9, 1.3, "L", "#d9cdb6", "#8a6a4a"),
+          dStove(e, 2.2, 0, 1.4, 1.3),
+          dCounterF(e, 3.6, 0, 1.9, 1.3, "L", "#d9cdb6", "#8a6a4a"),
+          dFridge(e, 5.6, 0, 1.3, 1.3),
+          dChairOf(e, 1.6, 3.6, "#5fa9a0"),
+          dTable(e, 2.8, 3.3, 2, 1.8, 1.7),
+          dChairOf(e, 5.2, 3.6, "#5fa9a0"),
+          dPotPlant(e, 6.3, 6.2, 1));
+      },
+      items: [
+        "pot",
+        "pan",
+        "plate",
+        "bowl",
+        "mug",
+        "cutlery",
+        "spatula",
+        "kettle",
+        "toaster",
+        "fruit",
+        "magnet",
+        "spices",
+        "board",
+      ],
+    },
+  ),
+  (G.find((e) => "demenage" === e.id).wl = [
+    "La chambre est prête. Le lit attend déjà ses premières nuits.",
+    "La salle de bain sent le savon frais. Le canard a trouvé son bain.",
+    "La cuisine est rangée. Ça sent presque le café du matin.",
+    "Le salon est prêt : un plaid sur le divan, la télé, et déjà des soirées tranquilles.",
+    "La chambre de bébé est prête. Un mobile, une veilleuse, et beaucoup d’amour.",
+    "La nouvelle salle de bain brille. La maison commence à ressembler à un chez-soi.",
+    "L’entrée est prête : les manteaux sur les patères, les bottes bien rangées.",
+    "La chambre des parents est prête. Un grand lit, une fenêtre, un peu de silence.",
+    "Le bureau est rangé. Les idées viendront plus facilement ici.",
+    "La cour est prête pour les jeux : le seau dans le sable, le vélo dans la cabane.",
+    "La nouvelle cuisine est rangée. La dernière boîte est vide : bienvenue chez toi.",
+  ]),
+  Object.keys(dStory).forEach((e) => delete dStory[e]),
+  Object.assign(dStory, {
+    0: [
+      "Année 1 · Le condo",
+      "Tes parents emménagent dans leur tout premier condo. Des boîtes partout, une odeur de peinture fraîche… et la chambre à installer en premier.",
+    ],
+    4: [
+      "Année 3 · Une bonne nouvelle",
+      "Un bébé s’en vient ! La petite pièce du fond devient une chambre toute douce.",
+    ],
+    5: [
+      "Année 6 · La maison",
+      "Le condo devient trop petit : la famille déménage dans une vraie maison, avec une cour. On recommence à déballer.",
+    ],
+    9: ["Un samedi de printemps", "Il fait enfin beau. Les jouets d’extérieur attendent dans leurs boîtes."],
+  }),
+  (DBT.length = 0),
+  DBT.push(...DRM.map((e) => e.n)),
+  Object.assign(DIT, {
+    map: [
+      "Carte du Nord",
+      '<path d="M3 7l8-3 10 3 8-3v21l-8 3-10-3-8 3z" fill="#f2e6c8"/><path d="M11 4v21M21 7v21" stroke="#d9c69a" stroke-width="1.2"/><path d="M6 19q4-6 8-2t9-6" stroke="#e8667a" stroke-width="1.6" fill="none" stroke-dasharray="2 2"/><path d="M23 8l3 3M26 8l-3 3" stroke="#3a3d52" stroke-width="1.4"/>',
+    ],
+    lantern: [
+      "Lanterne",
+      '<path d="M12 4h8M16 2v2" stroke="#6a5a4a" stroke-width="1.6"/><rect x="10" y="6" width="12" height="3" rx="1" fill="#3e4352"/><rect x="11" y="9" width="10" height="15" rx="2" fill="#ffd978"/><path d="M11 9h10v15H11z" fill="none" stroke="#3e4352" stroke-width="1.6"/><path d="M16 13q3 3 0 7-3-4 0-7z" fill="#f4a24a"/><rect x="9" y="24" width="14" height="3" rx="1" fill="#3e4352"/>',
+    ],
+    backpack: [
+      "Sac à dos",
+      '<rect x="8" y="7" width="16" height="21" rx="5" fill="#d96f4f"/><path d="M12 7V5a4 4 0 0 1 8 0v2" fill="none" stroke="#a8503a" stroke-width="2"/><rect x="11" y="17" width="10" height="7" rx="2" fill="#e8946c"/><path d="M11 13h10" stroke="#a8503a" stroke-width="1.4"/>',
+    ],
+    mittens: [
+      "Moufles",
+      '<path d="M4 26V13q0-6 5-6t5 6v13z" fill="#e8667a"/><path d="M13 17q4-2 4 2t-3 3" fill="#d9555f"/><rect x="3.5" y="24" width="11" height="4" rx="1.5" fill="#fff"/><path d="M18 26V13q0-6 5-6t5 6v13z" fill="#5fa9e0"/><rect x="17.5" y="24" width="11" height="4" rx="1.5" fill="#fff"/>',
+    ],
+    flask: [
+      "Gourde chaude",
+      '<rect x="9" y="9" width="14" height="19" rx="6" fill="#7a8896"/><rect x="9" y="14" width="14" height="8" fill="#c96a5a"/><rect x="12" y="4" width="8" height="5" rx="1.5" fill="#3e4352"/><path d="M13 18h6" stroke="#f4d9c6" stroke-width="1.2"/><path d="M14 0q1.4 1.4 0 3M18 0q1.4 1.4 0 3" stroke="#cfd8e6" stroke-width="1" fill="none"/>',
+    ],
+    logs: [
+      "Bûches",
+      '<rect x="3" y="18" width="26" height="8" rx="4" fill="#9a6a3e"/><circle cx="25" cy="22" r="3.6" fill="#d9a066"/><circle cx="25" cy="22" r="1.4" fill="none" stroke="#8a5a36"/><rect x="6" y="10" width="22" height="8" rx="4" fill="#8a5a36"/><circle cx="24" cy="14" r="3.6" fill="#e6b57a"/><circle cx="24" cy="14" r="1.4" fill="none" stroke="#9a6a3e"/>',
+    ],
+    compass: [
+      "Boussole",
+      '<circle cx="16" cy="17" r="12" fill="#e2b84a"/><circle cx="16" cy="17" r="9.5" fill="#f6f1e2"/><path d="M16 9l2.6 8h-5.2z" fill="#e8667a"/><path d="M16 25l-2.6-8h5.2z" fill="#3e4352"/><circle cx="16" cy="17" r="1.4" fill="#e2b84a"/><rect x="14.5" y="2.4" width="3" height="3" rx="1" fill="#c99a2e"/>',
+    ],
+    flag: [
+      "Drapeau",
+      '<rect x="7" y="3" width="2.4" height="26" rx="1" fill="#8a8f9a"/><path d="M9.4 4h17l-4 5 4 5h-17z" fill="#e8667a"/><path d="M15 6.4l1 2h2.2l-1.8 1.3.7 2.1-2.1-1.3-2.1 1.3.7-2.1-1.8-1.3h2.2z" fill="#fff"/><ellipse cx="8.2" cy="28.5" rx="5" ry="1.6" fill="#e6eef6"/>',
+    ],
+    sled: [
+      "Luge",
+      '<path d="M3 24h22q4 0 4-4" stroke="#c9404a" stroke-width="2.4" fill="none" stroke-linecap="round"/><rect x="5" y="13" width="20" height="5" rx="1.6" fill="#c58a54"/><path d="M8 18v6M22 18v6" stroke="#8a5a36" stroke-width="2"/><path d="M5 13q-3-3-1-6" stroke="#e2b84a" stroke-width="1.4" fill="none"/>',
+    ],
+    spyglass: [
+      "Longue-vue",
+      '<path d="M13 28l3-9 3 9" stroke="#6a5a4a" stroke-width="1.6" fill="none"/><path d="M6 21l5-3" stroke="#8a5a36" stroke-width="6" stroke-linecap="round"/><path d="M10 18l8-5" stroke="#c99a2e" stroke-width="6" stroke-linecap="round"/><path d="M17 13l9-6" stroke="#e2b84a" stroke-width="8" stroke-linecap="round"/><circle cx="27" cy="6.4" r="2.6" fill="#cfe9fa"/>',
+    ],
+    pstar: [
+      "Étoile polaire",
+      '<path d="M16 2l3.6 8.6 9.4.8-7.2 6 2.2 9.2L16 21.8 8 26.6l2.2-9.2-7.2-6 9.4-.8z" fill="#ffd978"/><path d="M16 2l3.6 8.6 9.4.8-7.2 6L16 21.8z" fill="#f4c24a"/>',
+    ],
+    bell: [
+      "Cloche",
+      '<path d="M16 5q-8 0-8 10v5l-3 4h22l-3-4v-5q0-10-8-10z" fill="#e2b84a"/><path d="M16 5q-8 0-8 10v5l-3 4h11z" fill="#f2cc5e"/><circle cx="16" cy="26.5" r="2.8" fill="#c99a2e"/><path d="M11 5q5-4 10 0" stroke="#e8667a" stroke-width="2.6" fill="none"/><circle cx="16" cy="3" r="2" fill="#3f9a62"/>',
+    ],
+    cookie: [
+      "Biscuit",
+      '<circle cx="16" cy="7" r="5" fill="#c98a4a"/><path d="M10 13h12l6 4-2 3-4-2v4l3 7-3 1.6-4-5-4 5L7 29l3-7v-4l-4 2-2-3z" fill="#c98a4a"/><circle cx="14.4" cy="6.4" r=".9" fill="#3a2a1a"/><circle cx="17.6" cy="6.4" r=".9" fill="#3a2a1a"/><path d="M14 9q2 1.4 4 0" stroke="#fff" stroke-width=".9" fill="none"/><circle cx="16" cy="15.5" r="1" fill="#e8667a"/><circle cx="16" cy="19" r="1" fill="#5fa9e0"/>',
+    ],
+    milk: [
+      "Verre de lait",
+      '<path d="M10 5h12l-2 23h-8z" fill="#f2f5fb" stroke="#cfd8e6" stroke-width="1.2"/><path d="M10.6 11h10.8l-1.4 17h-8z" fill="#fff"/><ellipse cx="16" cy="11" rx="5.4" ry="1.2" fill="#e6ecf6"/><path d="M18.6 14v10" stroke="#e6ecf6" stroke-width="1.4"/>',
+    ],
+    cupcake: [
+      "Petit gâteau",
+      '<path d="M8 17h16l-2.4 11h-11.2z" fill="#e8946c"/><path d="M11 17l1 11M14.6 17v11M18 17v11M21 17l-1 11" stroke="#c9774f" stroke-width="1"/><path d="M7 17q-1-6 5-7 1-5 4-5t4 5q6 1 5 7z" fill="#ffc2d6"/><circle cx="16" cy="4.4" r="2.6" fill="#e8445a"/><circle cx="12" cy="12.4" r=".9" fill="#5fa9e0"/><circle cx="19.4" cy="11.4" r=".9" fill="#ffd978"/><circle cx="16" cy="14.4" r=".9" fill="#7fc48a"/>',
+    ],
+    choco: [
+      "Chocolat",
+      '<rect x="6" y="5" width="20" height="22" rx="2" fill="#6a3a22"/><path d="M6 11h20M12.7 5v12M19.3 5v12" stroke="#4a2614" stroke-width="1.2"/><path d="M6 15h20v12H6z" fill="#e8667a"/><rect x="9" y="18.4" width="14" height="5" rx="1" fill="#ffd978"/>',
+    ],
+    wrench: [
+      "Clé à molette",
+      '<path d="M8 26l12-12" stroke="#9aa6b8" stroke-width="5" stroke-linecap="round"/><path d="M19 4a6 6 0 0 0-1 8l3 3a6 6 0 0 0 8-1l-4-1-2-2-1-4z" fill="#b9c3d2"/><circle cx="8" cy="26" r="1.6" fill="#7b889c"/>',
+    ],
+    paint: [
+      "Pot de peinture",
+      '<path d="M7 11h18v14q0 3-9 3t-9-3z" fill="#cfd8e6"/><ellipse cx="16" cy="11" rx="9" ry="3" fill="#5fa9e0"/><path d="M10 12v5q0 2 1.6 2t1.6-2v-4" fill="#5fa9e0"/><path d="M7 11q9-12 18 0" stroke="#8a8f9a" stroke-width="1.4" fill="none"/><rect x="15" y="18" width="8" height="5" rx="1" fill="#fff"/><circle cx="19" cy="20.5" r="1.6" fill="#e8667a"/>',
+    ],
+    spool: [
+      "Bobine de fil",
+      '<rect x="8" y="4" width="16" height="3.4" rx="1.4" fill="#c58a54"/><rect x="8" y="24.6" width="16" height="3.4" rx="1.4" fill="#c58a54"/><rect x="10" y="7.4" width="12" height="17.2" fill="#e8667a"/><path d="M10 10h12M10 13h12M10 16h12M10 19h12M10 22h12" stroke="#c9505a" stroke-width=".9"/><path d="M22 18q6 2 4 9" stroke="#e8667a" stroke-width="1.2" fill="none"/>',
+    ],
+    robot: [
+      "Robot",
+      '<rect x="15" y="2" width="2" height="4" fill="#8a8f9a"/><circle cx="16" cy="2.4" r="1.6" fill="#e8667a"/><rect x="9" y="6" width="14" height="10" rx="2.4" fill="#9fc8e0"/><circle cx="13" cy="11" r="1.8" fill="#3e4352"/><circle cx="19" cy="11" r="1.8" fill="#3e4352"/><rect x="8" y="17" width="16" height="9" rx="2" fill="#7fa6c8"/><rect x="13" y="19" width="6" height="4" rx="1" fill="#ffd978"/><path d="M8 19l-4 4M24 19l4 4" stroke="#7fa6c8" stroke-width="2.4" stroke-linecap="round"/><rect x="10" y="26" width="4" height="4" fill="#5f86a8"/><rect x="18" y="26" width="4" height="4" fill="#5f86a8"/>',
+    ],
+    ribbon: [
+      "Ruban",
+      '<path d="M16 27q8 0 12 3" stroke="#e8445a" stroke-width="3" fill="none"/><circle cx="16" cy="16" r="11" fill="#e8445a"/><circle cx="16" cy="16" r="7.6" fill="#f06a7e"/><circle cx="16" cy="16" r="4" fill="#f4efe6"/>',
+    ],
+    scissors: [
+      "Ciseaux",
+      '<path d="M11.6 19.6L22 3M20.4 19.6L10 3" stroke="#b9c3d2" stroke-width="2.4" stroke-linecap="round"/><circle cx="9" cy="23" r="4.4" fill="none" stroke="#e8667a" stroke-width="2.6"/><circle cx="23" cy="23" r="4.4" fill="none" stroke="#e8667a" stroke-width="2.6"/><circle cx="16" cy="11" r="1.2" fill="#7b889c"/>',
+    ],
+    tag: [
+      "Étiquette",
+      '<path d="M4 12l7-7h17v18H11z" fill="#f2e6c8"/><circle cx="10" cy="14" r="2" fill="#fff" stroke="#c9b894"/><path d="M15 11h9M15 15h7M15 19h5" stroke="#d96f6f" stroke-width="1.4"/><path d="M10 14q-6 6-6 14" stroke="#e8445a" stroke-width="1.4" fill="none"/>',
+    ],
+    paperroll: [
+      "Papier cadeau",
+      '<rect x="4" y="11" width="24" height="10" rx="5" fill="#3f9a62"/><path d="M8 11l3 10M14 11l3 10M20 11l3 10" stroke="#ffd978" stroke-width="1.6"/><ellipse cx="27" cy="16" rx="2.4" ry="5" fill="#f4efe6"/><circle cx="27" cy="16" r="1.2" fill="#c9b894"/><path d="M5 21q-1 4 4 6l14-2" fill="#56b07a"/>',
+    ],
+    tape: [
+      "Ruban adhésif",
+      '<circle cx="15" cy="17" r="10" fill="#f4e6a8"/><circle cx="15" cy="17" r="5" fill="#fff"/><circle cx="15" cy="17" r="10" fill="none" stroke="#e2cf7a" stroke-width="1.2"/><path d="M24 14l6 1v4l-6 1" fill="#b9c3d2"/>',
+    ],
+    bow: [
+      "Nœud",
+      '<path d="M16 16l-6 12 3-.6 3 2.6M16 16l6 12-3-.6-3 2.6" fill="#c9303f"/><path d="M16 16q-10-11-13-6t13 6zM16 16q10-11 13-6t-13 6z" fill="#e8445a"/><circle cx="16" cy="16" r="3.2" fill="#f06a7e"/>',
+    ],
+    carrot: [
+      "Carottes",
+      '<path d="M8 25L22 9l3 3L11 27q-3 1-3-2z" fill="#f08a3a"/><path d="M13 21l2 1M16 17l2 1M19 13l2 1" stroke="#c9692a" stroke-width="1.2"/><path d="M23 9q0-6 4-6-1 4-2 6 4-2 6 0-3 2-6 3" fill="#5fae6a"/>',
+    ],
+    apple: [
+      "Pommes",
+      '<path d="M16 9q-4-3-8 0-5 5-1 13 3 6 6 5 3-1 6 0 3 1 6-5 4-8-1-13-4-3-8 0z" fill="#e0524f"/><path d="M16 9q0-4 2-6" stroke="#6a3a2a" stroke-width="1.6" fill="none"/><path d="M17 6q4-3 7 0-4 2-7 0z" fill="#69b87a"/><path d="M10 13q-2 3-1 6" stroke="#f08a88" stroke-width="1.6" fill="none"/>',
+    ],
+    hay: [
+      "Botte de foin",
+      '<rect x="3" y="10" width="26" height="16" rx="3" fill="#e6c76a"/><rect x="3" y="10" width="26" height="5" rx="2" fill="#f2d98a"/><path d="M10 10v16M22 10v16" stroke="#a8743a" stroke-width="1.6"/><path d="M6 18l2 4M14 17l1 5M18 18l2 3M25 17l1 5" stroke="#c9a24a" stroke-width="1"/>',
+    ],
+    jingle: [
+      "Grelots",
+      '<path d="M3 8q13 14 26 0" stroke="#c9404a" stroke-width="3.4" fill="none"/><circle cx="8" cy="15" r="3.2" fill="#e2b84a"/><circle cx="16" cy="18" r="3.4" fill="#e2b84a"/><circle cx="24" cy="15" r="3.2" fill="#e2b84a"/><path d="M6.6 16h2.8M14.4 19h3.2M22.6 16h2.8" stroke="#a8802a" stroke-width="1"/>',
+    ],
+    brush: [
+      "Brosse",
+      '<rect x="4" y="9" width="24" height="9" rx="4" fill="#c58a54"/><path d="M6 18v7M9 18v8M12 18v7M15 18v8M18 18v7M21 18v8M24 18v7M27 18v6" stroke="#5a4636" stroke-width="1.6"/><rect x="9" y="11" width="14" height="3.4" rx="1.6" fill="#a8724a"/>',
+    ],
+    fork: [
+      "Fourche",
+      '<rect x="14.7" y="10" width="2.6" height="20" rx="1" fill="#b98a58"/><path d="M8 3v6q0 3 3 3h10q3 0 3-3V3M12.6 3v9M19.4 3v9" stroke="#9aa6b8" stroke-width="2" fill="none"/>',
+    ],
+    sack: [
+      "Hotte",
+      '<path d="M8 10q-5 8-3 15 2 4 11 4t11-4q2-7-3-15z" fill="#a8723a"/><path d="M8 10q8 4 16 0l-2-3q-6 2-12 0z" fill="#c9905a"/><rect x="11" y="2" width="5" height="6" rx="1" fill="#e8667a"/><rect x="16" y="3" width="5" height="5" rx="1" fill="#5fa9e0"/><path d="M8 17q8 3 16 0" stroke="#8a5a2a" stroke-width="1.2" fill="none"/>',
+    ],
+    ticket: [
+      "Billet de train",
+      '<path d="M3 9h26v5a2 2 0 0 0 0 4v5H3v-5a2 2 0 0 0 0-4z" fill="#f2c24a"/><path d="M10 9v14" stroke="#c99a2e" stroke-dasharray="2 2"/><path d="M14 13h11M14 17h8" stroke="#8a5a2a" stroke-width="1.4"/>',
+    ],
+    suitcase: [
+      "Valise",
+      '<rect x="4" y="10" width="24" height="17" rx="3" fill="#b9573e"/><path d="M12 10V6h8v4" fill="none" stroke="#6a3a2a" stroke-width="2"/><path d="M4 16h24" stroke="#8a3a2a" stroke-width="1.4"/><rect x="9" y="10" width="2.4" height="17" fill="#e2b84a"/><rect x="20.6" y="10" width="2.4" height="17" fill="#e2b84a"/><circle cx="7.6" cy="22" r="1.8" fill="#f4efe6"/>',
+    ],
+    radio: [
+      "Radio",
+      '<path d="M8 10L20 3" stroke="#8a8f9a" stroke-width="1.6"/><rect x="4" y="10" width="24" height="16" rx="3" fill="#5f6f8a"/><circle cx="11" cy="18" r="4.4" fill="#3e4352"/><circle cx="11" cy="18" r="2" fill="#7b889c"/><rect x="18" y="14" width="7" height="3" rx="1" fill="#9af0b0"/><circle cx="20" cy="22" r="1.4" fill="#e8667a"/><circle cx="24" cy="22" r="1.4" fill="#ffd978"/>',
+    ],
+    camera: [
+      "Appareil photo",
+      '<rect x="10" y="6" width="9" height="5" rx="1.4" fill="#5c6376"/><rect x="3" y="10" width="26" height="16" rx="3" fill="#3e4352"/><circle cx="16" cy="18" r="6" fill="#7b889c"/><circle cx="16" cy="18" r="3.6" fill="#2a3a5a"/><circle cx="15" cy="17" r="1.2" fill="#9fc8e0"/><rect x="23" y="12" width="3" height="2" rx=".6" fill="#ffd978"/>',
+    ],
+    skymap: [
+      "Carte du ciel",
+      '<rect x="4" y="3" width="24" height="26" rx="2" fill="#1f2a5a"/><circle cx="16" cy="16" r="10" fill="none" stroke="#5a6aa8" stroke-width="1"/><path d="M9 11l5 3 4-4 5 6M12 22l4-3 4 3" stroke="#9fb4e8" stroke-width=".8" fill="none"/><g fill="#fff6c0"><circle cx="9" cy="11" r="1.2"/><circle cx="14" cy="14" r="1"/><circle cx="18" cy="10" r="1.2"/><circle cx="23" cy="16" r="1"/><circle cx="12" cy="22" r="1"/><circle cx="16" cy="19" r="1.2"/><circle cx="20" cy="22" r="1"/></g>',
+    ],
+    bear: ["Ourson", "DIT"],
+    ttrain: ["Petit train", "DIT"],
+    escarf: ["Écharpe brodée", "DIT"],
+  }),
+  (DIT.bear[1] = DIT.teddy[1] + '<path d="M12 18l4 2 4-2-1 3-3-1-3 1z" fill="#e8445a"/>'),
+  (DIT.ttrain[1] = DIT.train[1]),
+  (DIT.escarf[1] = DIT.scarf[1]
+    .replace(/#5fae8a/g, "#c9404a")
+    .replace(/#4f9a78/g, "#a8303a")
+    .replace(/#e8f4ec/g, "#ffd978")),
+  Object.entries({
+    map: { c: ["console", "table"], a: ["bench", "desk"] },
+    lantern: { c: ["hook"], a: ["console", "table", "side", "bench"] },
+    backpack: { c: ["bench", "hook"], a: ["floor"] },
+    mittens: { c: ["bench", "hook"], a: ["console"] },
+    flask: { c: ["counter", "table"], a: ["side"] },
+    logs: { c: ["floor"], a: [] },
+    compass: { c: ["desk"], a: ["odrawer", "wshelf", "shelf"] },
+    flag: { c: ["wall"], a: ["floor"] },
+    sled: { c: ["floor"], a: [] },
+    spyglass: { c: ["desk"], a: ["wshelf", "shelf"] },
+    pstar: { c: ["wall"], a: ["wshelf", "shelf"] },
+    bell: { c: ["wall", "hook"], a: ["wshelf", "shelf"] },
+    cookie: { c: ["coffee", "table"], a: ["counter", "side"] },
+    milk: { c: ["table"], a: ["counter"] },
+    cupcake: { c: ["counter"], a: ["table", "ucab"] },
+    choco: { c: ["ucab"], a: ["cab", "counter"] },
+    wrench: { c: ["odrawer"], a: ["desk", "shelf"] },
+    paint: { c: ["shelf"], a: ["wshelf", "floor"] },
+    spool: { c: ["desk"], a: ["odrawer", "shelf"] },
+    robot: { c: ["shelf", "wshelf"], a: ["toybox", "floor"] },
+    ribbon: { c: ["table"], a: ["desk", "shelf"] },
+    scissors: { c: ["odrawer"], a: ["desk", "table"] },
+    tag: { c: ["desk"], a: ["odrawer", "table"] },
+    paperroll: { c: ["shelf"], a: ["floor", "table"] },
+    tape: { c: ["desk"], a: ["odrawer", "table"] },
+    bow: { c: ["table"], a: ["wshelf", "desk"] },
+    carrot: { c: ["trough"], a: ["floor"] },
+    apple: { c: ["trough"], a: ["shelf"] },
+    hay: { c: ["floor"], a: [] },
+    jingle: { c: ["hook"], a: ["bench", "wall"] },
+    brush: { c: ["shelf"], a: ["bench"] },
+    fork: { c: ["floor"], a: [] },
+    sack: { c: ["sleigh"], a: ["floor"] },
+    bear: { c: ["sleigh"], a: ["shelf", "table"] },
+    ttrain: { c: ["sleigh"], a: ["shelf", "table"] },
+    escarf: { c: ["sleigh"], a: ["hook", "table"] },
+    ticket: { c: ["console"], a: ["bench"] },
+    suitcase: { c: ["wshelf", "floor"], a: ["bench"] },
+    radio: { c: ["desk"], a: ["shelf", "side"] },
+    camera: { c: ["desk", "side"], a: ["table", "sofa"] },
+    skymap: { c: ["wall"], a: ["table", "desk"] },
+  }).forEach(([e, t]) => {
+    ((DOK[e] = t), (DIT[e][2] = t.c));
+  }),
+  Object.assign(DSZ, {
+    ticket: 20,
+    suitcase: 28,
+    radio: 24,
+    camera: 22,
+    skymap: 24,
+    sled: 32,
+    logs: 28,
+    hay: 30,
+    fork: 30,
+    sack: 28,
+    flag: 26,
+    paperroll: 26,
+    compass: 20,
+    scissors: 20,
+    tag: 20,
+    tape: 20,
+    bow: 22,
+    cookie: 22,
+    milk: 20,
+    cupcake: 22,
+    choco: 22,
+    wrench: 22,
+    spool: 20,
+    jingle: 24,
+    brush: 24,
+    carrot: 22,
+    apple: 20,
+    lantern: 24,
+    pstar: 24,
+    bell: 24,
+    spyglass: 26,
+    mittens: 24,
+    flask: 20,
+  }));
+const dTrough = (e, t, a, s, n, o = "#8a5a36") => {
+  const i = e.box(t, a, 0, s, n, 1, o),
+    r = [
+      e.P(t + 0.12, a + 0.12, 1),
+      e.P(t + s - 0.12, a + 0.12, 1),
+      e.P(t + s - 0.12, a + n - 0.12, 1),
+      e.P(t + 0.12, a + n - 0.12, 1),
+    ];
+  (e.pg(r, "#e6c76a", dSh(o, 0.7)), e.zone("trough", r, i.hull));
+};
+const dSleigh = (e, t, a, s, n) => {
+  ([a + 0.15, a + n - 0.15].forEach((a) => {
+    (e.ln(e.P(t - 0.3, a, 0.05), e.P(t + s + 0.15, a, 0.05), "#e2b84a", 2.6),
+      e.ln(e.P(t + s + 0.15, a, 0.05), e.P(t + s + 0.45, a, 0.5), "#e2b84a", 2.6));
+  }),
+    e.box(t, a, 0.25, 0.45, n, 2.1, "#b8343e"));
+  const o = e.box(t + 0.45, a, 0.25, s - 0.45, n, 1.1, "#c9404a", { t: "#7a1f2a" }),
+    i = [
+      e.P(t + 0.6, a + 0.15, 1.35),
+      e.P(t + s - 0.15, a + 0.15, 1.35),
+      e.P(t + s - 0.15, a + n - 0.15, 1.35),
+      e.P(t + 0.6, a + n - 0.15, 1.35),
+    ];
+  (e.pg(i, "#5a1520"),
+    e.ln(e.P(t + 0.45, a + n, 0.8), e.P(t + s, a + n, 0.8), "#e2b84a", 1.6),
+    e.zone("sleigh", i, o.hull));
+};
+const dXr = (e) => () => (e = (16807 * e) % 2147483647) / 2147483647;
+const dF = (e) => e.map((e) => e[0].toFixed(1) + "," + e[1].toFixed(1)).join(" ");
+const dPt = (e, t, a, s) => ("L" === t ? e.P(0, a, s) : e.P(a, 0, s));
+const dPl = (e, t, a) => a.map(([a, s]) => dPt(e, t, a, s));
+let dXid = 0;
+const dWalls = (e, t, a) => {
+  const { P: s, W: n, D: o, Hh: i } = e;
+  (e.pg([s(0, 0), s(0, o), s(0, o, i), s(0, 0, i)], t), e.pg([s(0, 0), s(n, 0), s(n, 0, i), s(0, 0, i)], a));
+};
+const dEdges = (e, t, a) => {
+  const { P: s, W: n, D: o, Hh: i } = e;
+  (e.pg([s(0, o, 0), s(-0.35, o, 0), s(-0.35, o, i), s(0, o, i)], dSh(t, 0.62)),
+    e.pg([s(n, 0, 0), s(n, -0.35, 0), s(n, -0.35, i), s(n, 0, i)], dSh(a, 0.6)),
+    e.pg([s(0, 0, i), s(0, o, i), s(-0.35, o, i), s(-0.35, 0, i)], dSh(t, 0.8)),
+    e.pg([s(0, 0, i), s(n, 0, i), s(n, -0.35, i), s(0, -0.35, i)], dSh(a, 0.8)),
+    e.ln(s(0, 0, 0), s(0, 0, i), dSh(t, 0.6), 1.4));
+};
+const dTxt = (e, t, a, s, n, o, i, r = "middle", l = 700) => {
+  const c = dPt(e, t, a, s),
+    d = "L" === t ? [1, -0.5] : [1, 0.5],
+    f = Math.hypot(d[0], d[1]);
+  e.s += `<text transform="matrix(${(d[0] / f).toFixed(3)} ${(d[1] / f).toFixed(3)} 0 1 ${c[0].toFixed(1)} ${c[1].toFixed(1)})" font-size="${o}" font-weight="${l}" fill="${i}" font-family="Fraunces,Georgia,serif" text-anchor="${r}">${n}</text>`;
+};
+const dLogs = (e, t) => {
+  const { W: a, D: s, Hh: n } = e;
+  for (let o = 0, i = 0; o < n - 0.05; o += 0.5, i++) {
+    const r = Math.min(n, o + 0.5),
+      l = i % 2 ? 0.93 : 1;
+    (e.pg(e.qL(0, s, o, r), dSh(t, 0.94 * l)),
+      e.pg(e.qR(0, a, o, r), dSh(t, l)),
+      [
+        ["L", s],
+        ["R", a],
+      ].forEach(([a, s]) => {
+        (e.ln(dPt(e, a, 0, r), dPt(e, a, s, r), dSh(t, 0.62), 1.8),
+          e.ln(dPt(e, a, 0, o + 0.36), dPt(e, a, s, o + 0.36), dSh(t, 1.12), 1));
+        const n = dPt(e, a, s, o + 0.25);
+        e.s += `<ellipse cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" rx="5.4" ry="5.4" fill="${dSh(t, 1.25)}" stroke="${dSh(t, 0.7)}" stroke-width="1.2"/><circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r="2" fill="none" stroke="${dSh(t, 0.85)}"/>`;
+      }));
   }
-  return P.map((p) => ({ w: p.w, r: p.r - r0, c: p.c - c0, h: p.h }));
-}
-const thOrd = (a, n) =>
-  lvShuf([...Array(THM.length).keys()], rng(53 + Math.floor(a / THM.length)))[a % THM.length];
+};
+const dPlanks = (e, t, a, s = 0, n = e.Hh, o = 0.45) => {
+  const i = "L" === t ? e.D : e.W;
+  e.pg(
+    dPl(e, t, [
+      [0, s],
+      [i, s],
+      [i, n],
+      [0, n],
+    ]),
+    a,
+  );
+  for (let r = o; r < i; r += o) e.ln(dPt(e, t, r, s), dPt(e, t, r, n), dSh(a, 0.78), 1.1);
+  for (let r = o / 2; r < i; r += o)
+    e.s += [s + 0.2, n - 0.2]
+      .map((s) => {
+        const n = dPt(e, t, r, s);
+        return `<circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r=".9" fill="${dSh(a, 0.6)}"/>`;
+      })
+      .join("");
+};
+const dBricks = (e, t, a, s, n = 0, o = e.Hh, i = 0.42, r = 0.9) => {
+  const l = "L" === t ? e.D : e.W;
+  e.pg(
+    dPl(e, t, [
+      [0, n],
+      [l, n],
+      [l, o],
+      [0, o],
+    ]),
+    a,
+  );
+  for (let a = n, c = 0; a < o - 0.01; a += i, c++) {
+    e.ln(dPt(e, t, 0, a), dPt(e, t, l, a), s, 1);
+    for (let n = ((c % 2) * r) / 2; n < l; n += r)
+      n > 0 && e.ln(dPt(e, t, n, a), dPt(e, t, n, Math.min(o, a + i)), s, 1);
+  }
+};
+const dPanels = (e, t, a) => {
+  const s = "L" === t ? e.D : e.W,
+    n = e.Hh;
+  (e.pg(
+    dPl(e, t, [
+      [0, 0],
+      [s, 0],
+      [s, n],
+      [0, n],
+    ]),
+    a,
+  ),
+    [1.1, n - 0.7].forEach((n) => e.ln(dPt(e, t, 0, n), dPt(e, t, s, n), dSh(a, 0.75), 1.4)));
+  for (let o = 1.4; o < s; o += 1.4) e.ln(dPt(e, t, o, 0), dPt(e, t, o, n), dSh(a, 0.75), 1.4);
+  for (let o = 0.15; o < s; o += 0.35)
+    [1.25, n - 0.85].forEach((s) => {
+      const n = dPt(e, t, o, s);
+      e.s += `<circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r="1" fill="${dSh(a, 0.62)}"/>`;
+    });
+  e.pg(
+    dPl(e, t, [
+      [0, 0],
+      [s, 0],
+      [s, 1.1],
+      [0, 1.1],
+    ]),
+    dSh(a, 0.86),
+  );
+};
+const dStripes = (e, t, a, s, n = 0.4, o) => {
+  const i = "L" === t ? e.D : e.W,
+    r = e.Hh;
+  e.pg(
+    dPl(e, t, [
+      [0, 0],
+      [i, 0],
+      [i, r],
+      [0, r],
+    ]),
+    a,
+  );
+  for (let a = 0; a < i; a += 2 * n)
+    e.pg(
+      dPl(e, t, [
+        [a, 0],
+        [Math.min(i, a + n), 0],
+        [Math.min(i, a + n), r],
+        [a, r],
+      ]),
+      s,
+    );
+  if (o) for (let a = n; a < i; a += 2 * n) e.ln(dPt(e, t, a, 0), dPt(e, t, a, r), o, 1);
+};
+const dDots = (e, t, a, s, n, o, i) => {
+  const r = dXr(i),
+    l = "L" === t ? e.D : e.W;
+  for (let i = 0; i < o; i++) {
+    const o = dPt(e, t, 0.2 + r() * (l - 0.4), s + r() * (n - s));
+    e.s += `<circle cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="${(1.6 + 1.6 * r()).toFixed(1)}" fill="${a[i % a.length]}"/>`;
+  }
+};
+const dFlPl = (e, t, a = 0.55) => {
+  const { P: s, W: n, D: o } = e,
+    i = dXr(7);
+  for (let i = a; i < o; i += a) e.ln(s(0, i), s(n, i), dSh(t, 0.8), 1);
+  for (let r = 0; r < o; r += a)
+    for (let l = 2 * i(); l < n; l += 1.6 + 1.8 * i())
+      e.ln(s(l, r), s(l, Math.min(o, r + a)), dSh(t, 0.8), 1);
+};
+const dFlSnow = (e, t = 3) => {
+  const { P: a, W: s, D: n } = e,
+    o = dXr(t);
+  for (let t = 0; t < 90; t++) {
+    const t = a(o() * s, o() * n);
+    e.s += `<circle cx="${t[0].toFixed(1)}" cy="${t[1].toFixed(1)}" r="${(0.6 + 1.4 * o()).toFixed(1)}" fill="${o() < 0.5 ? "#cfe2f4" : "#fff"}"/>`;
+  }
+};
+const dFlGrid = (e, t) => {
+  const { P: a, W: s, D: n } = e;
+  for (let o = 1; o < 7; o++)
+    (e.ln(a(o, 0), a(o, n), dSh(t, 0.78), 1.2), e.ln(a(0, o), a(s, o), dSh(t, 0.78), 1.2));
+  for (let o = 0.5; o < s; o += 1)
+    for (let s = 0.5; s < n; s += 1) {
+      const n = a(o, s);
+      e.s += `<circle cx="${n[0].toFixed(1)}" cy="${n[1].toFixed(1)}" r="1.1" fill="${dSh(t, 0.7)}"/>`;
+    }
+};
+const dFlBlob = (e, t, a, s, n, o, i = 18) => {
+  const r = [];
+  for (let o = 0; o < i; o++) {
+    const l = (o / i) * Math.PI * 2,
+      c = 1 + 0.12 * Math.sin(5 * l);
+    r.push(e.P(t + s * c * Math.cos(l), a + n * c * Math.sin(l)));
+  }
+  e.pg(r, o, dSh(o, 0.8), 1);
+};
+const dScape = (e, t, a, s, n, o, i = {}) => {
+  const r = "dx" + ++dXid,
+    l = dXr(i.seed || 11),
+    c = (a + s) / 2;
+  let d;
+  if ("arch" === i.shape) {
+    const e = o - ((s - a) / 2) * (i.ar || 0.8);
+    d = [
+      [a, n],
+      [s, n],
+      [s, e],
+    ];
+    for (let t = 1; t < 16; t++) {
+      const n = (t / 16) * Math.PI;
+      d.push([c + ((s - a) / 2) * Math.cos(n), e + (o - e) * Math.sin(n)]);
+    }
+    d.push([a, e]);
+  } else if ("round" === i.shape) {
+    const e = (n + o) / 2;
+    d = [];
+    for (let t = 0; t < 24; t++) {
+      const i = (t / 24) * Math.PI * 2;
+      d.push([c + ((s - a) / 2) * Math.cos(i), e + ((o - n) / 2) * Math.sin(i)]);
+    }
+  } else
+    d = [
+      [a, n],
+      [s, n],
+      [s, o],
+      [a, o],
+    ];
+  const f = dPl(e, t, d),
+    u = i.sky || ["#141a4a", "#3a4a8a"],
+    h = o - n;
+  e.s += `<defs><linearGradient id="${r}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${u[0]}"/><stop offset="1" stop-color="${u[1]}"/></linearGradient><clipPath id="${r}c"><polygon points="${dF(f)}"/></clipPath>${(i.au || []).map((e, t) => `<linearGradient id="${r}a${t}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${e}" stop-opacity="0"/><stop offset=".55" stop-color="${e}" stop-opacity=".7"/><stop offset="1" stop-color="${e}" stop-opacity="1"/></linearGradient>`).join("")}<filter id="${r}b" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter><filter id="${r}g" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter></defs><g clip-path="url(#${r}c)"><polygon points="${dF(f)}" fill="url(#${r}s)"/>`;
+  for (let o = 0; o < (i.stars || 0); o++) {
+    const o = dPt(e, t, a + l() * (s - a), n + h * (0.35 + 0.65 * l()));
+    e.s += `<circle cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="${(0.5 + 1.1 * l()).toFixed(1)}" fill="#fff" opacity="${(0.5 + 0.5 * l()).toFixed(2)}"/>`;
+  }
+  if (i.moon) {
+    const o = dPt(e, t, a + 0.78 * (s - a), n + 0.8 * h);
+    e.s += `<circle cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="9" fill="#fff6d0" opacity=".25"/><circle cx="${o[0].toFixed(1)}" cy="${o[1].toFixed(1)}" r="5.4" fill="#fff6d0"/>`;
+  }
+  if (
+    ((i.au || []).forEach((o, i) => {
+      const l = (e) => n + h * (0.36 + 0.11 * i) + 0.08 * h * Math.sin(2.3 * e + 1.9 * i),
+        c = (e) => h * (0.34 + 0.14 * Math.sin(1.5 * e + 2.4 * i)),
+        d = [],
+        f = [];
+      for (let e = a - 0.2; e <= s + 0.2; e += 0.1) (d.push([e, l(e)]), f.unshift([e, l(e) + c(e)]));
+      const u = dF(dPl(e, t, d.concat(f)));
+      e.s += `<polygon points="${u}" fill="${o}" opacity=".35" filter="url(#${r}g)"/><polygon points="${u}" fill="url(#${r}a${i})" filter="url(#${r}b)"/>`;
+      for (let n = a; n <= s; n += 0.06) {
+        const a = dPt(e, t, n, l(n)),
+          s = dPt(e, t, n, l(n) + c(n) * (0.55 + 0.4 * Math.abs(Math.sin(9 * n + i))));
+        e.s += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${s[0].toFixed(1)}" y2="${s[1].toFixed(1)}" stroke="${o}" stroke-opacity=".28" stroke-width="1"/>`;
+      }
+    }),
+    i.mt)
+  ) {
+    const o = [[a - 0.1, n]];
+    for (let e = a - 0.1; e <= s + 0.2; e += 0.55)
+      o.push([e, n + h * (0.18 + 0.22 * Math.abs(Math.sin(1.7 * e + 0.6)))]);
+    (o.push([s + 0.2, n]), e.pg(dPl(e, t, o), i.mt));
+  }
+  if (i.houses)
+    for (let o = a + 0.3; o < s - 0.2; o += 0.7 + 0.3 * l()) {
+      const a = n + 0.12 * h,
+        s = 0.12 * h;
+      e.pg(
+        dPl(e, t, [
+          [o, a],
+          [o + 0.4, a],
+          [o + 0.4, a + s],
+          [o + 0.2, a + 1.6 * s],
+          [o, a + s],
+        ]),
+        "#3a2a4a",
+      );
+      const i = dPt(e, t, o + 0.2, a + 0.5 * s);
+      e.s += `<rect x="${(i[0] - 1.6).toFixed(1)}" y="${(i[1] - 1.6).toFixed(1)}" width="3.2" height="3.2" fill="#ffd36b"/>`;
+    }
+  if (i.pines)
+    for (let o = 0; o < i.pines; o++) {
+      const o = a + l() * (s - a),
+        r = n + h * (0.08 + 0.08 * l()),
+        c = h * (0.16 + 0.14 * l());
+      e.pg(
+        dPl(e, t, [
+          [o - 0.16, r],
+          [o, r + c],
+          [o + 0.16, r],
+        ]),
+        i.pc || "#1f4a4a",
+      );
+    }
+  (e.pg(
+    dPl(e, t, [
+      [a - 0.1, n],
+      [s + 0.1, n],
+      [s + 0.1, n + 0.1 * h],
+      [c, n + 0.14 * h],
+      [a - 0.1, n + 0.09 * h],
+    ]),
+    i.gr || "#eef4fb",
+  ),
+    (e.s += `</g><polygon points="${dF(f)}" fill="none" stroke="${i.fr || "#f4f1ea"}" stroke-width="${i.fw || 4}" stroke-linejoin="round"/>`),
+    i.mul &&
+      (e.ln(dPt(e, t, c, n), dPt(e, t, c, o), i.fr || "#f4f1ea", 1.8),
+      e.ln(dPt(e, t, a, n + 0.5 * h), dPt(e, t, s, n + 0.5 * h), i.fr || "#f4f1ea", 1.8)));
+};
+const dDeer = (e, t, a, s = 1, n) => {
+  const o = e.P(t, a, 0);
+  e.s += `<g transform="translate(${o[0].toFixed(1)} ${o[1].toFixed(1)}) scale(${s})"><path d="M-16 -22v22M-8 -21v21M8 -21v21M15 -22v22" stroke="#6a4024" stroke-width="3.6" stroke-linecap="round"/><ellipse cx="0" cy="-27" rx="19" ry="10" fill="#a8723a"/><ellipse cx="2" cy="-22" rx="13" ry="4" fill="#e6c79a"/><path d="M-14 -31q-6-9-5-20" stroke="#a8723a" stroke-width="8" stroke-linecap="round"/><ellipse cx="-22" cy="-52" rx="8" ry="6" fill="#a8723a"/><ellipse cx="-28" cy="-50" rx="3.4" ry="2.6" fill="#5a3a22"/><circle cx="-21" cy="-54" r="1.3" fill="#2a1a10"/><path d="M-19 -57q-2-10 5-15M-16 -66l6-2M-23 -57q-9-8-7-16M-29 -66l-5-3" stroke="#e2c99a" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M18 -31q5-1 5 4" stroke="#a8723a" stroke-width="4" stroke-linecap="round"/>${n ? '<path d="M-17 -40q8 6 14 14" stroke="#c9404a" stroke-width="3.4" fill="none"/><circle cx="-12" cy="-36" r="2.2" fill="#e2b84a"/><circle cx="-7" cy="-31" r="2.2" fill="#e2b84a"/>' : ""}</g>`;
+};
+const dGear = (e, t, a, s, n, o) => {
+  const i = [];
+  for (let e = 0; e < 32; e++) {
+    const t = (e / 32) * Math.PI * 2,
+      o = n * (e % 4 < 2 ? 1.18 : 1);
+    i.push([a + o * Math.cos(t), s + o * Math.sin(t)]);
+  }
+  e.pg(dPl(e, t, i), o, dSh(o, 0.7), 1);
+  const r = [];
+  for (let e = 0; e < 16; e++) {
+    const t = (e / 16) * Math.PI * 2;
+    r.push([a + 0.38 * n * Math.cos(t), s + 0.38 * n * Math.sin(t)]);
+  }
+  e.pg(dPl(e, t, r), dSh(o, 0.7));
+};
+const dPine = (e, t, a, s = 1) => {
+  (e.cyl(t, a, 0, 0.3 * s, 0.5 * s, "#8a5a36"), (e.ch[e.ch.length - 1].h = 2.4 * s));
+  const n = e.P(t, a, 0.5 * s);
+  e.s += `<g transform="translate(${n[0].toFixed(1)} ${n[1].toFixed(1)}) scale(${s})"><path d="M0-46l13 18h-6l10 14h-7l9 14h-38l9-14h-7l10-14h-6z" fill="#2f7a52"/><path d="M0-46l13 18h-6l10 14h-7l9 14H0z" fill="#276a46"/><path d="M-9-18h18M-12-4h24" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/></g>`;
+};
+const dGifts = (e, t, a) => {
+  [
+    [0, 0, 0.9, 0.9, 0.7, "#e8667a"],
+    [0.9, 0.1, 0.8, 0.8, 0.55, "#5fa9e0"],
+    [0.15, 0.1, 0.65, 0.65, 0.5, "#7fc48a", ".7"],
+    [1, 0.2, 0.55, 0.55, 0.45, "#f2c24a", ".55"],
+  ].forEach(([s, n, o, i, r, l, c]) => {
+    const d = c ? +c : 0;
+    (e.box(t + s, a + n, d, o, i, r, l),
+      e.ln(e.P(t + s + o / 2, a + n + i, d), e.P(t + s + o / 2, a + n + i, d + r), "#fff", 2),
+      e.ln(e.P(t + s + o, a + n + i / 2, d), e.P(t + s + o, a + n + i / 2, d + r), "#fff", 2));
+  });
+};
+const dBunting = (e, t, a, s, n, o) => {
+  e.ln(dPt(e, t, a, n), dPt(e, t, s, n), "#8a6a4a", 1);
+  let i = 0;
+  for (let r = a + 0.05; r < s - 0.35; r += 0.45)
+    e.pg(
+      dPl(e, t, [
+        [r, n],
+        [r + 0.36, n],
+        [r + 0.18, n - 0.42],
+      ]),
+      o[i++ % o.length],
+    );
+};
+const dWoodStove = (e, t, a) => {
+  const s = e.box(t, a, 0, 1.3, 1.1, 1.6, "#3a3d48", { t: "#2a2c34" });
+  (e.pg(
+    [
+      e.P(t + 0.3, a + 1.1, 0.35),
+      e.P(t + 1, a + 1.1, 0.35),
+      e.P(t + 1, a + 1.1, 1.05),
+      e.P(t + 0.3, a + 1.1, 1.05),
+    ],
+    "#f4a24a",
+    "#2a2c34",
+    1.4,
+  ),
+    e.pg(
+      [e.P(t + 0.42, a + 1.1, 0.42), e.P(t + 0.88, a + 1.1, 0.42), e.P(t + 0.65, a + 1.1, 0.95)],
+      "#ffd36b",
+    ),
+    e.box(t + 0.5, a + 0.4, 1.6, 0.3, 0.3, e.Hh - 1.6, "#4a4e5a"),
+    e.zone("stove", s.top, s.hull));
+};
+const dOven = (e, t, a, s, n) => {
+  const o = 2.4,
+    i = e.box(t, a, 0, s, n, o, "#c0634a", { t: "#a8523c" });
+  for (let i = 0.4; i < o; i += 0.4) e.ln(e.P(t + s, a, i), e.P(t + s, a + n, i), "#9a4a36", 1);
+  const r = [];
+  for (let o = 0; o <= 12; o++) {
+    const i = (o / 12) * Math.PI;
+    r.push(e.P(t + s, a + n / 2 + 0.55 * Math.cos(i), 0.35 + 0.7 * Math.sin(i)));
+  }
+  (r.push(e.P(t + s, a + n / 2 - 0.55, 0.35), e.P(t + s, a + n / 2 + 0.55, 0.35)),
+    e.pg(r, "#2a1a14"),
+    e.pg(
+      [e.P(t + s, a + n / 2 - 0.35, 0.36), e.P(t + s, a + n / 2 + 0.35, 0.36), e.P(t + s, a + n / 2, 0.8)],
+      "#f4a24a",
+    ),
+    e.box(t + s / 2 - 0.3, a + n / 2 - 0.3, o, 0.6, 0.6, e.Hh - o, "#a8523c"),
+    e.zone("stove", i.top, i.hull));
+};
+const dFireplace = (e, t, a) => {
+  const s = e.box(0, t, 0, 0.9, a, 2.2, "#d9c8b0", { t: "#c9b89e" });
+  (e.pg(
+    [e.P(0.9, t + 0.4, 0.2), e.P(0.9, t + a - 0.4, 0.2), e.P(0.9, t + a - 0.4, 1.4), e.P(0.9, t + 0.4, 1.4)],
+    "#2a1a14",
+  ),
+    e.pg([e.P(0.9, t + 0.6, 0.22), e.P(0.9, t + a - 0.6, 0.22), e.P(0.9, t + a / 2, 1)], "#f4a24a"),
+    e.pg([e.P(0.9, t + 0.85, 0.22), e.P(0.9, t + a - 0.85, 0.22), e.P(0.9, t + a / 2, 0.7)], "#ffd36b"),
+    e.box(-0.05, t - 0.15, 2.2, 1.15, a + 0.3, 0.22, "#a8724a"),
+    e.zone(
+      "wshelf",
+      [
+        e.P(0, t - 0.15, 2.42),
+        e.P(1.1, t - 0.15, 2.42),
+        e.P(1.1, t + a + 0.15, 2.42),
+        e.P(0, t + a + 0.15, 2.42),
+      ],
+      s.hull,
+    ));
+};
+const dIceBench = (e, t, a, s, n) => {
+  const o = e.box(t, a, 0, s, n, 0.9, "#d6e8f6", { t: "#e6f1fa" }),
+    i = e.box(t, a, 0.9, s, n, 0.22, "#c9a27a", { t: "#d9b48a" });
+  (e.box(t + 0.1, a + n - 0.7, 1.12, 0.8, 0.6, 0.3, "#e8946c"),
+    e.zone("sofa", i.top, dHull([...o.hull, ...i.hull])));
+};
+const dIceBlock = (e, t, a, s, n, o, i) => {
+  const r = e.box(t, a, 0, s, n, o, "#cfe4f4", { t: "#e3f0fa" });
+  (e.ln(e.P(t, a + n, 0.5 * o), e.P(t + s, a + n, 0.5 * o), "#b6d0e6", 1),
+    e.ln(e.P(t + s, a, 0.5 * o), e.P(t + s, a + n, 0.5 * o), "#b6d0e6", 1),
+    e.zone(i, r.top, r.hull));
+};
+const dIgloo = (e) => {
+  const { P: t, W: a, D: s, Hh: n } = e,
+    o = (e, t) => 1.9 + (n - 1.9) * Math.cos((((e / t) * Math.PI) / 2) * 0.92);
+  ([
+    ["L", s, "#dcebf7"],
+    ["R", a, "#e9f3fb"],
+  ].forEach(([t, a, s]) => {
+    const i = [
+      [0, 0],
+      [a, 0],
+    ];
+    for (let e = a; e >= 0; e -= 0.2) i.push([e, o(e, a)]);
+    const r = "dx" + ++dXid,
+      l = dF(dPl(e, t, i));
+    e.s += `<defs><clipPath id="${r}"><polygon points="${l}"/></clipPath></defs><polygon points="${l}" fill="${s}"/><g clip-path="url(#${r})">`;
+    for (let s = 0, o = 0; s < n; s += 0.55, o++) {
+      (e.ln(dPt(e, t, 0, s), dPt(e, t, a, s), "#b6d0e6", 1.3),
+        e.ln(dPt(e, t, 0, s + 0.08), dPt(e, t, a, s + 0.08), "#fff", 0.8));
+      for (let n = (o % 2) * 0.6; n < a; n += 1.2)
+        n > 0 && e.ln(dPt(e, t, n, s), dPt(e, t, n, s + 0.55), "#b6d0e6", 1.3);
+    }
+    e.s += "</g>";
+    const c = [];
+    for (let s = a; s >= 0; s -= 0.2) c.push(dPt(e, t, s, o(s, a)));
+    e.s += `<polyline points="${dF(c)}" fill="none" stroke="#a9c4dc" stroke-width="3.4" stroke-linejoin="round"/>`;
+  }),
+    e.ln(t(0, 0, 0), t(0, 0, n), "#b6d0e6", 1.4));
+};
+const DNIGHT = "#232a66";
+const DXR = [
+  {
+    n: "Le départ vers le Nord",
+    s: "Zeni part pour le pôle Nord ! Dans la petite gare du village, il attend le train de nuit. Range ses affaires avant le départ : billet, valise, carte du Nord et lanterne.",
+    c: ["#efe3cc", "#efe3cc", "#cdb89a", "#bfa98a"],
+    w: (e) => {
+      (dWalls(e, "#efe3cc", "#f4e9d6"),
+        dPlanks(e, "L", "#4f7a5a", 0, 1.7, 0.32),
+        dPlanks(e, "R", "#4f7a5a", 0, 1.7, 0.32),
+        dEdges(e, "#efe3cc", "#f4e9d6"),
+        e.pg(
+          dPl(e, "L", [
+            [1, 2.9],
+            [3.9, 2.9],
+            [3.9, 4.6],
+            [1, 4.6],
+          ]),
+          "#2a2f3a",
+          "#8a6a4a",
+          2,
+        ),
+        dTxt(e, "L", 2.45, 4.25, "DÉPARTS", 8, "#ffd978"),
+        [
+          ["Pôle Nord", "22:15"],
+          ["Toundra", "22:40"],
+          ["Aurores", "23:05"],
+        ].forEach(([t, a], s) => {
+          (dTxt(e, "L", 3.7, 3.9 - 0.32 * s, t, 6.5, "#f4efe6", "start", 600),
+            dTxt(e, "L", 1.2, 3.9 - 0.32 * s, a, 6.5, "#ffd978", "end", 600));
+        }),
+        dScape(e, "R", 1.2, 3.9, 1.9, 4.7, {
+          shape: "arch",
+          stars: 26,
+          moon: 1,
+          mt: "#9fb0d6",
+          pines: 9,
+          fr: "#4f7a5a",
+          fw: 5,
+          mul: 1,
+          seed: 5,
+        }),
+        dClockW(e, "R", 5.2, 4.4),
+        dTxt(e, "R", 5.2, 4.95, "GARE", 8, "#4f7a5a"));
+    },
+    b: (e) => {
+      (dHooks(e, "R", 4.2, 6.6, 3.4, "#4f7a5a"),
+        dWallShelf(e, "L", 4.6, 6.6, 3.6, "#4f7a5a"),
+        dRug(e, 3.4, 2.2, 3, 1, "#e2b84a"),
+        dBench(e, 0, 0.8, 1.1, 2.8, "#4f7a5a"),
+        dConsole(e, 0, 4.5, 1, 2, "#6a4a3a"),
+        dPine(e, 6.2, 6.2, 1.1));
+    },
+    items: ["coat", "hat", "scarf", "boots", "mittens", "backpack", "ticket", "suitcase", "map", "lantern"],
+  },
+  {
+    n: "La cabane de la toundra",
+    s: "Au milieu de la toundra glacée, Zeni trouve une cabane en rondins pour la nuit. Il range ses affaires près du poêle, bien au chaud.",
+    c: ["#b9824e", "#b9824e", "#a8784a", "#9a6c40"],
+    w: (e) => {
+      (dLogs(e, "#b9824e"),
+        dScape(e, "L", 0.8, 2.6, 2.3, 4.2, {
+          stars: 14,
+          moon: 1,
+          mt: "#c9d6ec",
+          pines: 7,
+          fr: "#7a4a2a",
+          fw: 5,
+          mul: 1,
+          seed: 9,
+          sky: ["#1a2050", "#5a6aa8"],
+        }));
+      const t = e.P(3.6, 0, 4.4);
+      ((e.s += `<g transform="translate(${t[0].toFixed(1)} ${t[1].toFixed(1)})"><path d="M0 0q-12-4-16-16M-8-4q-4-6-3-12M-13-9l-7 1M0 0q12-4 16-16M8-4q4-6 3-12M13-9l7 1" stroke="#e2c99a" stroke-width="2.6" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="3" rx="6" ry="5" fill="#7a4a2a"/></g>`),
+        dFlPl(e, "#a8784a"));
+    },
+    b: (e) => {
+      (dHooks(e, "R", 4.2, 6.6, 3.4, "#6a4024"),
+        dFlBlob(e, 4.6, 4, 1.5, 1.2, "#e6d6bc"),
+        dWoodStove(e, 0.6, 0.3),
+        dSide(e, 0, 1.9, 0.9, 0.9, 1.25, "#8a5a36"),
+        dBed(e, 0, 3, 2.4, 3.6, "#a8503a", "#6a4024", "#efe2c8"),
+        dTable(e, 3.4, 2.2, 1.6, 1.4, 1.7, "#8a5a36"),
+        dChairOf(e, 5.3, 2.4, "#8a5a36"),
+        e.box(2.4, 0.15, 0, 1.4, 0.7, 0.5, "#9a6a3e", { t: "#c9965e" }));
+    },
+    items: ["pot", "kettle", "cocoa", "flask", "logs", "blanket", "pillow", "lantern", "hat", "scarf"],
+  },
+  {
+    n: "La station du pôle Nord",
+    s: "Le voici au pôle Nord ! Dans la station des explorateurs, entre la radio et les hublots, Zeni range la boussole, le drapeau et la luge.",
+    c: ["#cfd8e2", "#cfd8e2", "#9aa6b4", "#8e9aa8"],
+    w: (e) => {
+      (dPanels(e, "L", "#cfd8e2"),
+        dPanels(e, "R", "#dbe3ec"),
+        dEdges(e, "#cfd8e2", "#dbe3ec"),
+        e.pg(e.qL(0, e.D, 1.1, 1.35), "#e8945a"),
+        e.pg(e.qR(0, e.W, 1.1, 1.35), "#e8945a"),
+        dScape(e, "L", 1, 2.4, 2.6, 3.9, {
+          shape: "round",
+          stars: 8,
+          mt: "#e6eef8",
+          sky: ["#2a3a7a", "#8aa6d9"],
+          gr: "#f4f8fc",
+          fr: "#7b889c",
+          fw: 6,
+          seed: 4,
+        }),
+        dScape(e, "L", 3, 4.4, 2.6, 3.9, {
+          shape: "round",
+          stars: 8,
+          sky: ["#2a3a7a", "#8aa6d9"],
+          gr: "#f4f8fc",
+          fr: "#7b889c",
+          fw: 6,
+          seed: 8,
+          pines: 0,
+        }));
+      const t = dPt(e, "L", 3.7, 2.95);
+      ((e.s += `<path d="M${t[0].toFixed(1)} ${t[1].toFixed(1)}v-16l9 3-9 4" stroke="#555" fill="#e8667a"/>`),
+        e.pg(
+          dPl(e, "R", [
+            [1.4, 3],
+            [4.2, 3],
+            [4.2, 4.4],
+            [1.4, 4.4],
+          ]),
+          "#1f2a36",
+          "#7b889c",
+          2,
+        ));
+      const a = dPt(e, "R", 2.2, 3.7);
+      ((e.s += `<ellipse cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" rx="13" ry="13" fill="none" stroke="#5ff59a" stroke-width="1.2" opacity=".8"/><ellipse cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" rx="7" ry="7" fill="none" stroke="#5ff59a" opacity=".6"/><line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${(a[0] + 11).toFixed(1)}" y2="${(a[1] - 6).toFixed(1)}" stroke="#5ff59a" stroke-width="1.4"/>`),
+        [
+          [3, 4.1],
+          [3, 3.75],
+          [3, 3.4],
+        ].forEach(([t, a], s) => e.ln(dPt(e, "R", t, a), dPt(e, "R", t + 0.9 - 0.2 * s, a), "#5ff59a", 1.4)),
+        dTxt(e, "R", 2.8, 4.85, "STATION POLAIRE", 7.5, "#3e4a5c"),
+        dFlGrid(e, "#9aa6b4"));
+    },
+    b: (e) => {
+      (dHooks(e, "L", 5, 6.6, 3.4, "#5c6376"),
+        dRug(e, 1.8, 2.6, 3, 2.4, "#e8945a"),
+        dDeskO(e, 1.3, 0, 3.1, 1.3, "#8a96a8"),
+        dShelf(e, 5, 0, 1.9, 1.1, 4.4, "#7b889c", "L"),
+        dChairOf(e, 2.3, 1.6, "#e8945a"),
+        dFiling(e, 0, 5.4, 1.1, 1.2, "#9aa6b8"));
+    },
+    items: ["compass", "flag", "sled", "earth", "notebook", "folder", "books", "radio", "mug", "coat"],
+  },
+  {
+    n: "L’igloo des aurores",
+    s: "Zeni passe la nuit dans un igloo. Par la grande ouverture, le ciel s’illumine de vert et de rose : les aurores boréales dansent au-dessus de la neige.",
+    c: ["#dcebf7", "#dcebf7", "#f2f7fc", "#e8f0f8"],
+    Hh: 5.6,
+    w: (e) => {
+      (dIgloo(e),
+        dScape(e, "R", 0.9, 5.6, 0.7, 3.7, {
+          shape: "arch",
+          ar: 0.5,
+          stars: 46,
+          sky: ["#060a24", "#123a5a"],
+          au: ["#5ff5b0", "#5ad8f0", "#f08ad8"],
+          mt: "#1f3550",
+          pines: 10,
+          pc: "#0e2230",
+          gr: "#dfeefa",
+          fr: "#c9dff0",
+          fw: 7,
+          seed: 13,
+        }),
+        dFlSnow(e, 5));
+    },
+    b: (e) => {
+      (dFlBlob(e, 3.6, 3.6, 1.7, 1.3, "#c9a27a"),
+        dFlBlob(e, 3.6, 3.6, 1.2, 0.9, "#d9b48a"),
+        dIceBench(e, 0, 1.8, 1.6, 3.6),
+        dIceBlock(e, 3, 3, 1.3, 1.3, 0.9, "table"),
+        dIceBlock(e, 5.6, 0.4, 1, 1, 1.6, "desk"),
+        dIceBlock(e, 0, 0.2, 1, 1, 1.25, "side"),
+        dIceBlock(e, 0, 5.8, 1, 1, 1.25, "side"));
+      const t = e.P(6.1, 0.9, 1.6);
+      e.s += `<path d="M${t[0].toFixed(1)} ${t[1].toFixed(1)}m-8 0l-6 18M${t[0].toFixed(1)} ${t[1].toFixed(1)}m0 0l0 20M${t[0].toFixed(1)} ${t[1].toFixed(1)}m8 0l6 18" stroke="#6a5a4a" stroke-width="1.4" opacity="0"/>`;
+    },
+    items: ["spyglass", "camera", "skymap", "pstar", "candle", "blanket", "cocoa", "flask", "globe", "book"],
+  },
+  {
+    n: "Une maison en pain d’épices",
+    s: "Au village du Père Noël, les maisons sont en pain d’épices ! Zeni aide à décorer celle-ci : sapin, guirlande, cloche et chaussettes devant la cheminée.",
+    c: ["#b9783e", "#b9783e", "#f6e6e6", "#e8a8a8"],
+    w: (e) => {
+      (dWalls(e, "#b06e36", "#bf7c40"),
+        dEdges(e, "#b06e36", "#bf7c40"),
+        [
+          ["L", e.D],
+          ["R", e.W],
+        ].forEach(([t, a]) => {
+          for (let s = 0; s < a - 0.01; s += 0.5)
+            e.pg(
+              dPl(e, t, [
+                [s, e.Hh - 0.02],
+                [s + 0.5, e.Hh - 0.02],
+                [s + 0.25, e.Hh - 0.42],
+              ]),
+              "#fff",
+            );
+          e.ln(dPt(e, t, 0, 1.2), dPt(e, t, a, 1.2), "#fff", 2.4);
+          for (let s = 0.25; s < a; s += 0.5) {
+            const a = dPt(e, t, s, 1.2);
+            e.s += `<circle cx="${a[0].toFixed(1)}" cy="${(a[1] - 3).toFixed(1)}" r="2.4" fill="${["#e8445a", "#7fc48a", "#ffd978", "#5fa9e0"][Math.round(2 * s) % 4]}"/>`;
+          }
+          dDots(e, t, ["#e8445a", "#7fc48a", "#ffd978", "#fff"], 1.6, e.Hh - 0.7, 10, "L" === t ? 3 : 7);
+        }),
+        dScape(e, "R", 2.9, 4.9, 2.3, 4.3, {
+          shape: "arch",
+          stars: 18,
+          moon: 1,
+          houses: 1,
+          pines: 4,
+          fr: "#fff",
+          fw: 5,
+          mul: 1,
+          seed: 21,
+        }),
+        [
+          [0, e.D],
+          [e.W, 0],
+        ].forEach(([t, a]) => {
+          const s = e.P(t, a, 0),
+            n = e.P(t, a, e.Hh);
+          e.s += `<line x1="${s[0].toFixed(1)}" y1="${s[1].toFixed(1)}" x2="${n[0].toFixed(1)}" y2="${n[1].toFixed(1)}" stroke="#fff" stroke-width="7"/><line x1="${s[0].toFixed(1)}" y1="${s[1].toFixed(1)}" x2="${n[0].toFixed(1)}" y2="${n[1].toFixed(1)}" stroke="#e8445a" stroke-width="7" stroke-dasharray="6 6"/>`;
+        }));
+    },
+    b: (e) => {
+      (dFireplace(e, 2, 2.4),
+        dRug(e, 2.4, 2, 3.6, 3.4, "#c9505a"),
+        dSide(e, 0, 5.2, 1, 1, 1.25, "#7a3a1a"),
+        dShelf(e, 5.6, 0, 1.4, 1, 3.4, "#a8603a", "L"),
+        dSofa(e, 1.4, 5.2, 3, 1.6, "#f4a6c0", !1),
+        dTable(e, 3.3, 2.7, 1.6, 1.7, 0.9, "#6a3a22", "coffee"));
+    },
+    items: ["tree", "gift", "gift2", "garland", "stocking", "wreath", "bell", "cookie", "globe", "candle"],
+  },
+  {
+    n: "La boulangerie des lutins",
+    s: "Ça sent le chocolat chaud ! Près du grand four à pain, Zeni donne un coup de main aux lutins boulangers et range leur boutique.",
+    c: ["#f4e2c8", "#f4e2c8", "#c9704a", "#e8c0a0"],
+    w: (e) => {
+      (dWalls(e, "#f4e2c8", "#f8ead4"),
+        dBricks(e, "L", "#f4f6f8", "#cfd8e2", 0, 1.9, 0.38, 0.38),
+        dBricks(e, "R", "#f4f6f8", "#cfd8e2", 0, 1.9, 0.38, 0.38),
+        dEdges(e, "#f4e2c8", "#f8ead4"),
+        dScape(e, "L", 0.8, 2.5, 2.4, 4.2, {
+          shape: "arch",
+          stars: 12,
+          houses: 1,
+          fr: "#a8603a",
+          fw: 5,
+          mul: 1,
+          seed: 17,
+        }),
+        dTxt(e, "L", 1.65, 4.7, "Boulangerie", 11, "#a8603a", void 0, 700),
+        dBunting(e, "R", 0.2, 6.8, 5, ["#e8445a", "#ffd978", "#7fc48a", "#5fa9e0"]));
+    },
+    b: (e) => {
+      (dOven(e, 0, 3.8, 1.5, 2.2),
+        dUpperC(e, 0.3, 2.2, "#c98a6a"),
+        dUpperC(e, 3.6, 5.5, "#c98a6a"),
+        dWallShelf(e, "R", 2.35, 3.45, 3.6, "#a8603a"),
+        dRug(e, 2, 3, 3.8, 3, "#e8946c"),
+        dCounterF(e, 0.3, 0, 1.9, 1.3, "L", "#f4e6d6", "#a8603a"),
+        dCounterF(e, 2.2, 0, 1.4, 1.3, "L", "#f4e6d6", "#a8603a"),
+        dCounterF(e, 3.6, 0, 1.9, 1.3, "L", "#f4e6d6", "#a8603a"),
+        dFridge(e, 5.6, 0, 1.3, 1.3),
+        dChairOf(e, 2, 3.6, "#e8667a"),
+        dTable(e, 3, 3.3, 2, 1.8, 1.7, "#a8603a"),
+        dChairOf(e, 5.4, 3.6, "#e8667a"),
+        e.box(5.6, 5.4, 0, 0.8, 0.7, 1, "#efe2c8", { t: "#f6ecd8" }),
+        e.box(6, 6.2, 0, 0.7, 0.6, 0.9, "#e6d6bc", { t: "#f6ecd8" }));
+    },
+    items: ["milk", "cupcake", "choco", "cocoa", "cookie", "mug", "plate", "bowl", "spatula", "pot"],
+  },
+  {
+    n: "L’usine à jouets",
+    s: "Dans l’usine à jouets, les engrenages tournent et les jouets défilent sur le tapis roulant. Zeni remet chaque jouet et chaque outil à sa place.",
+    c: ["#9aa0a8", "#9aa0a8", "#a8aeb6", "#9aa0a8"],
+    w: (e) => {
+      (dBricks(e, "L", "#b9574a", "#8a3a32", 0, e.Hh, 0.42, 0.9),
+        dPanels(e, "R", "#c9ced6"),
+        dEdges(e, "#b9574a", "#c9ced6"),
+        dGear(e, "L", 3.4, 3.4, 0.75, "#e2b84a"),
+        dGear(e, "L", 4.6, 4.2, 0.5, "#9aa6b8"),
+        dGear(e, "L", 5.4, 3.1, 0.42, "#e8667a"),
+        [3.7, 4.3].forEach((t) => e.ln(dPt(e, "R", 0, t), dPt(e, "R", e.W, t), "#7b889c", 4)),
+        e.ln(dPt(e, "R", 5.9, 0), dPt(e, "R", 5.9, 4.3), "#7b889c", 4));
+      const t = dPt(e, "R", 5.9, 2.6);
+      ((e.s += `<circle cx="${t[0].toFixed(1)}" cy="${t[1].toFixed(1)}" r="6" fill="#f4efe6" stroke="#5c6376" stroke-width="1.6"/><line x1="${t[0].toFixed(1)}" y1="${t[1].toFixed(1)}" x2="${(t[0] + 3).toFixed(1)}" y2="${(t[1] - 4).toFixed(1)}" stroke="#e8445a" stroke-width="1.4"/>`),
+        dTxt(e, "R", 2.6, 4.9, "ATELIER DES JOUETS", 8, "#e8445a"));
+      const { P: a, W: s, D: n } = e;
+      for (let t = 0; t < 14; t++)
+        e.pg(
+          [
+            a(0.2 + 0.45 * t, n - 0.5),
+            a(0.42 + 0.45 * t, n - 0.5),
+            a(0.62 + 0.45 * t, n - 0.2),
+            a(0.4 + 0.45 * t, n - 0.2),
+          ],
+          t % 2 ? "#3a3d48" : "#f2c24a",
+        );
+    },
+    b: (e) => {
+      (dRug(e, 2, 2.4, 3, 2.6, "#5fa9e0"), dDeskO(e, 0.3, 0, 3.1, 1.3, "#b98a5a"));
+      const t = e.box(3.6, 0, 0, 3.3, 1, 1.2, "#5c6376", { t: "#3a3d48" });
+      for (let t = 3.8; t < 6.9; t += 0.35) e.ln(e.P(t, 1, 1.2), e.P(t, 1, 1), "#9aa6b8", 1.4);
+      (e.zone("shelf", t.top, t.hull),
+        e.box(6, 0.2, 1.2, 0.45, 0.45, 0.4, "#e8667a"),
+        e.box(4, 0.3, 1.2, 0.4, 0.4, 0.35, "#7fc48a"),
+        dShelf(e, 0, 1, 1.1, 2, 3.6, "#e8946c", "R"),
+        dChairOf(e, 1.3, 1.6, "#e8667a"),
+        dToyBox(e, 0, 5.2, 1.6, 1.2, "#5fa9e0"));
+    },
+    items: ["wrench", "paint", "spool", "robot", "train", "blocks", "ball", "horse", "duck", "rattle"],
+  },
+  {
+    n: "L’atelier d’emballage",
+    s: "Des montagnes de paquets, des rubans de toutes les couleurs : c’est l’atelier d’emballage. Zeni y range le papier, les ciseaux et les étiquettes.",
+    c: ["#f4e2ea", "#f4e2ea", "#d9b08a", "#cfa680"],
+    w: (e) => {
+      (dStripes(e, "L", "#f4ece0", "#e8667a", 0.32, "#e2b84a"),
+        dStripes(e, "R", "#3f9a62", "#36885a", 0.5),
+        dDots(e, "R", ["#ffd978", "#fff"], 0.3, e.Hh - 0.3, 40, 5),
+        dEdges(e, "#e8667a", "#3f9a62"),
+        e.ln(dPt(e, "R", 0.6, 4.3), dPt(e, "R", 4.6, 4.3), "#8a6a4a", 2),
+        ["#e8445a", "#5fa9e0", "#ffd978", "#b48ae8", "#fff", "#7fc48a", "#f08aa8"].forEach((t, a) => {
+          const s = dPt(e, "R", 0.9 + 0.55 * a, 4.3);
+          e.s += `<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="6.4" fill="${t}" stroke="${dSh(t, 0.75)}"/><path d="M${s[0].toFixed(1)} ${(s[1] + 5).toFixed(1)}q2 10-2 18" stroke="${t}" stroke-width="2.2" fill="none"/>`;
+        }),
+        dScape(e, "L", 2, 3.6, 2.6, 4.3, { stars: 16, houses: 1, fr: "#f4ece0", fw: 5, mul: 1, seed: 31 }),
+        dTxt(e, "L", 5, 4.6, "Emballage", 10, "#3f9a62"),
+        dFlPl(e, "#d9b08a"),
+        dFlSnow(e, 9));
+    },
+    b: (e) => {
+      (dDeskO(e, 1.3, 0, 2.4, 1.3, "#c58a54"),
+        dShelf(e, 4, 0, 1.6, 1.1, 3.6, "#a8724a", "L"),
+        dChairOf(e, 2, 1.6, "#e8667a"),
+        dTable(e, 2.4, 3.2, 2.4, 1.8, 1.7, "#c58a54"),
+        dToyBox(e, 0, 5.2, 1.6, 1.2, "#e8667a"),
+        dGifts(e, 5.4, 4.6),
+        dGifts(e, 5.8, 0.2));
+    },
+    items: ["ribbon", "bow", "scissors", "tag", "tape", "pens", "paperroll", "gift", "gift2", "stocking"],
+  },
+  {
+    n: "L’écurie des rennes",
+    s: "À l’écurie, les rennes se reposent avant la grande nuit. Zeni leur apporte des carottes et range tout le matériel.",
+    c: ["#8a5a36", "#8a5a36", "#c9a86a", "#bf9e60"],
+    w: (e) => {
+      (dPlanks(e, "L", "#9a6a3e"),
+        dPlanks(e, "R", "#a8763f"),
+        dEdges(e, "#9a6a3e", "#a8763f"),
+        [
+          ["L", e.D],
+          ["R", e.W],
+        ].forEach(([t, a]) => {
+          e.pg(
+            dPl(e, t, [
+              [0, 4.2],
+              [a, 4.2],
+              [a, 4.55],
+              [0, 4.55],
+            ]),
+            "#6a4024",
+          );
+          for (let s = 0.8; s < a; s += 2.2)
+            e.pg(
+              dPl(e, t, [
+                [s, 0],
+                [s + 0.3, 0],
+                [s + 0.3, 4.2],
+                [s, 4.2],
+              ]),
+              "#7a4a2a",
+            );
+        }),
+        dScape(e, "R", 2.6, 4.2, 2.8, 3.9, {
+          stars: 16,
+          moon: 1,
+          pines: 5,
+          fr: "#6a4024",
+          fw: 5,
+          mul: 1,
+          seed: 41,
+        }));
+      const { P: t, W: a, D: s } = e,
+        n = dXr(19);
+      for (let o = 0; o < 70; o++) {
+        const o = n() * a,
+          i = n() * s,
+          r = t(o, i),
+          l = t(o + 0.25, i + 0.3 * (n() - 0.5));
+        e.ln(r, l, n() < 0.5 ? "#e6c76a" : "#d9b45a", 1);
+      }
+    },
+    b: (e) => {
+      (dDeer(e, 0.7, 1.6, 1),
+        dDeer(e, 0.7, 4, 0.95),
+        [
+          [1.6, 0.2],
+          [1.6, 2.7],
+          [1.6, 5.2],
+        ].forEach(([t, a]) => {
+          (e.box(t, a, 0, 0.18, 1.6, 1.3, "#7a4a2a", { t: "#8a5a36" }),
+            e.ln(e.P(t + 0.18, a, 0.5), e.P(t + 0.18, a + 1.6, 0.5), "#6a4024", 2));
+        }),
+        dHooks(e, "R", 4.7, 6.7, 3.4, "#6a4024"),
+        dTrough(e, 4.6, 0, 2.2, 1),
+        dChest(e, 5.4, 4, 1.3, 1.3, "#7a4a2a"),
+        e.box(5.6, 5.6, 0, 1.3, 1.2, 0.9, "#e6c76a", { t: "#f2d98a" }));
+    },
+    items: ["carrot", "apple", "hay", "fork", "jingle", "lantern", "brush", "mittens", "hat", "scarf"],
+  },
+  {
+    n: "Le traîneau du Père Noël",
+    s: "Le grand soir est arrivé ! Dehors, sous les étoiles, les rennes attendent. Zeni charge le traîneau : l’ourson pour sa fille, le petit train pour son fils et l’écharpe brodée pour sa compagne.",
+    c: ["#1a2050", "#1a2050", "#f2f7fc", "#e8f0f8"],
+    w: (e) => {
+      ([
+        ["L", e.D],
+        ["R", e.W],
+      ].forEach(([t, a]) => {
+        dScape(e, t, 0, a, 0, e.Hh, {
+          stars: 60,
+          moon: "R" === t,
+          mt: "#2a3a6a",
+          houses: "L" === t,
+          pines: 8,
+          pc: "#14304a",
+          sky: ["#0a0e30", "#3a3a8a"],
+          fr: "#0a0e30",
+          fw: 0.1,
+          seed: "L" === t ? 51 : 53,
+        });
+        for (let s = 0.3; s < a; s += 0.9)
+          e.pg(
+            dPl(e, t, [
+              [s, 0],
+              [s + 0.18, 0],
+              [s + 0.18, 1.2],
+              [s + 0.09, 1.35],
+              [s, 1.2],
+            ]),
+            "#8a5a36",
+          );
+        [0.45, 0.95].forEach((s) =>
+          e.pg(
+            dPl(e, t, [
+              [0, s],
+              [a, s],
+              [a, s + 0.14],
+              [0, s + 0.14],
+            ]),
+            "#a8723a",
+          ),
+        );
+      }),
+        e.ln(e.P(0, 0, 0), e.P(0, 0, e.Hh), "#0a0e30", 1),
+        e.pg(
+          dPl(e, "L", [
+            [0.8, 1.7],
+            [3.8, 1.7],
+            [3.8, 3.9],
+            [0.8, 3.9],
+          ]),
+          "#8a5a36",
+          "#6a4024",
+          1.4,
+        ));
+      for (let t = 1.1; t < 3.8; t += 0.35) e.ln(dPt(e, "L", t, 1.7), dPt(e, "L", t, 3.9), "#7a4a2a", 1);
+      dFlSnow(e, 11);
+    },
+    b: (e) => {
+      (dHooks(e, "L", 1, 3.6, 3.4, "#6a4024"),
+        dRug(e, 1.8, 1.8, 4.2, 3.4, "#dfeefa"),
+        dSleigh(e, 1.9, 2.4, 3, 1.8),
+        dDeer(e, 5.6, 2.9, 0.9, 1),
+        dDeer(e, 6.4, 3.9, 0.9, 1));
+      const t = e.box(0, 4.6, 0, 1.5, 1.5, 1.6, "#b98a5a", { t: "#c99a68" });
+      (e.ln(e.P(0, 6.1, 0.8), e.P(1.5, 6.1, 0.8), "#8a5a36", 1.6),
+        e.ln(e.P(1.5, 4.6, 0.8), e.P(1.5, 6.1, 0.8), "#8a5a36", 1.6),
+        e.zone("table", t.top, t.hull),
+        dPine(e, 6.3, 0.6, 1.1));
+    },
+    items: ["sack", "bear", "ttrain", "escarf", "bell", "lantern", "map", "pstar", "wreath", "gift"],
+  },
+];
+DXR.forEach((e) => {
+  ((e.W = e.W || 7), (e.D = e.D || 7), (e.Hh = e.Hh || 5.2));
+});
+const sv = keep;
+const chip = () => {
+  const e = $(".chip");
+  e && (e.textContent = "🫧 " + FLX());
+};
+const nk = (e) =>
+  e
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+const GW = new Set(L.flat().concat(LB.split(" ")).map(nk));
+const fits = (e, t) => {
+  const a = [...t];
+  for (const t of e) {
+    const e = a.indexOf(t);
+    if (e < 0) return !1;
+    a.splice(e, 1);
+  }
+  return !0;
+};
+const rng = (e) => {
+  let t = e >>> 0;
+  return () => {
+    t = (t + 1831565813) >>> 0;
+    let e = t;
+    return (
+      (e = Math.imul(e ^ (e >>> 15), 1 | e)),
+      (e ^= e + Math.imul(e ^ (e >>> 7), 61 | e)),
+      ((e ^ (e >>> 14)) >>> 0) / 4294967296
+    );
+  };
+};
