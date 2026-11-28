@@ -1180,33 +1180,29 @@
       if (!S || !CV) return;
       S.tx = (e.clientX - CV.getBoundingClientRect().left) / PKg;
     };
+    // Contrôles via Input : glisser dans la borne pour viser ; flèches gauche / droite.
     let on = 0;
-    addEventListener(
-      "pointerdown",
-      (e) => {
-        if (!S || !e.target.closest || !e.target.closest(".zgbox") || e.target.closest("button")) return;
-        on = 1;
-        if (S.state === "ready") {
-          S.state = "play";
-          ov("");
-        }
-        pt(e);
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => {
+        const e = i.evt;
+        if (a === "toucher") {
+          if (!S || !e.target.closest || !e.target.closest(".zgbox") || e.target.closest("button")) return;
+          on = 1;
+          if (S.state === "ready") {
+            S.state = "play";
+            ov("");
+          }
+          pt(e);
+        } else if (a === "lacher") on = 0;
+        else on && pt(e);
       },
       { passive: !0 },
     );
-    addEventListener(
-      "pointermove",
-      (e) => {
-        on && pt(e);
-      },
-      { passive: !0 },
-    );
-    addEventListener("pointerup", () => (on = 0), { passive: !0 });
-    addEventListener("keydown", (e) => {
+    Input.sur(["bougerGauche", "bougerDroite"], (a, i) => {
       if (cur !== ID || !S) return;
-      const d = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
-      if (!d) return;
-      e.preventDefault();
+      const d = a === "bougerGauche" ? -1 : 1;
+      i.evt.preventDefault();
       if (S.state === "ready") {
         S.state = "play";
         ov("");

@@ -45,7 +45,8 @@ const InputTactile = {
     if (veut("toucher") || balaye) ptr("pointerdown", veut("toucher") ? "toucher" : null, "appui");
     if (veut("glisser")) ptr("pointermove", "glisser", "mouvement");
     if (veut("lacher") || balaye) ptr("pointerup", veut("lacher") ? "lacher" : null, "relache");
-    if (balaye) ptr("pointercancel", null, "relache");
+    const annule = o.annulation && veut("lacher");
+    if (balaye || annule) ptr("pointercancel", annule ? "lacher" : null, "relache");
     if (veut("menu"))
       arrets.push(
         Input.ecouter(

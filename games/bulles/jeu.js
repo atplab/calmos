@@ -964,9 +964,8 @@
         const e = jel();
         e && (e.classList.remove("on"), (e.firstChild.style.transform = ""));
       };
-    addEventListener(
-      "pointerdown",
-      (e) => {
+    // Contrôles via Input : manette virtuelle au doigt ou à la souris (appui, glisser, lâcher) ; flèches.
+    const jdown = (e) => {
         if (
           !S ||
           J.id !== null ||
@@ -991,11 +990,7 @@
           ov("");
         }
       },
-      { passive: !0 },
-    );
-    addEventListener(
-      "pointermove",
-      (e) => {
+      jmove = (e) => {
         if (!S || e.pointerId !== J.id) return;
         let dx = e.clientX - J.x,
           dy = e.clientY - J.y;
@@ -1009,24 +1004,25 @@
         const el = jel();
         el && (el.firstChild.style.transform = `translate(${dx}px,${dy}px)`);
       },
-      { passive: !0 },
+      jup = (e) => {
+        if (e.pointerId !== J.id) return;
+        J.id = null;
+        if (S) {
+          S.jo = 0;
+          S.jx = S.jy = 0;
+        }
+        jrest();
+      };
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => (a === "toucher" ? jdown : a === "lacher" ? jup : jmove)(i.evt),
+      { passive: !0, annulation: !0 },
     );
-    const jup = (e) => {
-      if (e.pointerId !== J.id) return;
-      J.id = null;
-      if (S) {
-        S.jo = 0;
-        S.jx = S.jy = 0;
-      }
-      jrest();
-    };
-    addEventListener("pointerup", jup, { passive: !0 });
-    addEventListener("pointercancel", jup, { passive: !0 });
-    addEventListener("keydown", (e) => {
+    const DIR = { monter: [0, -1], descendre: [0, 1], bougerGauche: [-1, 0], bougerDroite: [1, 0] };
+    Input.sur(["monter", "descendre", "bougerGauche", "bougerDroite"], (a, i) => {
       if (cur !== ID || !S) return;
-      const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.key];
-      if (!d) return;
-      e.preventDefault();
+      const d = DIR[a];
+      i.evt.preventDefault();
       if (S.state === "ready") {
         S.state = "play";
         ov("");

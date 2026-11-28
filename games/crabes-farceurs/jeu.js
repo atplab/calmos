@@ -996,9 +996,11 @@
   function bind() {
     if (BD) return;
     BD = 1;
-    addEventListener(
-      "pointerdown",
-      (e) => {
+    // Contrôles via Input : toucher (doigt ou souris) un farceur pour le taper.
+    Input.sur(
+      "toucher",
+      (_, i) => {
+        const e = i.evt;
         if (!S || !e.target.closest || !e.target.closest(".zcbox") || e.target.closest("button")) return;
         e.cancelable && e.preventDefault();
         const r = CV.getBoundingClientRect();

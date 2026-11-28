@@ -6,6 +6,7 @@
 //   capture, passive : mêmes réglages que addEventListener
 //   touches  : { "a": "bougerGauche", … } touches propres au jeu (prioritaires sur InputActions.touches)
 //   relache  : true pour recevoir aussi les relâchements de touche (info.phase = "relache")
+//   annulation : true pour recevoir aussi « lacher » quand le contact est annulé (pointercancel)
 //   sources  : ["clavier", "souris", "tactile"] pour limiter les méthodes de contrôle écoutées
 // info contient toujours : source, phase, evt (l'événement d'origine, pour preventDefault si besoin).
 // La manette (manette.js) passe par le clavier et le pointeur simulés : elle marche donc partout sans rien faire.

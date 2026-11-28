@@ -24,6 +24,7 @@ const InputSouris = {
     if (veut("toucher")) ptr("pointerdown", "toucher", "appui");
     if (veut("glisser") || veut("survoler")) ptr("pointermove", "glisser", "mouvement");
     if (veut("lacher")) ptr("pointerup", "lacher", "relache");
+    if (veut("lacher") && o.annulation) ptr("pointercancel", "lacher", "relache");
     if (veut("defiler"))
       arrets.push(
         Input.ecouter(

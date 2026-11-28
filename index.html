@@ -44,6 +44,7 @@ const InputActions = {
 //   capture, passive : mêmes réglages que addEventListener
 //   touches  : { "a": "bougerGauche", … } touches propres au jeu (prioritaires sur InputActions.touches)
 //   relache  : true pour recevoir aussi les relâchements de touche (info.phase = "relache")
+//   annulation : true pour recevoir aussi « lacher » quand le contact est annulé (pointercancel)
 //   sources  : ["clavier", "souris", "tactile"] pour limiter les méthodes de contrôle écoutées
 // info contient toujours : source, phase, evt (l'événement d'origine, pour preventDefault si besoin).
 // La manette (manette.js) passe par le clavier et le pointeur simulés : elle marche donc partout sans rien faire.
@@ -142,6 +143,7 @@ const InputSouris = {
     if (veut("toucher")) ptr("pointerdown", "toucher", "appui");
     if (veut("glisser") || veut("survoler")) ptr("pointermove", "glisser", "mouvement");
     if (veut("lacher")) ptr("pointerup", "lacher", "relache");
+    if (veut("lacher") && o.annulation) ptr("pointercancel", "lacher", "relache");
     if (veut("defiler"))
       arrets.push(
         Input.ecouter(
@@ -221,7 +223,8 @@ const InputTactile = {
     if (veut("toucher") || balaye) ptr("pointerdown", veut("toucher") ? "toucher" : null, "appui");
     if (veut("glisser")) ptr("pointermove", "glisser", "mouvement");
     if (veut("lacher") || balaye) ptr("pointerup", veut("lacher") ? "lacher" : null, "relache");
-    if (balaye) ptr("pointercancel", null, "relache");
+    const annule = o.annulation && veut("lacher");
+    if (balaye || annule) ptr("pointercancel", annule ? "lacher" : null, "relache");
     if (veut("menu"))
       arrets.push(
         Input.ecouter(
@@ -95593,7 +95596,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1255 · gs507${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1256 · gs508${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
@@ -110801,53 +110804,53 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
   function bind() {
     if (BD) return;
     BD = 1;
-    addEventListener("keydown", (e) => {
-      if (cur !== ID || !G || !$("#zrc")) return;
-      const d = {
-        ArrowUp: "u",
-        ArrowDown: "d",
-        ArrowLeft: "l",
-        ArrowRight: "r",
-        w: "u",
-        s: "d",
-        a: "l",
-        d: "r",
-        z: "u",
-        q: "l",
-      }[e.key.length > 1 ? e.key : e.key.toLowerCase()];
-      if (d || e.key === " ") {
-        e.preventDefault();
-        go(d);
-      }
-    });
+    // Contrôles via Input : flèches, ZQSD / WASD et Espace ; au doigt ou à la souris, glisser dans la grille.
+    const DIR = { monter: "u", descendre: "d", bougerGauche: "l", bougerDroite: "r" },
+      LET = {
+        w: "monter",
+        s: "descendre",
+        a: "bougerGauche",
+        d: "bougerDroite",
+        z: "monter",
+        q: "bougerGauche",
+      },
+      touches = {};
+    for (const k in LET) touches[k] = touches[k.toUpperCase()] = LET[k];
+    Input.sur(
+      ["monter", "descendre", "bougerGauche", "bougerDroite", "sauter"],
+      (a, i) => {
+        if (cur !== ID || !G || !$("#zrc")) return;
+        i.evt.preventDefault();
+        go(DIR[a]);
+      },
+      { touches },
+    );
     let sx = 0,
       sy = 0,
       on = 0;
-    addEventListener(
-      "pointerdown",
-      (e) => {
-        if (!G || !e.target.closest || !e.target.closest(".zrg") || e.target.closest("button")) return;
-        sx = e.clientX;
-        sy = e.clientY;
-        on = 1;
-        G.state === "ready" && go("");
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => {
+        const e = i.evt;
+        if (a === "toucher") {
+          if (!G || !e.target.closest || !e.target.closest(".zrg") || e.target.closest("button")) return;
+          sx = e.clientX;
+          sy = e.clientY;
+          on = 1;
+          G.state === "ready" && go("");
+        } else if (a === "lacher") on = 0;
+        else {
+          if (!on || !G) return;
+          const dx = e.clientX - sx,
+            dy = e.clientY - sy;
+          if (Math.hypot(dx, dy) < 22) return;
+          go(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "d" : "u");
+          sx = e.clientX;
+          sy = e.clientY;
+        }
       },
       { passive: !0 },
     );
-    addEventListener(
-      "pointermove",
-      (e) => {
-        if (!on || !G) return;
-        const dx = e.clientX - sx,
-          dy = e.clientY - sy;
-        if (Math.hypot(dx, dy) < 22) return;
-        go(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "d" : "u");
-        sx = e.clientX;
-        sy = e.clientY;
-      },
-      { passive: !0 },
-    );
-    addEventListener("pointerup", () => (on = 0), { passive: !0 });
     addEventListener("resize", () => {
       if (G && $("#zrc")) {
         G.inf ? sizeInf() : draw0();
@@ -113992,9 +113995,8 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
         const e = jel();
         e && (e.classList.remove("on"), (e.firstChild.style.transform = ""));
       };
-    addEventListener(
-      "pointerdown",
-      (e) => {
+    // Contrôles via Input : manette virtuelle au doigt ou à la souris (appui, glisser, lâcher) ; flèches.
+    const jdown = (e) => {
         if (
           !S ||
           J.id !== null ||
@@ -114019,11 +114021,7 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
           ov("");
         }
       },
-      { passive: !0 },
-    );
-    addEventListener(
-      "pointermove",
-      (e) => {
+      jmove = (e) => {
         if (!S || e.pointerId !== J.id) return;
         let dx = e.clientX - J.x,
           dy = e.clientY - J.y;
@@ -114037,24 +114035,25 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
         const el = jel();
         el && (el.firstChild.style.transform = `translate(${dx}px,${dy}px)`);
       },
-      { passive: !0 },
+      jup = (e) => {
+        if (e.pointerId !== J.id) return;
+        J.id = null;
+        if (S) {
+          S.jo = 0;
+          S.jx = S.jy = 0;
+        }
+        jrest();
+      };
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => (a === "toucher" ? jdown : a === "lacher" ? jup : jmove)(i.evt),
+      { passive: !0, annulation: !0 },
     );
-    const jup = (e) => {
-      if (e.pointerId !== J.id) return;
-      J.id = null;
-      if (S) {
-        S.jo = 0;
-        S.jx = S.jy = 0;
-      }
-      jrest();
-    };
-    addEventListener("pointerup", jup, { passive: !0 });
-    addEventListener("pointercancel", jup, { passive: !0 });
-    addEventListener("keydown", (e) => {
+    const DIR = { monter: [0, -1], descendre: [0, 1], bougerGauche: [-1, 0], bougerDroite: [1, 0] };
+    Input.sur(["monter", "descendre", "bougerGauche", "bougerDroite"], (a, i) => {
       if (cur !== ID || !S) return;
-      const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[e.key];
-      if (!d) return;
-      e.preventDefault();
+      const d = DIR[a];
+      i.evt.preventDefault();
       if (S.state === "ready") {
         S.state = "play";
         ov("");
@@ -116570,33 +116569,29 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
       if (!S || !CV) return;
       S.tx = (e.clientX - CV.getBoundingClientRect().left) / PKg;
     };
+    // Contrôles via Input : glisser dans la borne pour viser ; flèches gauche / droite.
     let on = 0;
-    addEventListener(
-      "pointerdown",
-      (e) => {
-        if (!S || !e.target.closest || !e.target.closest(".zgbox") || e.target.closest("button")) return;
-        on = 1;
-        if (S.state === "ready") {
-          S.state = "play";
-          ov("");
-        }
-        pt(e);
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => {
+        const e = i.evt;
+        if (a === "toucher") {
+          if (!S || !e.target.closest || !e.target.closest(".zgbox") || e.target.closest("button")) return;
+          on = 1;
+          if (S.state === "ready") {
+            S.state = "play";
+            ov("");
+          }
+          pt(e);
+        } else if (a === "lacher") on = 0;
+        else on && pt(e);
       },
       { passive: !0 },
     );
-    addEventListener(
-      "pointermove",
-      (e) => {
-        on && pt(e);
-      },
-      { passive: !0 },
-    );
-    addEventListener("pointerup", () => (on = 0), { passive: !0 });
-    addEventListener("keydown", (e) => {
+    Input.sur(["bougerGauche", "bougerDroite"], (a, i) => {
       if (cur !== ID || !S) return;
-      const d = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
-      if (!d) return;
-      e.preventDefault();
+      const d = a === "bougerGauche" ? -1 : 1;
+      i.evt.preventDefault();
       if (S.state === "ready") {
         S.state = "play";
         ov("");
@@ -125735,9 +125730,11 @@ body[data-scsk="e"]:has(.pg-scrabble) #scfx[data-k="e"] {
   function bind() {
     if (BD) return;
     BD = 1;
-    addEventListener(
-      "pointerdown",
-      (e) => {
+    // Contrôles via Input : toucher (doigt ou souris) un farceur pour le taper.
+    Input.sur(
+      "toucher",
+      (_, i) => {
+        const e = i.evt;
         if (!S || !e.target.closest || !e.target.closest(".zcbox") || e.target.closest("button")) return;
         e.cancelable && e.preventDefault();
         const r = CV.getBoundingClientRect();

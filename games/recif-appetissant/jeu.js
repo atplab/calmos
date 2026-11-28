@@ -998,53 +998,53 @@
   function bind() {
     if (BD) return;
     BD = 1;
-    addEventListener("keydown", (e) => {
-      if (cur !== ID || !G || !$("#zrc")) return;
-      const d = {
-        ArrowUp: "u",
-        ArrowDown: "d",
-        ArrowLeft: "l",
-        ArrowRight: "r",
-        w: "u",
-        s: "d",
-        a: "l",
-        d: "r",
-        z: "u",
-        q: "l",
-      }[e.key.length > 1 ? e.key : e.key.toLowerCase()];
-      if (d || e.key === " ") {
-        e.preventDefault();
-        go(d);
-      }
-    });
+    // Contrôles via Input : flèches, ZQSD / WASD et Espace ; au doigt ou à la souris, glisser dans la grille.
+    const DIR = { monter: "u", descendre: "d", bougerGauche: "l", bougerDroite: "r" },
+      LET = {
+        w: "monter",
+        s: "descendre",
+        a: "bougerGauche",
+        d: "bougerDroite",
+        z: "monter",
+        q: "bougerGauche",
+      },
+      touches = {};
+    for (const k in LET) touches[k] = touches[k.toUpperCase()] = LET[k];
+    Input.sur(
+      ["monter", "descendre", "bougerGauche", "bougerDroite", "sauter"],
+      (a, i) => {
+        if (cur !== ID || !G || !$("#zrc")) return;
+        i.evt.preventDefault();
+        go(DIR[a]);
+      },
+      { touches },
+    );
     let sx = 0,
       sy = 0,
       on = 0;
-    addEventListener(
-      "pointerdown",
-      (e) => {
-        if (!G || !e.target.closest || !e.target.closest(".zrg") || e.target.closest("button")) return;
-        sx = e.clientX;
-        sy = e.clientY;
-        on = 1;
-        G.state === "ready" && go("");
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (a, i) => {
+        const e = i.evt;
+        if (a === "toucher") {
+          if (!G || !e.target.closest || !e.target.closest(".zrg") || e.target.closest("button")) return;
+          sx = e.clientX;
+          sy = e.clientY;
+          on = 1;
+          G.state === "ready" && go("");
+        } else if (a === "lacher") on = 0;
+        else {
+          if (!on || !G) return;
+          const dx = e.clientX - sx,
+            dy = e.clientY - sy;
+          if (Math.hypot(dx, dy) < 22) return;
+          go(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "d" : "u");
+          sx = e.clientX;
+          sy = e.clientY;
+        }
       },
       { passive: !0 },
     );
-    addEventListener(
-      "pointermove",
-      (e) => {
-        if (!on || !G) return;
-        const dx = e.clientX - sx,
-          dy = e.clientY - sy;
-        if (Math.hypot(dx, dy) < 22) return;
-        go(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "r" : "l") : dy > 0 ? "d" : "u");
-        sx = e.clientX;
-        sy = e.clientY;
-      },
-      { passive: !0 },
-    );
-    addEventListener("pointerup", () => (on = 0), { passive: !0 });
     addEventListener("resize", () => {
       if (G && $("#zrc")) {
         G.inf ? sizeInf() : draw0();
