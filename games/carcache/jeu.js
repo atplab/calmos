@@ -2309,7 +2309,8 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
         ccCommit();
       },
       ccQuit: () => {
-        if (!CC.q) {
+        // Venant du « Quitter » du menu Pause, c'est déjà une confirmation : on quitte directement.
+        if (!CC.q && !window.__pzq) {
           CC.q = 1;
           ccShow();
           setTimeout(() => {

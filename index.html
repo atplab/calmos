@@ -95763,7 +95763,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1265 · gs517${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1266 · gs518${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
@@ -106211,7 +106211,8 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
         ccCommit();
       },
       ccQuit: () => {
-        if (!CC.q) {
+        // Venant du « Quitter » du menu Pause, c'est déjà une confirmation : on quitte directement.
+        if (!CC.q && !window.__pzq) {
           CC.q = 1;
           ccShow();
           setTimeout(() => {
