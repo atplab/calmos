@@ -58028,6 +58028,8 @@ function soFin() {
     };
   (soPush(), t());
 }
+
+// Billard : jeu (BI…biHub), contrôles via Input
 const BI = {
   W: 1000,
   H: 2000,
@@ -59475,46 +59477,55 @@ function biBind() {
   const cv = $("#bicv");
   let drag = 0,
     st0 = null;
-  cv.addEventListener("pointerdown", (e) => {
-    if (!biCan()) return;
-    const p = biPt(e),
-      c = biCue();
-    cv.setPointerCapture(e.pointerId);
-    if (BG.hand && Math.hypot(p.x - c.x, p.y - c.y) < BI.R * 3) {
-      drag = 2;
-    } else {
-      drag = 1;
-      st0 = { x: e.clientX, y: e.clientY, a: Math.atan2(p.y - c.y, p.x - c.x), aim: BG.aim, mv: !1 };
-    }
-  });
-  cv.addEventListener("pointermove", (e) => {
-    if (!drag) return;
-    const p = biPt(e),
-      c = biCue();
-    if (drag === 2) {
-      const R = BI.R,
-        x = Math.max(R, Math.min(BI.W - R, p.x)),
-        y = Math.max(R, Math.min(BG.head ? 500 : BI.H - R, p.y)),
-        ox = c.x,
-        oy = c.y;
-      c.x = x;
-      c.y = y;
-      if (biOverlap(c)) {
-        c.x = ox;
-        c.y = oy;
+  // Contrôles via Input : queue (canvas), jauge de puissance, molette de visée et bille d'effet.
+  Input.sur(
+    "toucher",
+    (q, { evt: e }) => {
+      if (!biCan()) return;
+      const p = biPt(e),
+        c = biCue();
+      cv.setPointerCapture(e.pointerId);
+      if (BG.hand && Math.hypot(p.x - c.x, p.y - c.y) < BI.R * 3) {
+        drag = 2;
+      } else {
+        drag = 1;
+        st0 = { x: e.clientX, y: e.clientY, a: Math.atan2(p.y - c.y, p.x - c.x), aim: BG.aim, mv: !1 };
       }
+    },
+    { cible: cv },
+  );
+  Input.sur(
+    ["glisser", "survoler"],
+    (q, { evt: e }) => {
+      if (!drag) return;
+      const p = biPt(e),
+        c = biCue();
+      if (drag === 2) {
+        const R = BI.R,
+          x = Math.max(R, Math.min(BI.W - R, p.x)),
+          y = Math.max(R, Math.min(BG.head ? 500 : BI.H - R, p.y)),
+          ox = c.x,
+          oy = c.y;
+        c.x = x;
+        c.y = y;
+        if (biOverlap(c)) {
+          c.x = ox;
+          c.y = oy;
+        }
+        biDraw();
+        return;
+      }
+      if (!st0.mv && Math.hypot(e.clientX - st0.x, e.clientY - st0.y) < 6) return;
+      st0.mv = !0;
+      if (BG.st === "place") BG.st = "aim";
+      const a = Math.atan2(p.y - c.y, p.x - c.x);
+      let d = a - st0.a;
+      d = Math.atan2(Math.sin(d), Math.cos(d));
+      BG.aim = st0.aim + d;
       biDraw();
-      return;
-    }
-    if (!st0.mv && Math.hypot(e.clientX - st0.x, e.clientY - st0.y) < 6) return;
-    st0.mv = !0;
-    if (BG.st === "place") BG.st = "aim";
-    const a = Math.atan2(p.y - c.y, p.x - c.x);
-    let d = a - st0.a;
-    d = Math.atan2(Math.sin(d), Math.cos(d));
-    BG.aim = st0.aim + d;
-    biDraw();
-  });
+    },
+    { cible: cv },
+  );
   const up = (e) => {
     if (drag === 1 && st0 && !st0.mv) {
       const p = biPt(e);
@@ -59530,39 +59541,55 @@ function biBind() {
     drag = 0;
     st0 = null;
   };
-  cv.addEventListener("pointerup", up);
-  cv.addEventListener("pointercancel", () => {
-    drag = 0;
-    st0 = null;
-  });
+  // pointerup → up, pointercancel → simple remise à zéro (comme avant).
+  Input.sur(
+    "lacher",
+    (q, { evt: e }) => {
+      if (e.type === "pointercancel") {
+        drag = 0;
+        st0 = null;
+        return;
+      }
+      up(e);
+    },
+    { cible: cv, annulation: !0 },
+  );
   const pw = $("#bipw"),
     pf = $("#bipf"),
     cq = $("#bicq");
   let pd = null;
-  pw.addEventListener("pointerdown", (e) => {
-    if (!biCan()) return;
-    if (BG.st === "place") BG.st = "aim";
-    pd = { y: e.clientY, h: pw.clientHeight, k: 0 };
-    pf.style.backgroundSize = "100% " + pw.clientHeight + "px";
-    pw.setPointerCapture(e.pointerId);
-    BG.st = "pow";
-  });
-  pw.addEventListener("pointermove", (e) => {
-    if (!pd) return;
-    BG.pow = Math.max(0, Math.min(1, (e.clientY - pd.y) / (pd.h * 0.8)));
-    pf.style.height = BG.pow * 100 + "%";
-    {
-      const k = Math.floor(BG.pow * 12);
-      if (k !== pd.k) {
-        pd.k = k;
-        vib(4);
-        biNoise(2400 + k * 120, 0.06, 0.012);
+  Input.sur(
+    "toucher",
+    (q, { evt: e }) => {
+      if (!biCan()) return;
+      if (BG.st === "place") BG.st = "aim";
+      pd = { y: e.clientY, h: pw.clientHeight, k: 0 };
+      pf.style.backgroundSize = "100% " + pw.clientHeight + "px";
+      pw.setPointerCapture(e.pointerId);
+      BG.st = "pow";
+    },
+    { cible: pw },
+  );
+  Input.sur(
+    ["glisser", "survoler"],
+    (q, { evt: e }) => {
+      if (!pd) return;
+      BG.pow = Math.max(0, Math.min(1, (e.clientY - pd.y) / (pd.h * 0.8)));
+      pf.style.height = BG.pow * 100 + "%";
+      {
+        const k = Math.floor(BG.pow * 12);
+        if (k !== pd.k) {
+          pd.k = k;
+          vib(4);
+          biNoise(2400 + k * 120, 0.06, 0.012);
+        }
       }
-    }
-    pw.classList.toggle("hot", BG.pow > 0.85);
-    cq.style.transform = `translateY(${BG.pow * pd.h * 0.8}px)`;
-    biDraw();
-  });
+      pw.classList.toggle("hot", BG.pow > 0.85);
+      cq.style.transform = `translateY(${BG.pow * pd.h * 0.8}px)`;
+      biDraw();
+    },
+    { cible: pw },
+  );
   const pup = () => {
     if (!pd) return;
     pd = null;
@@ -59584,63 +59611,73 @@ function biBind() {
       biRun();
     });
   };
-  pw.addEventListener("pointerup", pup);
-  pw.addEventListener("pointercancel", pup);
+  Input.sur("lacher", () => pup(), { cible: pw, annulation: !0 });
   const wh = $("#biwh"),
     wrb = $("#biwr");
   let wy = null,
     off = 0;
-  wh.addEventListener("pointerdown", (e) => {
-    if (!biCan()) return;
-    if (BG.st === "place") BG.st = "aim";
-    wy = e.clientY;
-    wh.setPointerCapture(e.pointerId);
-  });
-  wh.addEventListener("pointermove", (e) => {
-    if (wy === null) return;
-    const dy = e.clientY - wy;
-    wy = e.clientY;
-    off += dy;
-    wrb.style.backgroundPositionY = off + "px";
-    if (Math.floor(off / 9) !== wh._k) {
-      wh._k = Math.floor(off / 9);
-      vib(3);
-      biNoise(4200, 0.05, 0.01);
-    }
-    BG.aim += dy * 0.0011;
-    biDraw();
-  });
+  Input.sur(
+    "toucher",
+    (q, { evt: e }) => {
+      if (!biCan()) return;
+      if (BG.st === "place") BG.st = "aim";
+      wy = e.clientY;
+      wh.setPointerCapture(e.pointerId);
+    },
+    { cible: wh },
+  );
+  Input.sur(
+    ["glisser", "survoler"],
+    (q, { evt: e }) => {
+      if (wy === null) return;
+      const dy = e.clientY - wy;
+      wy = e.clientY;
+      off += dy;
+      wrb.style.backgroundPositionY = off + "px";
+      if (Math.floor(off / 9) !== wh._k) {
+        wh._k = Math.floor(off / 9);
+        vib(3);
+        biNoise(4200, 0.05, 0.01);
+      }
+      BG.aim += dy * 0.0011;
+      biDraw();
+    },
+    { cible: wh },
+  );
   const wup = () => {
     if (wy !== null) {
       wy = null;
       biUI();
     }
   };
-  wh.addEventListener("pointerup", wup);
-  wh.addEventListener("pointercancel", wup);
+  Input.sur("lacher", () => wup(), { cible: wh, annulation: !0 });
   const sb = $("#bisb");
-  sb.addEventListener("pointerdown", (e) => {
-    const r = sb.getBoundingClientRect();
-    let x = ((e.clientX - r.left) / r.width) * 2 - 1,
-      y = -(((e.clientY - r.top) / r.height) * 2 - 1);
-    const L = Math.hypot(x, y);
-    if (L > 0.85) {
-      x *= 0.85 / L;
-      y *= 0.85 / L;
-    }
-    {
-      const q = 0.85 / 3,
-        z = (v) => (Math.abs(v) < 0.2 ? 0 : Math.round(v / q) * q);
-      ((x = z(x)), (y = z(y)));
-      const L2 = Math.hypot(x, y);
-      L2 > 0.85 && ((x *= 0.85 / L2), (y *= 0.85 / L2));
-    }
-    BG.sp = [x, y];
-    sb.style.setProperty("--x", x);
-    sb.style.setProperty("--y", -y);
-    biUI();
-    biDraw();
-  });
+  Input.sur(
+    "toucher",
+    (q, { evt: e }) => {
+      const r = sb.getBoundingClientRect();
+      let x = ((e.clientX - r.left) / r.width) * 2 - 1,
+        y = -(((e.clientY - r.top) / r.height) * 2 - 1);
+      const L = Math.hypot(x, y);
+      if (L > 0.85) {
+        x *= 0.85 / L;
+        y *= 0.85 / L;
+      }
+      {
+        const q = 0.85 / 3,
+          z = (v) => (Math.abs(v) < 0.2 ? 0 : Math.round(v / q) * q);
+        ((x = z(x)), (y = z(y)));
+        const L2 = Math.hypot(x, y);
+        L2 > 0.85 && ((x *= 0.85 / L2), (y *= 0.85 / L2));
+      }
+      BG.sp = [x, y];
+      sb.style.setProperty("--x", x);
+      sb.style.setProperty("--y", -y);
+      biUI();
+      biDraw();
+    },
+    { cible: sb },
+  );
 }
 function biActs() {
   if (BIO) return;
@@ -61902,6 +61939,8 @@ function soActs() {
       soFin: () => soFin(),
     }));
 }
+
+// Air hockey : jeu (AH…ahActs), contrôles via Input
 const AHN = 20;
 const AHH = 1.7;
 const AHR = 0.042;
@@ -62104,9 +62143,11 @@ function ahScreen(e) {
   ((AH.x = a.getContext("2d")),
     ahSize(),
     (AH.ptr = {}),
-    a.addEventListener("pointerdown", ahPD),
-    a.addEventListener("pointermove", ahPM),
-    ["pointerup", "pointercancel", "lostpointercapture"].forEach((e) => a.addEventListener(e, ahPU)),
+    // Contrôles via Input : toucher / glisser / lacher (aussi sur pointercancel) ; lostpointercapture reste direct.
+    Input.sur("toucher", (q, { evt: e }) => ahPD(e), { cible: a }),
+    Input.sur(["glisser", "survoler"], (q, { evt: e }) => ahPM(e), { cible: a }),
+    Input.sur("lacher", (q, { evt: e }) => ahPU(e), { cible: a, annulation: !0 }),
+    a.addEventListener("lostpointercapture", ahPU),
     addEventListener("resize", ahSize),
     (AH.last = 0),
     (AH.raf = requestAnimationFrame(ahLoop)),
@@ -75792,6 +75833,8 @@ var mtMu = {
 function mtMus(e) {
   "object" == typeof mtMu && mtMu.set(e);
 }
+
+// Air hockey : musique (ahMu, ahMus)
 var ahMu = {
   on: !1,
   L: null,
@@ -77005,6 +77048,8 @@ var fiMu = {
 function fiMus(e) {
   "object" == typeof fiMu && fiMu.set(e);
 }
+
+// Fusion à gogo : jeu (PLN…pPlan), contrôles via Input
 const PLN = [
   "Comète",
   "Lune",
@@ -78925,7 +78970,7 @@ function pPlan(e) {
     };
   let oe = null;
   const ie = (e) => {
-      if (!z.isConnected) return void document.removeEventListener("pointerdown", ie, !0);
+      if (!z.isConnected) return void arretAppui();
       if (e.button > 0 || I || O || N) return;
       const t = e.target;
       (t.closest && t.closest("button,a,input,.top,.ttov,.nav,nav,dialog")) ||
@@ -78939,11 +78984,7 @@ function pPlan(e) {
           : ne(e));
     },
     re = (e) => {
-      if (!z.isConnected)
-        return (
-          document.removeEventListener("pointermove", re),
-          void document.removeEventListener("pointerup", le)
-        );
+      if (!z.isConnected) return void arretSuivi();
       (oe === e.pointerId || "mouse" === e.pointerType) && ne(e);
     },
     le = (e) => {
@@ -78952,24 +78993,28 @@ function pPlan(e) {
       const t = performance.now();
       !I && !O && !N && t >= C && X(t);
     };
-  (document.addEventListener("pointerdown", ie, !0),
-    document.addEventListener("pointermove", re),
-    document.addEventListener("pointerup", le));
-  const ce = (e) => {
-    if (!z.isConnected) return void removeEventListener("keydown", ce);
+  // Contrôles via Input : toucher (document, en capture), glisser/survoler et lacher (document).
+  const arretAppui = Input.sur("toucher", (q, { evt: e }) => ie(e), { cible: document, capture: !0 }),
+    arretSuivi = Input.sur(
+      ["glisser", "survoler", "lacher"],
+      (q, { evt: e }) => ("lacher" === q ? le : re)(e),
+      {
+        cible: document,
+      },
+    );
+  // Clavier via Input : gauche/droite déplacent, sauter/valider/descendre (Espace, Entrée, flèche bas) lâchent.
+  const ce = (q, { evt: e }) => {
+    if (!z.isConnected) return void arretClavier();
     const t = performance.now();
-    "ArrowLeft" === e.key
+    "bougerGauche" === q
       ? ((T = Math.max(g, T - 14)), (k -= 0.12), e.preventDefault())
-      : "ArrowRight" === e.key
+      : "bougerDroite" === q
         ? ((T = Math.min(E, T + 14)), (k += 0.12), e.preventDefault())
-        : (" " !== e.key && "Enter" !== e.key && "ArrowDown" !== e.key) ||
-          I ||
-          O ||
-          N ||
-          !(t >= C) ||
-          (e.preventDefault(), X(t));
+        : I || O || N || !(t >= C) || (e.preventDefault(), X(t));
   };
-  addEventListener("keydown", ce);
+  const arretClavier = Input.sur(["bougerGauche", "bougerDroite", "sauter", "valider", "descendre"], ce, {
+    sources: ["clavier"],
+  });
   const de = () => {
     z.isConnected ? Z() : removeEventListener("resize", de);
   };
@@ -78987,6 +79032,7 @@ function pPlan(e) {
     ee(),
     requestAnimationFrame(se));
 }
+
 const CUN = 30;
 const kzRng = (e) => {
   let t = e >>> 0;
@@ -95688,7 +95734,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1262 · gs514${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1263 · gs515${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
