@@ -1,0 +1,4 @@
+html:has(.pg-planetes),
+html:has(.pg-brick) {
+  overflow: hidden;
+}

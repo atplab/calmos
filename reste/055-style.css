@@ -1,0 +1,112 @@
+.zrr {
+  background: #03040d;
+}
+.zrr .zrbg {
+  opacity: 0.3;
+}
+.zrr .zrti b,
+.bkh .tts {
+  font:
+    800 13px ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7dffb0;
+  text-shadow: 0 0 8px #7dffb0;
+  opacity: 1;
+}
+.zrr .zrti small {
+  font:
+    700 12px ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.1em;
+  color: #7ef0ff;
+  text-shadow: 0 0 6px #22d3ee;
+  opacity: 1;
+}
+.zrr .zrbox {
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 2px #ff4fd8,
+    0 0 26px rgba(255, 79, 216, 0.45);
+}
+.zrr .zrbox:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 90% at 50% 45%, transparent 60%, rgba(0, 0, 0, 0.5));
+}
+.bkw:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 62%, rgba(0, 20, 40, 0.45));
+}
+.zrr .zrbox .zrov,
+.bkw .ttov,
+.bkw .ttpop {
+  z-index: 3;
+}
+.ttw.bkw {
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #0a5568 0%,
+    #073f5c 38%,
+    #042a48 72%,
+    #031c36 94%,
+    #c9ad72 94.6%,
+    #8f7843 100%
+  );
+  box-shadow:
+    0 0 0 2px #5fe0d0,
+    0 0 26px rgba(95, 224, 208, 0.4);
+}
+.bkw:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.4) 0 2px, transparent 3px) 0 0/64px 96px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.28) 0 1.5px, transparent 2.5px) 24px 40px/46px 72px,
+    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0 3px, transparent 4px) 10px 10px/110px 140px;
+  animation: bkRise 16s linear infinite;
+}
+@keyframes bkRise {
+  to {
+    background-position:
+      0 -96px,
+      24px -32px,
+      10px -130px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bkw:before {
+    animation: none;
+  }
+}
+.bkw .ttpop {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #fff3a0;
+  text-shadow: 0 0 10px #ffb400;
+}
+.bkh .ttbar i {
+  background: linear-gradient(90deg, #27c4a8, #9ff0ff) !important;
+  box-shadow: 0 0 8px #5ff0d0;
+}

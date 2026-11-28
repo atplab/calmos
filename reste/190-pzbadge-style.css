@@ -1,0 +1,18 @@
+body:not(#zz) .back[data-pz] {
+  position: relative;
+  overflow: visible;
+}
+body:not(#zz) .back[data-pz]::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background:
+    linear-gradient(#2a2370, #2a2370) 5px 4.5px/2.2px 8px no-repeat,
+    linear-gradient(#2a2370, #2a2370) 9.6px 4.5px/2.2px 8px no-repeat,
+    #ffd86b;
+  box-shadow: 0 0 0 2px #2a2370;
+}

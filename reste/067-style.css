@@ -1,0 +1,171 @@
+.rfsel {
+  display: flex;
+  gap: 10px;
+  padding: 4px 2px 8px;
+  margin: 0 -4px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+}
+.rfsel button {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: auto;
+  gap: 6px;
+  padding: 10px 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+  overflow: visible;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: inherit;
+  font: 700 11px inherit;
+  font-family: inherit;
+  box-shadow: none;
+  transition:
+    background 0.4s,
+    transform 0.4s,
+    box-shadow 0.4s;
+}
+.rfsel button::after {
+  display: none;
+}
+.rfsel button i svg {
+  width: 40px;
+  height: 40px;
+  filter: none;
+  opacity: 1;
+}
+.rfsel button span {
+  font: 700 11px inherit;
+  font-family: inherit;
+  letter-spacing: 0;
+}
+.rfsel button[aria-selected="true"] {
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 6px 18px rgba(60, 40, 120, 0.18);
+  transform: translateY(-2px);
+  color: inherit;
+}
+.rfsel button[aria-selected="true"] i svg {
+  transform: none;
+}
+.rfst {
+  gap: 10px;
+  padding: 22px 18px 20px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(60, 40, 120, 0.12);
+  color: inherit;
+}
+.rfpn {
+  width: 120px;
+  height: 120px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  animation: rfbob 6s ease-in-out infinite;
+}
+.rfpn::before,
+.rfpn::after {
+  display: none;
+}
+.rfpn .rfart {
+  width: 120px;
+  height: 120px;
+  animation: none;
+  filter: drop-shadow(0 10px 14px rgba(40, 30, 90, 0.22));
+}
+@keyframes rfbob {
+  50% {
+    transform: translateY(-8px) rotate(-2deg);
+  }
+}
+.rfst h2 {
+  margin: 0;
+  font:
+    700 26px Fraunces,
+    Georgia,
+    serif;
+  color: inherit;
+}
+.rfst .rft {
+  display: block;
+  margin: 0;
+  font: 700 13px inherit;
+  font-family: inherit;
+  font-style: normal;
+  color: inherit;
+  opacity: 0.7;
+}
+.rfst .rft::before,
+.rfst .rft::after {
+  display: none;
+}
+.rfst .rfs {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: 30ch;
+  color: inherit;
+}
+.rfgo {
+  border-radius: 22px;
+  background: linear-gradient(180deg, var(--ga, #8f7fe6), var(--gb, #6a5bc8));
+  color: #fff;
+  font: 800 18px inherit;
+  font-family: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 20px rgba(40, 50, 110, 0.3);
+  animation: none;
+}
+.rfgo small {
+  color: #fff;
+  opacity: 0.85;
+  font-weight: 600;
+}
+.rfpl {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  font: 700 13px inherit;
+  font-family: inherit;
+  padding: 9px 18px;
+  border-radius: 999px;
+}
+.rfseg {
+  background: rgba(255, 255, 255, 0.22);
+  border: 0;
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+}
+.rfseg button {
+  color: inherit;
+  font: 700 13px inherit;
+  font-family: inherit;
+  border-radius: 999px;
+}
+.rfseg button.on {
+  background: rgba(255, 255, 255, 0.85);
+  color: #3a2f7a;
+}
+.rflk {
+  background: rgba(255, 255, 255, 0.22);
+  border: 0;
+  color: inherit;
+  border-radius: 16px;
+}
+.rfti b {
+  font:
+    700 19px Fraunces,
+    Georgia,
+    serif;
+}

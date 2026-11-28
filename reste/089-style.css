@@ -1,0 +1,18 @@
+.sgsht[data-m="cso"] #chh > :not(.chnew),
+.sgsht[data-m="cso"]:not([data-pk="1"]) .sgbody {
+  display: none !important;
+}
+.sgsht[data-m="cso"] .chnew > h2 {
+  font-size: 15px;
+}
+.chsow {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.chsow .rc-t {
+  flex: 1 1 100%;
+}
+.chsow .scbt .rc-go {
+  flex: 1;
+}

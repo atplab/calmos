@@ -1,0 +1,4 @@
+#app .pf .cmrow > .tg:first-child,
+#app .pf #fam-setting {
+  border-top: 0 !important;
+}

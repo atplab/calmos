@@ -1,0 +1,449 @@
+.sfr.pro {
+  background: rgba(6, 18, 40, 0.84);
+  padding: 14px;
+  gap: 14px;
+  grid-auto-flow: row;
+  align-content: center;
+  justify-items: center;
+}
+.prb {
+  position: relative;
+  width: min(92vw, 400px);
+  height: min(62vh, 500px);
+  perspective: 1400px;
+}
+.prp {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #fffaf0, #f6ebd2);
+  border-radius: 10px 16px 16px 10px;
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    inset 9px 0 14px -9px rgba(120, 90, 40, 0.4);
+  transform-origin: 0 50%;
+  transition:
+    transform 1s cubic-bezier(0.55, 0.05, 0.25, 1),
+    opacity 0.35s;
+  backface-visibility: hidden;
+  padding: 14px 14px 12px;
+  overflow: hidden;
+}
+.prp.out {
+  transform: rotateY(-112deg);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 1s cubic-bezier(0.55, 0.05, 0.25, 1),
+    opacity 0.3s 0.65s;
+}
+.prp:not(.on) .pri * {
+  animation-play-state: paused;
+}
+.pri {
+  flex: none;
+  aspect-ratio: 300/210;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 2px rgba(120, 90, 40, 0.22);
+}
+.pri svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.prx {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font:
+    400 19px/1.55 Fraunces,
+    Georgia,
+    serif;
+  color: #4a3a2a;
+  margin: 10px 6px 14px;
+  opacity: 0;
+}
+.prp.on .prx {
+  animation: prfd 1s 0.35s both;
+}
+.prp.on .prx,
+.prp.out .prx {
+  opacity: 1;
+}
+@keyframes prfd {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.prn {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  color: #a8946c;
+  font:
+    12px Fraunces,
+    Georgia,
+    serif;
+}
+.prc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  width: min(92vw, 400px);
+}
+.prv {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+}
+.prv:disabled {
+  opacity: 0.3;
+}
+.prd {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+.prd i {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: 0.4s;
+}
+.prd i.on {
+  background: #fff;
+  width: 18px;
+}
+.prnx {
+  flex: none;
+  width: auto;
+  min-width: 150px;
+  margin: 0;
+}
+.prd {
+  min-width: 0;
+}
+.prtw,
+.prsh,
+.prfall,
+.prrip,
+.prrip2,
+.prfoam,
+.prgl,
+.prbob,
+.prbob2,
+.prcl,
+.prcv,
+.prpop,
+.prxa,
+.prxb,
+.prw {
+  transform-box: view-box;
+}
+.prtw {
+  animation: prtw 4s ease-in-out infinite;
+}
+@keyframes prtw {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.prw {
+  animation: prw 9s ease-in-out infinite alternate;
+}
+@keyframes prw {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+.prsh {
+  animation: prsh 10s ease-in-out infinite;
+}
+@keyframes prsh {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  36% {
+    transform: translate(190px, 130px);
+    opacity: 1;
+  }
+  40%,
+  100% {
+    transform: translate(190px, 130px);
+    opacity: 0;
+  }
+}
+.prfall {
+  opacity: 0;
+  animation: prfl 3.2s ease-in 0.8s forwards;
+}
+@keyframes prfl {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    transform: translateY(152px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(152px);
+    opacity: 0;
+  }
+}
+.prhop {
+  transform-box: fill-box;
+  animation: prhp 0.7s 4s ease-out both;
+}
+.prlk {
+  animation: prlk 3.2s 0.8s ease-in-out both;
+}
+@keyframes prlk {
+  0% {
+    transform: translate(-0.2px, -2px);
+  }
+  100% {
+    transform: translate(-1px, 1.4px);
+  }
+}
+@keyframes prhp {
+  0% {
+    transform: translateY(0);
+  }
+  35% {
+    transform: translateY(-9px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+.prtl {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: prtl 4.5s ease-in-out infinite;
+}
+@keyframes prtl {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+.prrip {
+  opacity: 0;
+  transform-origin: 150px 166px;
+  animation: prrp 3.2s ease-out forwards;
+}
+@keyframes prrp {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+.prrip2 {
+  opacity: 0;
+  transform-origin: 150px 160px;
+  animation: prrq 6s ease-out infinite;
+}
+@keyframes prrq {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+.prfoam {
+  opacity: 0;
+  animation: prfm 4s ease-out forwards;
+}
+@keyframes prfm {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.prgl {
+  opacity: 0;
+  animation: prgl 3s 4.1s ease-out forwards;
+}
+@keyframes prgl {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+.prbob {
+  animation: prbb 5s ease-in-out infinite;
+}
+@keyframes prbb {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+.prbob2 {
+  animation: prbb 6s ease-in-out infinite reverse;
+}
+.prcl {
+  animation: prcl 6s ease-in-out infinite;
+}
+@keyframes prcl {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-3px);
+  }
+}
+.prcv {
+  animation: prcv 7s ease-in-out infinite;
+}
+@keyframes prcv {
+  0% {
+    transform: rotate(var(--a)) translateX(84px) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  56% {
+    transform: rotate(var(--a)) translateX(2px) scale(0.7);
+    opacity: 1;
+  }
+  62%,
+  100% {
+    transform: rotate(var(--a)) translateX(0) scale(0.2);
+    opacity: 0;
+  }
+}
+.prpop {
+  animation: prpp 7s ease-in-out infinite;
+}
+@keyframes prpp {
+  0%,
+  54% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  64% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  74%,
+  92% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.prxa {
+  animation: prxa 11s ease-in-out infinite;
+}
+@keyframes prxa {
+  0%,
+  28% {
+    opacity: 1;
+  }
+  48%,
+  88% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.prxb {
+  animation: prxb 11s ease-in-out infinite;
+}
+@keyframes prxb {
+  0%,
+  28% {
+    opacity: 0;
+  }
+  48%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prp,
+  .prp.out {
+    transition: opacity 0.5s;
+  }
+  .prp.out {
+    transform: none;
+  }
+  .prtw,
+  .prsh,
+  .prfall,
+  .prrip,
+  .prrip2,
+  .prfoam,
+  .prgl,
+  .prbob,
+  .prbob2,
+  .prcl,
+  .prcv,
+  .prpop,
+  .prw {
+    animation: none;
+  }
+}

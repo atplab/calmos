@@ -1,0 +1,9 @@
+html:has(.aqfs),
+html:has(.aqfs) body {
+  overflow: hidden !important;
+  height: 100%;
+  overscroll-behavior: none;
+}
+.aqfs {
+  overscroll-behavior: none;
+}

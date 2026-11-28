@@ -1,0 +1,46 @@
+#app:has(#scg) .top.stk {
+  position: static !important;
+  margin-bottom: 6px !important;
+}
+#scg p.m,
+#scg .sch {
+  display: none !important;
+}
+.schl {
+  list-style: none;
+  margin: 8px 0 12px;
+  padding: 0;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.top button.tl {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+@media (max-width: 700px) {
+  #app:has(#scg) {
+    --gx: clamp(0px, calc((100dvh - 700px) * 0.06), 26px);
+  }
+  #app:has(#scg) .top.stk {
+    margin-bottom: calc(4px + var(--gx, 0px)) !important;
+  }
+  #scg {
+    padding-bottom: 2px !important;
+  }
+  #scg .scs {
+    margin-bottom: calc(14px + var(--gx, 0px)) !important;
+  }
+  #scg .scrk {
+    margin-bottom: calc(8px + var(--gx, 0px)) !important;
+  }
+  #scg .scpv {
+    margin-top: calc(6px + var(--gx, 0px)) !important;
+    margin-bottom: 4px !important;
+  }
+  #scg .sca > button {
+    min-height: 0 !important;
+    height: 54px !important;
+  }
+}

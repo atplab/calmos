@@ -1,0 +1,62 @@
+.sgr2 {
+  min-height: 74px !important;
+  margin-top: 14px !important;
+  align-items: flex-end;
+}
+.sgr2 .sgmd {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  transform: none;
+  width: auto;
+  max-width: none;
+  align-self: flex-end;
+}
+.sgr2 .sgmd button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 66px;
+  height: 62px;
+  padding: 0;
+  border-radius: 12px 12px 4px 4px;
+  background: linear-gradient(180deg, #e9d3a1, #c9a766);
+  color: #4a2d14;
+  opacity: 0.82;
+  box-shadow:
+    0 4px 0 #8a6232,
+    0 8px 10px rgba(0, 0, 0, 0.4);
+  transform: translateY(0);
+  transition:
+    transform 0.22s cubic-bezier(0.3, 1.5, 0.5, 1),
+    box-shadow 0.22s,
+    opacity 0.2s,
+    filter 0.2s;
+  filter: saturate(0.8);
+}
+.sgr2 .sgmd button i {
+  font-style: normal;
+  font-size: 28px;
+  line-height: 1;
+}
+.sgr2 .sgmd button b {
+  font-size: 11px;
+  font-weight: 800;
+}
+.sgr2 .sgmd button.on {
+  opacity: 1;
+  filter: none;
+  transform: translateY(-12px) rotate(-2deg);
+  box-shadow:
+    0 4px 0 #8a6232,
+    0 18px 16px rgba(0, 0, 0, 0.5),
+    0 0 0 3px rgba(255, 226, 150, 0.85);
+}
+.sgr2 .sgmd button:active {
+  transform: translateY(-4px);
+}

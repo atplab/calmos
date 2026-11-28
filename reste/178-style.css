@@ -1,0 +1,41 @@
+.zns2 {
+  position: fixed !important;
+  inset: 0;
+  z-index: 30;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--c1, #8fd0ff) 22%, #0a1030),
+    #060a1e
+  );
+}
+.zns2 .top.stk {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px;
+  background: linear-gradient(rgba(6, 8, 28, 0.7), transparent);
+}
+.zns2 .znvw {
+  flex: 1 1 0;
+  min-height: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.zns2 .znpb {
+  margin: 4px 14px;
+}
+.zns2 .znti,
+.zns2 .znrt {
+  color: #dfe6ff !important;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+}
+body:has(.zns2) {
+  overflow: hidden;
+}

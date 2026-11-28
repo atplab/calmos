@@ -1,0 +1,9 @@
+body[data-scsk="h"] .pg-scrabble .scrk {
+  background: linear-gradient(150deg, #a9cff0, #6f9fca);
+}
+body[data-scsk="o"] .pg-scrabble .scrk {
+  background: linear-gradient(150deg, #2b9bb0, #1d6f94);
+}
+body[data-scsk="e"] .pg-scrabble .scrk {
+  background: linear-gradient(150deg, #2b2f66, #1d2550);
+}

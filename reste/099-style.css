@@ -1,0 +1,56 @@
+.sj3 .sjball {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 34% 30%,
+      rgba(255, 255, 255, 0.95) 0 8%,
+      rgba(255, 255, 255, 0.25) 22%,
+      transparent 45%
+    ),
+    radial-gradient(circle at 60% 70%, transparent 40%, rgba(0, 0, 0, 0.55) 100%), var(--c);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
+}
+.sj3 .sjball.st {
+  background:
+    radial-gradient(
+      circle at 34% 30%,
+      rgba(255, 255, 255, 0.95) 0 8%,
+      rgba(255, 255, 255, 0.25) 22%,
+      transparent 45%
+    ),
+    radial-gradient(circle at 60% 70%, transparent 40%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(var(--sa, 180deg), #f4f0e6 0 26%, var(--c) 26% 74%, #f4f0e6 74%);
+}
+.sj3 .sjball[data-n]::after {
+  content: attr(data-n);
+  position: absolute;
+  left: calc(50% + var(--sx, 0) * 40%);
+  top: calc(50% + var(--sy, 0) * 40%);
+  width: 46%;
+  height: 46%;
+  transform: translate(-50%, -50%) scale(calc(0.35 + var(--sk, 1) * 0.65));
+  opacity: var(--so, 1);
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font: 800 5px/1 system-ui;
+  display: grid;
+  place-items: center;
+}
+.sj3 .sjcue {
+  position: absolute;
+  display: none;
+  width: 210px;
+  height: 6px;
+  margin-top: -3px;
+  transform-origin: 0 50%;
+  pointer-events: none;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 40%, rgba(0, 0, 0, 0.45)),
+    linear-gradient(90deg, #3a7ad8 0 3%, #f4e6c8 3% 6%, #e0c080 6% 55%, #6a3a1a 55% 62%, #2a1408 62%);
+  box-shadow: 0 8px 6px -4px rgba(0, 0, 0, 0.4);
+}

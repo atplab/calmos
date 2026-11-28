@@ -1,0 +1,19 @@
+html {
+  background: #0e0f34;
+}
+body {
+  animation: cmai 0.8s ease-out;
+}
+@keyframes cmai {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+}

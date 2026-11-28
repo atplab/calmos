@@ -1,0 +1,68 @@
+.prvib {
+  animation: prvb 0.16s linear infinite;
+}
+@keyframes prvb {
+  0%,
+  100% {
+    transform: translateX(-1.3px);
+  }
+  50% {
+    transform: translateX(1.3px);
+  }
+}
+.prin {
+  transform-box: fill-box;
+  transform-origin: 50% 60%;
+  animation: prin 1.5s 0.4s both cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes prin {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.prcur {
+  animation: prcu 6s linear infinite;
+}
+@keyframes prcu {
+  to {
+    stroke-dashoffset: -84;
+  }
+}
+.prau {
+  transform-box: view-box;
+  animation: prau 12s ease-in-out infinite alternate;
+}
+@keyframes prau {
+  from {
+    transform: translateX(-24px);
+  }
+  to {
+    transform: translateX(24px);
+  }
+}
+.prcl2 {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 18px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .prvib,
+  .prin,
+  .prcur,
+  .prau {
+    animation: none;
+  }
+}

@@ -1,0 +1,15 @@
+body.arhall *,
+body.arhall *::before,
+body.arhall *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.arcb {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.arcb .fc {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

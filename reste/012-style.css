@@ -1,0 +1,42 @@
+.chb .chs {
+  position: relative;
+}
+.chb .dmgh,
+.chb .dmsp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 5;
+}
+.chb .dmsp {
+  font-size: 20px;
+  z-index: 7;
+}
+.chb .chs.sel svg {
+  animation: dmLift 1s ease-in-out infinite;
+}
+.chb .chs.mv {
+  animation: dmHint 1.2s ease-in-out infinite;
+}
+@keyframes dmLift {
+  50% {
+    transform: translateY(-7%) scale(1.1);
+  }
+}
+@keyframes dmHint {
+  50% {
+    filter: brightness(1.35);
+  }
+}
+body.calm .chb .chs.sel svg,
+body.calm .chb .chs.mv {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chb .chs.sel svg,
+  .chb .chs.mv {
+    animation: none;
+  }
+}

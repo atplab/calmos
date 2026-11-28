@@ -1,0 +1,53 @@
+body:not(#zz) .back,
+body:not(#zz) .chip,
+body:not(#zz) .hb,
+body:not(#zz) .tl.tlk,
+body:not(#zz) .rlb,
+body:not(#zz) .rmkb,
+body:not(#zz) .pealb,
+body:not(#zz) .pet b.pewt,
+body:not(#zz) .wlsm,
+body:not(#zz) .rfpl {
+  background: #2a2370 !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border: 2px solid #4a4390 !important;
+  border-radius: 999px !important;
+  box-shadow: 0 4px 16px rgba(8, 6, 40, 0.22) !important;
+  color: #f3f0ff !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+body:not(#zz) .back,
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .chip,
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .hb,
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .tl.tlk {
+  height: 38px !important;
+  min-height: 38px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+}
+body:not(#zz) .back {
+  min-width: 64px !important;
+  width: 64px !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+}
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .chip,
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .hb,
+body:not(#zz) :is(.top, .wltp, .vztp, .rftp, .zrtp, .pet, .kzt, .hhd, .tr) > .tl.tlk {
+  padding: 0 16px !important;
+  font-size: 15px !important;
+  gap: 6px;
+}
+body:not(#zz) .back:active,
+body:not(#zz) .hb:active,
+body:not(#zz) .rlb:active,
+body:not(#zz) .tl.tlk:active,
+body:not(#zz) .pealb:active {
+  background: #3a3290 !important;
+}

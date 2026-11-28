@@ -1,0 +1,82 @@
+.apmc,
+.apmc * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+.apmc {
+  touch-action: pan-y;
+}
+.tank .fx.away {
+  display: none !important;
+}
+.tank .gdv {
+  position: absolute;
+  left: -30%;
+  top: var(--y);
+  width: var(--w);
+  z-index: 6;
+  pointer-events: none;
+  animation:
+    gdvx var(--d) ease-in-out infinite alternate,
+    gdvi 0.9s ease both;
+  transition: opacity 0.7s;
+}
+.tank .gdv.bye {
+  opacity: 0;
+}
+.tank .gdv .fy {
+  animation: gdvb 3.4s ease-in-out infinite alternate;
+}
+.tank .gdv .fr {
+  animation: gdvf calc(var(--d) * 2) steps(1, end) infinite;
+}
+.tank .gdv svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+@keyframes gdvx {
+  from {
+    left: -28%;
+  }
+  to {
+    left: 104%;
+  }
+}
+@keyframes gdvf {
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(-1);
+  }
+}
+@keyframes gdvb {
+  from {
+    transform: translateY(-7px);
+  }
+  to {
+    transform: translateY(7px);
+  }
+}
+@keyframes gdvi {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tank .gdv {
+    animation: none;
+    left: 38%;
+  }
+  .tank .gdv .fy,
+  .tank .gdv .fr {
+    animation: none;
+  }
+}

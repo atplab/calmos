@@ -1,0 +1,133 @@
+body[data-scsk="h"] .pg-scrabble .scc.t,
+body[data-scsk="h"] .pg-scrabble .sct {
+  background: radial-gradient(120% 95% at 32% 18%, #ffffff 0 22%, #cfe5fb);
+  color: #21507a;
+}
+body[data-scsk="h"] .pg-scrabble .scc.t small,
+body[data-scsk="h"] .pg-scrabble .sct small {
+  color: #4f86b8;
+}
+body[data-scsk="h"] .pg-scrabble .scc.t b,
+body[data-scsk="h"] .pg-scrabble .sct b {
+  color: #21507a;
+}
+body[data-scsk="h"] .pg-scrabble .scbw {
+  background: linear-gradient(150deg, #e6f3ff, #a9cff0 55%, #7fb3dc);
+}
+body[data-scsk="h"] .pg-scrabble .scc:not(.t):not([class*="pm-"]) {
+  background: rgba(255, 255, 255, 0.85);
+  color: #7aa6cc;
+}
+body[data-scsk="h"]:has(.pg-scrabble) {
+  background: linear-gradient(180deg, #14284a 0%, #2a4f73 55%, #7da3c3 100%) fixed !important;
+}
+body[data-scsk="o"] .pg-scrabble .scc.t,
+body[data-scsk="o"] .pg-scrabble .sct {
+  background: radial-gradient(120% 95% at 32% 18%, #fff6de 0 22%, #eecf92);
+  color: #1d4f5e;
+}
+body[data-scsk="o"] .pg-scrabble .scc.t small,
+body[data-scsk="o"] .pg-scrabble .sct small {
+  color: #2a8a8a;
+}
+body[data-scsk="o"] .pg-scrabble .scc.t b,
+body[data-scsk="o"] .pg-scrabble .sct b {
+  color: #1d4f5e;
+}
+body[data-scsk="o"] .pg-scrabble .scbw {
+  background: linear-gradient(150deg, #5fd0c4, #2b9bb0 55%, #1d6f94);
+}
+body[data-scsk="o"] .pg-scrabble .scc:not(.t):not([class*="pm-"]) {
+  background: rgba(232, 250, 247, 0.88);
+  color: #4a9aa0;
+}
+body[data-scsk="o"]:has(.pg-scrabble) {
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(120, 220, 230, 0.25), transparent 60%),
+    linear-gradient(180deg, #05263a 0%, #0a4660 55%, #13707f 100%) fixed !important;
+}
+body[data-scsk="e"] .pg-scrabble .scc.t,
+body[data-scsk="e"] .pg-scrabble .sct {
+  background: radial-gradient(120% 95% at 32% 18%, #3a4080 0 22%, #171a3a);
+  color: #ffe08a;
+}
+body[data-scsk="e"] .pg-scrabble .scc.t small,
+body[data-scsk="e"] .pg-scrabble .sct small {
+  color: #9fb0ff;
+}
+body[data-scsk="e"] .pg-scrabble .scc.t b,
+body[data-scsk="e"] .pg-scrabble .sct b {
+  color: #ffe08a;
+}
+body[data-scsk="e"] .pg-scrabble .scbw {
+  background: linear-gradient(150deg, #2b2f66, #3b2f73 55%, #1d2550);
+}
+body[data-scsk="e"] .pg-scrabble .scc:not(.t):not([class*="pm-"]) {
+  background: rgba(255, 255, 255, 0.09);
+  color: #8f9ad8;
+}
+body[data-scsk="e"]:has(.pg-scrabble) {
+  background:
+    radial-gradient(1.2px 1.2px at 12% 18%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 12%, #cfd6ff 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 40% 42%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 86% 58%, #fff 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 22% 76%, #e9ddff 50%, transparent 51%),
+    radial-gradient(1px 1px at 60% 88%, #fff 50%, transparent 51%),
+    radial-gradient(60% 40% at 80% 20%, rgba(120, 90, 220, 0.25), transparent 70%),
+    linear-gradient(180deg, #04050f, #10153a 60%, #1e1747) fixed !important;
+}
+body[data-scsk="e"] .pg-scrabble .scc.t,
+body[data-scsk="e"] .pg-scrabble .sct {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 8px rgba(255, 214, 120, 0.25);
+}
+.sgsht[data-m="sk"] .sgspn > .sgbody {
+  display: none;
+}
+.scskw {
+  display: grid;
+  gap: 10px;
+  padding: 4px 2px 8px;
+}
+.scski {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.scski.on {
+  background: rgba(255, 220, 150, 0.16);
+  outline: 1.5px solid rgba(255, 210, 122, 0.6);
+}
+.scskp {
+  display: flex;
+  gap: 3px;
+  flex: none;
+}
+.scskp i {
+  width: 24px;
+  height: 26px;
+  border-radius: 30%;
+  display: grid;
+  place-items: center;
+  font:
+    900 14px/1 Georgia,
+    serif;
+  font-style: normal;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+.scskt {
+  flex: 1;
+  min-width: 0;
+}
+.scskt b {
+  display: block;
+}
+.scskt small {
+  opacity: 0.75;
+  font-size: 12px;
+}

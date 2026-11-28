@@ -1,0 +1,18 @@
+#aqsh,
+.aqsh.glass {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+#aqbd {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.aqsh {
+  will-change: translate;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+.aqcar .ai svg,
+.aqcar .ap {
+  contain: paint;
+}

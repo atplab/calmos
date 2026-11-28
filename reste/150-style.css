@@ -1,0 +1,43 @@
+@media (pointer: fine) and (min-width: 900px) {
+  body:has(#nng) #app {
+    max-width: 900px;
+  }
+}
+@media (max-width: 700px) {
+  body:has(.sd) #app {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  body:has(.sd) .glass.play {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  body:has(.sd) .sd {
+    --z: calc((min(100vw, 520px) - 46px) / 9);
+  }
+}
+@media (max-width: 700px) {
+  body:has(.tn-g) #app {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  body:has(.tn-g) .glass.play {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+@media (min-width: 701px) {
+  body:has(.tn-g) #app {
+    max-width: 520px;
+  }
+}
+@media (max-width: 700px) {
+  body:has(#nng) #app {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  body:has(#nng) #app .glass {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+}

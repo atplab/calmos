@@ -1,0 +1,9 @@
+body:not(#zz) .smrc {
+  bottom: calc(150px + max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px))) !important;
+  right: 16px !important;
+  background: #2a2370 !important;
+  border: 2px solid #4a4390 !important;
+  color: #f3f0ff !important;
+  box-shadow: 0 4px 16px rgba(8, 6, 40, 0.22) !important;
+  z-index: 6 !important;
+}

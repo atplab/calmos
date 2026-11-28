@@ -1,0 +1,22 @@
+.rfsel {
+  gap: 5px;
+  margin: 0 -2px;
+}
+.rfsel button {
+  gap: 3px;
+  padding: 7px 1px 6px;
+  border-radius: 15px;
+}
+.rfsel button i svg {
+  width: min(30px, 100%);
+}
+.rfsel button span {
+  font-size: clamp(8px, 2.2vw, 10px);
+  line-height: 1.1;
+}
+.rfsel em {
+  top: 3px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+}

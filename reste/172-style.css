@@ -1,0 +1,10 @@
+.zrg,
+.zrg .zrbox,
+.zrg canvas {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+html:has(.zrg) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}

@@ -1,0 +1,10 @@
+.sgr2 {
+  justify-content: center !important;
+}
+.sgr2 .sgmd {
+  margin: 0 auto !important;
+  justify-content: center;
+}
+.sgr2 .sgdc {
+  display: none;
+}

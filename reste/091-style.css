@@ -1,0 +1,3 @@
+#app:has(.wlf) .rlb {
+  display: none !important;
+}

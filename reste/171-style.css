@@ -1,0 +1,7 @@
+.bkh .tts {
+  color: color-mix(in srgb, #0f5f38 calc(var(--gs, 1) * 100%), #7dffb0);
+  text-shadow: 0 0 calc(8px * (1 - var(--gs, 1))) #7dffb0;
+}
+body[data-tx="d"] .bkh .tts {
+  text-shadow: none;
+}

@@ -1,0 +1,20 @@
+body:not(#zz) :is(.top:not(.shud), .wltp, .vztp, .rftp, .zrtp) {
+  align-items: flex-start !important;
+}
+body:not(#zz) :is(.top:not(.shud), .wltp, .vztp, .rftp, .zrtp) > :not(.back):not(.chip):not(.tr):not(.tl) {
+  align-self: center;
+}
+body:has(.flv) #app {
+  --apx: 2px;
+}
+body:has(#nng) #app,
+body:has(.sd) #app,
+body:has(.tn-g) #app {
+  --apx: 4px;
+}
+body:not(#zz) .top.stk {
+  margin-left: calc(-1 * var(--apx, 18px)) !important;
+  margin-right: calc(-1 * var(--apx, 18px)) !important;
+  padding-left: 18px !important;
+  padding-right: 18px !important;
+}

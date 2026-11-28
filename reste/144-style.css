@@ -1,0 +1,12 @@
+#app:has(.story > .pkb) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 96px - max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px)));
+}
+#app:has(.story > .pkb) > .story {
+  margin: auto 0;
+  text-align: center;
+}
+#app:has(.story > .pkb) > .story .nxb {
+  text-align: left;
+}

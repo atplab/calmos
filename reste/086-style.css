@@ -1,0 +1,115 @@
+body[data-scsk="h"]:has(.pg-scrabble) #tint,
+body[data-scsk="h"]:has(.pg-scrabble) #pat,
+body[data-scsk="o"]:has(.pg-scrabble) :is(#tint, #pat, #snow),
+body[data-scsk="e"]:has(.pg-scrabble) :is(#tint, #pat, #snow) {
+  display: none !important;
+}
+#scfx {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  display: none;
+}
+body[data-scsk="o"]:has(.pg-scrabble) #scfx[data-k="o"],
+body[data-scsk="e"]:has(.pg-scrabble) #scfx[data-k="e"] {
+  display: block;
+}
+#scfx .st {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px 1px rgba(210, 220, 255, 0.8);
+  animation: scTw var(--d) ease-in-out infinite;
+  animation-delay: var(--l);
+  opacity: 0.2;
+}
+@keyframes scTw {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+#scfx .w {
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 60%;
+  opacity: 0.5;
+  background: repeating-radial-gradient(
+    ellipse 60px 22px at 50% 50%,
+    rgba(140, 230, 240, 0.16) 0 2px,
+    transparent 3px 26px
+  );
+  animation: scWv 18s ease-in-out infinite alternate;
+  filter: blur(1px);
+}
+#scfx .w2 {
+  top: 40%;
+  animation-duration: 24s;
+  animation-direction: alternate-reverse;
+  opacity: 0.35;
+}
+#scfx .ray {
+  position: absolute;
+  top: -10%;
+  width: 22%;
+  height: 80%;
+  background: linear-gradient(180deg, rgba(170, 240, 250, 0.22), transparent);
+  transform-origin: top center;
+  animation: scRy 9s ease-in-out infinite alternate;
+  filter: blur(6px);
+}
+#scfx .bb {
+  position: absolute;
+  bottom: -20px;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  border: 1px solid rgba(200, 245, 255, 0.5);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 60%);
+  animation: scBb var(--d) linear infinite;
+  animation-delay: var(--l);
+}
+@keyframes scWv {
+  0% {
+    transform: translateX(-6%) translateY(0) scaleY(1);
+  }
+  100% {
+    transform: translateX(6%) translateY(-3%) scaleY(1.15);
+  }
+}
+@keyframes scRy {
+  0% {
+    transform: rotate(-10deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(8deg);
+    opacity: 1;
+  }
+}
+@keyframes scBb {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(20px, -105vh);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #scfx * {
+    animation: none !important;
+  }
+}

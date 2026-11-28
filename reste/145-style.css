@@ -1,0 +1,84 @@
+body.pcg #app {
+  zoom: var(--pcz, 1);
+  min-height: calc(100dvh / var(--pcz, 1)) !important;
+}
+@media (min-width: 700px) {
+  .kzg > :not(.kzov) {
+    width: 440px;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.prch {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  width: min(92vw, 400px);
+  padding: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+.prch::-webkit-scrollbar {
+  display: none;
+}
+.prch button {
+  flex: none;
+  min-width: 42px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font:
+    600 15px system-ui,
+    sans-serif;
+}
+.prch button.on {
+  background: #5a55b8;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+.prb {
+  perspective: none;
+}
+.prb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px 16px 16px 10px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+#prb .prp {
+  box-shadow: inset 9px 0 14px -9px rgba(120, 90, 40, 0.4);
+}
+#prb.flp .pri * {
+  animation-play-state: paused !important;
+}
+body.bkon #app > :not(.sfr),
+body.bkon > #tint,
+body.bkon > #pat,
+body.bkon > #snow,
+body.bkon > #xdeco {
+  visibility: hidden !important;
+}
+body.bkon .sfr.pro {
+  background: #06142a;
+}
+.sfr.pro {
+  background: linear-gradient(rgba(6, 18, 40, 0.84) 55%, rgba(6, 18, 40, 0.985) 78%);
+}
+#prb .prp,
+#prb .prp.out {
+  transform: none;
+  opacity: 1;
+  transition: none;
+  will-change: auto;
+  -webkit-backface-visibility: visible;
+  backface-visibility: visible;
+}
+#prb .prp .prx {
+  opacity: 1;
+  animation: none;
+}

@@ -1,0 +1,52 @@
+.sj3 .ahp,
+.sj3 .ahm,
+.sj3 .ahk {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.sj3 .ahp {
+  background: radial-gradient(circle at 40% 35%, #555, #1a1a1a 70%);
+  box-shadow:
+    0 0 0 2px #ff3ab0,
+    0 0 12px #ff3ab0;
+}
+.sj3 .ahp.b {
+  background: #0a0a0a;
+  box-shadow: 0 0 8px rgba(255, 58, 176, 0.6);
+}
+.sj3 .ahm {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--c) 70%, #000) 0 30%,
+    rgba(255, 255, 255, 0.35) 31% 46%,
+    var(--c) 47%
+  );
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+.sj3 .ahm.b {
+  background: color-mix(in srgb, var(--c) 55%, #000);
+  box-shadow: none;
+}
+.sj3 .ahk {
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.9) 0 9%, transparent 40%),
+    radial-gradient(circle at 60% 70%, transparent 40%, rgba(0, 0, 0, 0.5)), var(--c);
+}
+.sj3 .ahk::after {
+  content: "";
+  position: absolute;
+  left: 32%;
+  right: 32%;
+  top: 70%;
+  height: 80%;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c) 60%, #000),
+    var(--c),
+    color-mix(in srgb, var(--c) 60%, #000)
+  );
+  border-radius: 0 0 30% 30%;
+  z-index: -1;
+}

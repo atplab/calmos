@@ -1,0 +1,26 @@
+.sgw .vzhr {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.sgw .vzb.on {
+  outline: 2px solid #ffd27a;
+  outline-offset: 2px;
+  border-radius: 14px;
+}
+.sgsht[data-m^="c"] .gdet {
+  display: none;
+}
+.sgsht[data-m="csk"] #chh > :not(.chsk) {
+  display: none;
+}
+.sgsht[data-m="cso"] #chh > .chsk,
+.sgsht[data-m="cso"] #chh > .chres,
+.sgsht[data-m="cso"] .chnew > .chgr:first-of-type,
+.sgsht[data-m="cli"] #chh > .chsk,
+.sgsht[data-m="cli"] #chh > .soc-i,
+.sgsht[data-m="cli"] #chh > .chres,
+.sgsht[data-m="cli"] .chnew > .chgr:first-of-type {
+  display: none;
+}

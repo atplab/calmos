@@ -1,0 +1,148 @@
+.pewd2 #pelp {
+  stroke: #ffe8c0;
+}
+.pewd2 .pesh {
+  filter: hue-rotate(-30deg);
+}
+.peg.pewd2 {
+  background: #2a0a12;
+}
+.pewd2 .pet {
+  background: linear-gradient(#6a1424, rgba(106, 20, 36, 0.55));
+  border-bottom: 2px solid #e8b030;
+}
+.pewd2 .pet b {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  letter-spacing: 0.1em;
+  color: #ffe8b8;
+}
+.pewd2 .peov {
+  background: rgba(40, 6, 12, 0.6);
+}
+.pewd2 .pecard,
+.pewd2 .pebag {
+  background: linear-gradient(#7a1a2a, #3a0e1c);
+  border: 2px solid #e8b030;
+  border-radius: 14px;
+}
+.pewd2 .pecard h2,
+.pewd2 .pebag h2 {
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+  color: #ffe8b8;
+}
+.pewd2 .btn {
+  background: linear-gradient(#d8302a, #8a141c);
+  color: #fff4d8;
+  box-shadow: inset 0 0 0 2px #e8b030;
+}
+.pepet {
+  position: absolute;
+  top: -12px;
+  width: 9px;
+  height: 7px;
+  border-radius: 70% 0 70% 0;
+  background: #ffc0d8;
+  opacity: 0.85;
+  z-index: 3;
+  pointer-events: none;
+  animation: pepf linear infinite;
+}
+@keyframes pepf {
+  to {
+    transform: translate(46px, 780px) rotate(420deg);
+  }
+}
+.pet b.pewt {
+  flex: 0 1 auto;
+  margin: 0 auto;
+  cursor: pointer;
+  white-space: nowrap;
+  padding: 6px 13px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.13);
+  font-size: 14px;
+}
+.pet b.pewt .pewd {
+  letter-spacing: 2px;
+  font-size: 11px;
+  opacity: 0.9;
+}
+.pet b.pewt.nw {
+  animation: pewp 1.6s ease-in-out infinite;
+}
+.pewd2 .pet b.pewt {
+  border-color: #e8b030;
+  background: rgba(232, 176, 48, 0.16);
+}
+.pewd3 #pelp {
+  stroke: #fff0d8;
+}
+.peg.pewd3 {
+  background: #120a2a;
+}
+.pewd3 .pet {
+  background: linear-gradient(#4a1a6a, rgba(74, 26, 106, 0.55));
+  border-bottom: 2px solid #ff9ad0;
+}
+.pewd3 .pet b {
+  color: #fff0c8;
+}
+.pewd3 .pet b.pewt {
+  border-color: #ff9ad0;
+  background: rgba(255, 154, 208, 0.16);
+}
+.pewd3 .peov {
+  background: rgba(18, 6, 40, 0.6);
+}
+.pewd3 .pecard,
+.pewd3 .pebag {
+  background: linear-gradient(#5a2a7a, #26104a);
+  border: 2px solid #ff9ad0;
+  border-radius: 16px;
+}
+.pewd3 .btn {
+  background: linear-gradient(#ff6aa8, #a02a78);
+  color: #fff;
+  box-shadow: inset 0 0 0 2px #ffd24a;
+}
+.pecf {
+  position: absolute;
+  top: -12px;
+  width: 7px;
+  height: 10px;
+  opacity: 0.9;
+  z-index: 3;
+  pointer-events: none;
+  animation: pepf linear infinite;
+}
+.pewsw {
+  display: none;
+  position: absolute;
+  right: max(14px, env(safe-area-inset-right, 0px));
+  top: calc(env(safe-area-inset-top, 0px) + 62px);
+  z-index: 5;
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(20, 16, 60, 0.62);
+  color: #fff;
+  font:
+    700 13px system-ui,
+    sans-serif;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.pewsw.w2 {
+  background: rgba(106, 20, 36, 0.88);
+  border-color: #e8b030;
+  color: #ffe8b8;
+}
+.pewsw.nw {
+  animation: pewp 1.6s ease-in-out infinite;
+}
+@keyframes pewp {
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 216, 107, 0.4);
+  }
+}

@@ -1,0 +1,9 @@
+body.sghall.chbg,
+body.sghall.chbg[data-chsk] {
+  background: linear-gradient(180deg, #4a2f1b, #2a190d 70%, #1c1008) fixed !important;
+}
+body.sghall.chbg::before,
+body.sghall.chbg::after {
+  display: none !important;
+  animation: none !important;
+}

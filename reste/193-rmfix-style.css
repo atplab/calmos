@@ -1,0 +1,31 @@
+body:not(#zz) .rmpool {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 16px 6px;
+}
+body:not(#zz) .rmpool .rmsp {
+  position: static !important;
+  transform: none !important;
+  width: 31%;
+  max-width: 110px !important;
+}
+body:not(#zz) .rmtp .chip {
+  height: 38px !important;
+  min-height: 0 !important;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  align-self: center !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+}
+.rmop {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+}

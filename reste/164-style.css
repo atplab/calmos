@@ -1,0 +1,26 @@
+@media (min-width: 700px) {
+  .arsw {
+    gap: 10px !important;
+  }
+  .arsw button {
+    font-size: 17px !important;
+    padding: 10px 22px !important;
+  }
+  .arsw button svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .arsg {
+    max-width: 640px !important;
+    gap: 10px !important;
+  }
+  .arsg button {
+    font-size: 15px !important;
+    padding: 9px 16px !important;
+    border-radius: 14px !important;
+  }
+  .arsg button svg {
+    width: 38px !important;
+    height: 38px !important;
+  }
+}

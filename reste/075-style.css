@@ -1,0 +1,35 @@
+.zrg {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+#app:has(> .play.pg-mots),
+#app:has(> .play.pg-croises),
+#app:has(> .play.pg-caches),
+#app:has(> .play.pg-phrase),
+#app:has(> .play.pg-ana),
+#app:has(> .play.pg-wordle),
+#app:has(> .play.pg-quiz),
+#app:has(> .play.pg-sudoku),
+#app:has(> .play.pg-tournade),
+#app:has(> .play.pg-flow),
+#app:has(> .play.pg-memo) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding-bottom: max(28px, 10dvh);
+}
+#app > .play.pg-mots,
+#app > .play.pg-croises,
+#app > .play.pg-caches,
+#app > .play.pg-phrase,
+#app > .play.pg-ana,
+#app > .play.pg-wordle,
+#app > .play.pg-quiz,
+#app > .play.pg-sudoku,
+#app > .play.pg-tournade,
+#app > .play.pg-flow,
+#app > .play.pg-memo {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}

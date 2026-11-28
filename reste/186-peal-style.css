@@ -1,0 +1,227 @@
+.pet b.pewt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pet b.pewt small {
+  opacity: 0.8;
+  font-size: 12px;
+}
+.pewd2 .pet b.pewt {
+  border-color: #e8b030;
+  background: rgba(216, 48, 42, 0.3);
+}
+.pewd3 .pet b.pewt {
+  border-color: #ff9ad0;
+  background: rgba(255, 106, 168, 0.25);
+}
+.pewp {
+  max-width: 380px;
+  transform: translateY(-14vh);
+}
+.pewc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  padding: 12px;
+  color: #fff;
+  font: inherit;
+  background: linear-gradient(135deg, #2a5aa0, #1a2a6a);
+}
+.pewc.w2 {
+  background: linear-gradient(135deg, #c8302a, #6a1424);
+}
+.pewc.w3 {
+  background: linear-gradient(135deg, #a0449a, #3a1a6a);
+}
+.pewc.on {
+  box-shadow: 0 0 0 3px #fff;
+}
+.pewc.lk {
+  filter: saturate(0.45) brightness(0.8);
+}
+.pewci {
+  font-size: 34px;
+  width: 46px;
+  text-align: center;
+}
+.pewct {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.pewct b {
+  font-size: 17px;
+}
+.pewct small {
+  opacity: 0.85;
+  font-size: 12.5px;
+}
+.pewct em {
+  font-style: normal;
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 3px;
+}
+.peal .pebh {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.pealb {
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font:
+    700 14px system-ui,
+    sans-serif;
+  border-radius: 99px;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.pealb:active {
+  background: rgba(255, 255, 255, 0.28);
+}
+.pealb.pealq {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+.pealb.pealx {
+  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex: none;
+}
+.petr .pebk {
+  display: none;
+}
+.peal {
+  max-width: 420px;
+  max-height: 80vh;
+  max-height: 80dvh;
+  transform: translateY(5vh);
+}
+.pealh {
+  position: sticky;
+  top: -16px;
+  z-index: 5;
+  margin: -16px -16px 0;
+  padding: 14px 16px 8px;
+  background: rgba(22, 16, 56, 0.94);
+  backdrop-filter: blur(8px);
+  border-radius: 24px 24px 14px 14px;
+  display: grid;
+  gap: 8px;
+}
+.pealt {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.pealw {
+  border: 0;
+  border-radius: 12px;
+  padding: 7px 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font:
+    700 13px system-ui,
+    sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.pealw span {
+  font-size: 12px;
+}
+.pealw.on {
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.pealw.lk {
+  opacity: 0.55;
+}
+.pealp {
+  position: relative;
+  height: 20px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+.pealp i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, #5ad8ff, #8aff9a);
+  border-radius: inherit;
+}
+.pealp b {
+  position: relative;
+  display: block;
+  text-align: center;
+  font:
+    700 12px/20px system-ui,
+    sans-serif;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.pealr {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pealc {
+  flex: none;
+  border: 0;
+  border-radius: 99px;
+  padding: 5px 11px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font:
+    600 12px system-ui,
+    sans-serif;
+}
+.pealc.on {
+  background: var(--c, #fff);
+  color: #1a1440;
+}
+.peal .pebkh {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+.peal .pebkh small {
+  opacity: 0.8;
+  font-size: 12px;
+}
+.peal .pebkh em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 12px;
+  opacity: 0.85;
+}
+.peal .pebki.no span {
+  filter: brightness(0) opacity(0.3);
+}

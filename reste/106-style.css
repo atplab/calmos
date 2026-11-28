@@ -1,0 +1,11 @@
+body.calm .xmfl.adv,
+body.calm .xmfl.adv *,
+body.calm .xmfl.adv::before,
+body.calm .xmfl.adv::after,
+body.calm .advd,
+body.calm .advd * {
+  animation: none !important;
+}
+body.calm .xmfl.adv .advlid {
+  transform: none !important;
+}

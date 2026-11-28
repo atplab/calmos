@@ -1,0 +1,64 @@
+.ccact {
+  overflow: visible !important;
+}
+.ccpile .ccem2 {
+  position: static !important;
+  background: none !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  right: auto !important;
+  top: auto !important;
+  z-index: auto !important;
+  display: inline-block !important;
+  font-size: inherit !important;
+}
+.ccf > i {
+  display: block !important;
+  width: 1.5em !important;
+  height: 1.5em !important;
+}
+.ccf > i .ccem2 {
+  width: 100% !important;
+  height: 100% !important;
+}
+body:not(#zz) .ccgh {
+  position: relative;
+  top: -9px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 22px !important;
+  min-height: 44px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: linear-gradient(180deg, #e9a63d, #b8601b) !important;
+  color: #fff !important;
+  font:
+    700 15px "Nunito Sans",
+    system-ui,
+    sans-serif !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 4px 0 #7a3a10,
+    0 8px 16px rgba(0, 0, 0, 0.35) !important;
+  animation: ccghp 2.2s ease-in-out infinite !important;
+  cursor: pointer;
+}
+body:not(#zz) .ccgh:active {
+  top: -6px;
+  box-shadow: 0 1px 0 #7a3a10 !important;
+}
+body:not(#zz) .ccgh.on {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.1)) !important;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  animation: none !important;
+}
+@keyframes ccghp {
+  50% {
+    filter: brightness(1.14);
+  }
+}

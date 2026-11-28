@@ -1,0 +1,140 @@
+#tuo {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(10, 8, 34, 0.62);
+  backdrop-filter: blur(1.5px);
+  animation: tuin 0.35s ease both;
+}
+#tur {
+  position: fixed;
+  z-index: 9001;
+  pointer-events: none;
+  border-radius: 16px;
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 4px rgba(169, 156, 240, 0.55),
+    0 0 28px 6px rgba(169, 156, 240, 0.6);
+  animation: tup 1.8s ease-in-out infinite;
+}
+#tuc {
+  position: fixed;
+  z-index: 9002;
+  left: 12px;
+  right: 12px;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px 12px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(60, 52, 128, 0.97), rgba(36, 32, 92, 0.97));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  color: #fff;
+  animation: tuin 0.35s ease both;
+}
+#tuc.top {
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+}
+#tuc.bot {
+  bottom: calc(max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px)) + 96px);
+}
+body:has(#tuc) #ntt {
+  display: none !important;
+}
+#tuc.bot2 {
+  bottom: calc(max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px)) + 26px);
+}
+#tuc.mid {
+  top: 50%;
+  transform: translateY(-50%);
+}
+#tuc .tuz {
+  flex: 0 0 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #d9d0ff, #8f82e0);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+#tuc .tuz svg {
+  width: 100%;
+  height: 100%;
+}
+#tuc .tub {
+  flex: 1;
+  min-width: 0;
+}
+#tuc .tub b.tun {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: #cfc6ff;
+  margin-bottom: 2px;
+}
+#tuc .tub p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.38;
+}
+#tuc .tur {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+#tuc button {
+  font: inherit;
+  cursor: pointer;
+}
+#tuc .tup {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 20px;
+  background: #fff;
+  color: #3a2f7a;
+  font-weight: 800;
+  font-size: 14px;
+}
+#tuc .tup.alt {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+#tuc .tus {
+  border: 0;
+  background: none;
+  color: #cfc6ff;
+  font-size: 13px;
+  text-decoration: underline;
+  padding: 6px 2px;
+}
+#tuc.cmp p {
+  font-size: 14px;
+}
+@keyframes tuin {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes tup {
+  50% {
+    box-shadow:
+      0 0 0 7px rgba(169, 156, 240, 0.35),
+      0 0 34px 10px rgba(169, 156, 240, 0.7);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #tuo,
+  #tuc,
+  #tur {
+    animation: none;
+  }
+}

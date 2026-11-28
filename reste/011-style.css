@@ -1,0 +1,33 @@
+.sgmd {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin: 6px auto 0;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  width: max-content;
+  max-width: 92%;
+}
+.sgmd button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.sgmd button.on {
+  background: rgba(255, 255, 255, 0.9);
+  color: #3a2616;
+  opacity: 1;
+}
+.sgsht[data-m="dso"] #dmh > .chsk,
+.sgsht[data-m="dso"] #dmh > .chres,
+.sgsht[data-m="dso"] #dmh .chnew > .chgr:first-of-type {
+  display: none;
+}

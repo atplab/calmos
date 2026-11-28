@@ -1,0 +1,196 @@
+#stg {
+  touch-action: none;
+}
+.smfog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1000px;
+  z-index: 7;
+  pointer-events: none;
+  will-change: transform;
+}
+.smfog i.l {
+  position: absolute;
+  inset: 0;
+}
+.smfog .ln {
+  background: linear-gradient(#0c0f33, #232a7a 60%, #3a3f9a);
+}
+.smfog .ld {
+  background: linear-gradient(#cfe3f4, #f2f9ff 60%, #fff);
+  opacity: var(--sun, 1);
+}
+.smfog .fd {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 150px;
+}
+.smfog .fdn {
+  background: linear-gradient(#3a3f9a, rgba(58, 63, 154, 0.55) 40%, rgba(58, 63, 154, 0));
+}
+.smfog .fdd {
+  background: linear-gradient(#fff, rgba(255, 255, 255, 0.55) 40%, rgba(255, 255, 255, 0));
+  opacity: var(--sun, 1);
+}
+.smfog .wv {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 64px;
+  top: calc(100% - 1px);
+  opacity: 0.7;
+  animation: smfw 9s ease-in-out infinite alternate;
+}
+.smfog .wv.b {
+  top: calc(100% + 14px);
+  opacity: 0.35;
+  animation-duration: 13s;
+  animation-direction: alternate-reverse;
+}
+.smfog .wv path.n {
+  fill: #3a3f9a;
+}
+.smfog .wv path.d {
+  fill: #fff;
+  opacity: var(--sun, 1);
+}
+.smfog .tx {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 44px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  text-align: center;
+  font:
+    700 32px Fraunces,
+    Georgia,
+    serif;
+  color: #fff;
+  background: rgba(20, 24, 90, 0.62);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 30px;
+  padding: 10px 26px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 28px rgba(160, 180, 255, 0.55);
+}
+.smfog .tx small {
+  display: block;
+  font:
+    600 12px system-ui,
+    sans-serif;
+  letter-spacing: 1.4px;
+  opacity: 0.95;
+  margin-top: 2px;
+}
+@keyframes smfw {
+  from {
+    transform: translateX(-5%);
+  }
+  to {
+    transform: translateX(5%);
+  }
+}
+#smv svg.smd,
+#smv svg.smn {
+  content-visibility: visible !important;
+}
+body:has(#stg) .sbar,
+body:has(#stg) .shb,
+body:has(#stg) .shc,
+body:has(#stg) .shm,
+body:has(#stg) .sht .chip,
+body:has(#stg) #aq-rem,
+body:has(#stg) #nav,
+body:has(#stg) .smrc,
+body:has(#stg) .smav {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+#stg .smc {
+  filter: none !important;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, #fff calc(var(--sun, 1) * 100%), #8a7ad0),
+    transparent
+  ) !important;
+}
+#stg .smp {
+  filter: none !important;
+}
+#stg .smi,
+#stg .sml {
+  filter: none !important;
+}
+#smv,
+.smfog {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+#stg.smpz .smx,
+#stg.smpz .smc,
+#stg.smpz .smo,
+#stg.smpz .smst {
+  animation: none !important;
+}
+#stg.smpz svg *,
+#stg.smpz .smx,
+#stg.smpz .smx * {
+  animation-play-state: paused !important;
+}
+.smav {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--rt, 120px) + 14px);
+  transform: translateX(-50%);
+  z-index: 8;
+  pointer-events: none;
+  white-space: nowrap;
+  text-align: center;
+  font:
+    700 30px Fraunces,
+    Georgia,
+    serif;
+  color: #fff;
+  background: rgba(20, 24, 90, 0.78);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 30px;
+  padding: 10px 26px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 28px rgba(160, 180, 255, 0.6);
+  opacity: 0;
+}
+.smav small {
+  display: block;
+  font:
+    600 12px system-ui,
+    sans-serif;
+  letter-spacing: 1.4px;
+  margin-top: 2px;
+}
+.smrc {
+  position: absolute;
+  right: 12px;
+  bottom: 92px;
+  z-index: 9;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background: rgba(10, 10, 45, 0.78);
+  color: #fff;
+  border-radius: 22px;
+  padding: 9px 14px;
+  font:
+    700 13px system-ui,
+    sans-serif;
+  display: none;
+}
+.smrc.on {
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .smfog .wv {
+    animation: none;
+  }
+}

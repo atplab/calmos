@@ -1,0 +1,27 @@
+.np .npw {
+  grid-column: span 2;
+  font-size: 15px;
+  height: 46px;
+}
+.np .npx {
+  grid-column: span 3;
+  background: rgba(255, 120, 120, 0.28);
+}
+.sd-c.rel {
+  background: rgba(255, 255, 255, 0.26) !important;
+}
+.sd-c.sel {
+  background: #ffe066 !important;
+  color: #1c1c40 !important;
+  box-shadow:
+    inset 0 0 0 3px #fff,
+    0 0 0 3px #ff9f1c,
+    0 0 16px 5px rgba(255, 214, 90, 0.85) !important;
+  position: relative;
+  z-index: 3;
+  transform: scale(1.08);
+}
+.sd-c.same {
+  outline: 2px solid #ffe066;
+  outline-offset: -3px;
+}

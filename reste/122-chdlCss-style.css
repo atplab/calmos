@@ -1,0 +1,35 @@
+#chdl {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(6, 10, 28, 0.62);
+  backdrop-filter: blur(6px);
+}
+.chdb {
+  width: min(94vw, 400px);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #2a2f5e, #161a40);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.chdb h2 {
+  margin: 0 0 4px;
+  font:
+    600 22px Fraunces,
+    Georgia,
+    serif;
+}
+.chdb .chrow {
+  display: flex;
+  gap: 10px;
+}
+.chdb .chrow .btn {
+  flex: 1;
+}

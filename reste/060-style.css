@@ -1,0 +1,118 @@
+#arwall {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 70% at 50% 0%, #3a1466 0%, #1a0833 45%, #08030f 100%);
+}
+#arwall::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -6%;
+  height: 40%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 95, 210, 0.22) 0 2px, transparent 2px 46px),
+    repeating-linear-gradient(0deg, rgba(95, 227, 255, 0.18) 0 2px, transparent 2px 34px),
+    linear-gradient(#170a2c, #05020a);
+  transform: perspective(380px) rotateX(58deg);
+  transform-origin: 50% 100%;
+}
+@media (orientation: landscape) and (max-height: 560px) {
+  .arw {
+    display: grid;
+    height: 100dvh;
+    min-height: 0;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-rows: auto auto auto 1fr auto;
+    column-gap: 12px;
+  }
+  .arw .vztp {
+    grid-column: 1/-1;
+  }
+  .arw .arst {
+    grid-column: 1;
+    grid-row: 2/6;
+    min-height: 0;
+    height: 100%;
+  }
+  .arw .arsw {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .arw .arsgw {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .arw .vzbt {
+    grid-column: 2;
+    grid-row: 5;
+    transform: none;
+  }
+  .arneon,
+  .arlt {
+    display: none;
+  }
+}
+.arw .vzbt,
+.arw .arsgw,
+.arw .arsw {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+.arw .vztp {
+  width: 100%;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.arst {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+@media (max-height: 640px) {
+  .arneon {
+    font-size: 17px;
+  }
+  .arneon small {
+    margin-top: 3px;
+    font-size: 9px;
+  }
+  .arlt {
+    display: none;
+  }
+  .arsg button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+@media (min-width: 700px) {
+  .arneon {
+    font-size: 30px;
+  }
+  .arnv {
+    width: 52px;
+    height: 52px;
+    margin-top: -26px;
+  }
+  .arnv.l {
+    left: 8%;
+  }
+  .arnv.r {
+    right: 8%;
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .arneon {
+    display: none;
+  }
+  .arw .vzbt {
+    transform: scale(0.85);
+    transform-origin: 50% 100%;
+  }
+}

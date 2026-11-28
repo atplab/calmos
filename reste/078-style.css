@@ -1,0 +1,11 @@
+.sgsht .pt-scrabble .rcx-b {
+  display: none;
+}
+.sgsht[data-m="on"] .scbt,
+.sgsht[data-m="on"] .scso .rc-t span,
+.sgsht[data-m="on"] [data-a="rmNew"],
+.sgsht[data-m="on"] [data-a="rmCode"],
+.sgsht[data-m="on"] .gdet,
+.sgsht[data-m="new"] .scmy {
+  display: none !important;
+}

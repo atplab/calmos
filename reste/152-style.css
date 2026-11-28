@@ -1,0 +1,15 @@
+.g2b {
+  overflow: clip;
+}
+.g2b.nm0,
+.g2b.nm1,
+.g2b.nm2,
+.g2b.nm3 {
+  animation: none !important;
+}
+.g2b > .g2x {
+  will-change: translate;
+  width: calc((100% - var(--gp) * (var(--n) + 1)) / var(--n));
+  height: auto;
+  aspect-ratio: 1;
+}

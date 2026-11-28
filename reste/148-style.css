@@ -1,0 +1,5 @@
+@media (pointer: fine) and (min-width: 900px) {
+  body:has(#zcc, #zgc, #bzc) #app {
+    max-width: 1040px;
+  }
+}

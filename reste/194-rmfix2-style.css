@@ -1,0 +1,92 @@
+.rmpb {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 6px 16px 6px 8px;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  background: rgba(20, 16, 60, 0.55);
+  color: #fff;
+  font: 600 15px system-ui;
+  text-align: left;
+}
+.rmpb i {
+  font-style: normal;
+  font-size: 22px;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: #2a2370;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rmpb span {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.rmpb small {
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.7;
+}
+.rmpb.st {
+  opacity: 0.85;
+}
+.rmgg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.rmgc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border-radius: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
+  color: inherit;
+  font: inherit;
+}
+.rmgc i {
+  font-style: normal;
+  font-size: 34px;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  background: #2a2370;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rmgc b {
+  font-size: 15px;
+}
+.rmgc small {
+  font-size: 11px;
+  opacity: 0.7;
+  text-align: center;
+}
+.rmgc.on {
+  border-color: #ffd36a;
+  background: rgba(255, 211, 106, 0.16);
+}
+.rmgc:disabled {
+  opacity: 0.35;
+}
+.rmru {
+  max-height: 55vh;
+  overflow: auto;
+  margin: 6px 0 12px;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.rmop {
+  gap: 8px;
+}

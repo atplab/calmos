@@ -1,0 +1,79 @@
+.sgbd.ch.sk-h .sgsq b.l {
+  background: #eef6fb;
+}
+.sgbd.ch.sk-h .sgsq b.d {
+  background: #8fb3d1;
+}
+.sgbd.ch.sk-h .sged {
+  background: linear-gradient(135deg, #d6e6f3, #7fa3c4);
+}
+.sgbd.ch.sk-o .sgsq b.l {
+  background: #d3f1f1;
+}
+.sgbd.ch.sk-o .sgsq b.d {
+  background: #4aa6b4;
+}
+.sgbd.ch.sk-o .sged {
+  background: linear-gradient(135deg, #2aa3b4, #0e5a70);
+}
+.sgbd.ch.sk-e .sgsq b.l {
+  background: #cfc9f0;
+}
+.sgbd.ch.sk-e .sgsq b.d {
+  background: #5a4fa6;
+}
+.sgbd.ch.sk-e .sged {
+  background: linear-gradient(135deg, #4a3f8a, #1d1840);
+}
+.sgbd.sc.sks-h .sgtl span,
+.sgbd.sc.sks-h .sgrk span {
+  background: radial-gradient(120% 95% at 32% 18%, #ffffff 0 22%, #cfe5fb);
+  color: #21507a;
+}
+.sgbd.sc.sks-h .sgtl sub,
+.sgbd.sc.sks-h .sgrk sub {
+  color: #21507a;
+}
+.sgbd.sc.sks-h .sged {
+  background: linear-gradient(135deg, #e6f3ff, #7fb3dc);
+}
+.sgbd.sc.sks-h .sgsq b:not([class]),
+.sgbd.sc.sks-h .sgsq b[class=""] {
+  background: rgba(255, 255, 255, 0.85);
+}
+.sgbd.sc.sks-o .sgtl span,
+.sgbd.sc.sks-o .sgrk span {
+  background: radial-gradient(120% 95% at 32% 18%, #fff6de 0 22%, #eecf92);
+  color: #1d4f5e;
+}
+.sgbd.sc.sks-o .sgtl sub,
+.sgbd.sc.sks-o .sgrk sub {
+  color: #1d4f5e;
+}
+.sgbd.sc.sks-o .sged {
+  background: linear-gradient(135deg, #5fd0c4, #1d6f94);
+}
+.sgbd.sc.sks-o .sgsq b:not([class]),
+.sgbd.sc.sks-o .sgsq b[class=""] {
+  background: #e8faf7;
+}
+.sgbd.sc.sks-e .sgtl span,
+.sgbd.sc.sks-e .sgrk span {
+  background: radial-gradient(120% 95% at 32% 18%, #3a4080 0 22%, #171a3a);
+  color: #ffe08a;
+}
+.sgbd.sc.sks-e .sgtl sub,
+.sgbd.sc.sks-e .sgrk sub {
+  color: #ffe08a;
+}
+.sgbd.sc.sks-e .sged {
+  background: linear-gradient(135deg, #2b2f66, #1d2550);
+}
+.sgbd.sc.sks-e .sgsq b:not([class]),
+.sgbd.sc.sks-e .sgsq b[class=""] {
+  background: #2a2f5a;
+}
+.sgbd.sc.sks-e .sgtl span,
+.sgbd.sc.sks-e .sgrk span {
+  box-shadow: 0 0 6px rgba(255, 214, 120, 0.35);
+}

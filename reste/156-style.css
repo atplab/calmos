@@ -1,0 +1,29 @@
+.sjw,
+.sgw {
+  height: calc(
+    100dvh - 52px - max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px), 16px)
+  );
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sjw .sjst {
+  flex: 1 1 0;
+  min-height: 0;
+}
+.sgw .sg3d {
+  flex: 1 1 0;
+  min-height: 0;
+}
+.sjw .vzbt,
+.sgw .vzbt {
+  margin-top: -64px;
+  padding-bottom: 6px;
+  position: relative;
+  z-index: 6;
+  flex: none;
+}
+.sgw .sgsh {
+  flex: none;
+}

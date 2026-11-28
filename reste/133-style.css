@@ -1,0 +1,11 @@
+#app.nofa .wlst > *,
+#app.nofa .rfst *,
+#app.nofa .vzmid {
+  animation-duration: 0.001s !important;
+  animation-delay: 0s !important;
+}
+#app.nofa .wlart,
+#app.nofa .rfst .rfpn {
+  animation-duration: 6s, 0.001s !important;
+  animation-delay: 0s !important;
+}

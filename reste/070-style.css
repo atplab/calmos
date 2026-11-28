@@ -1,0 +1,40 @@
+body[data-wlbg]::after,
+body[data-wlbg] .seadeco {
+  display: none !important;
+}
+body[data-wlbg] {
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(190, 160, 255, 0.45), transparent 55%),
+    radial-gradient(ellipse at 90% 100%, rgba(120, 170, 230, 0.4), transparent 60%),
+    linear-gradient(180deg, #4b3f8f, #3a3a7e 55%, #2d4568) fixed !important;
+}
+body[data-wlbg] #tint {
+  opacity: 0 !important;
+}
+body .sd .sd-c.pc.pk,
+body .sd .sd-c.pc.pk.gv,
+body .sd .sd-c.pc.pk.bad {
+  color: #241f4a !important;
+  text-shadow: none !important;
+}
+body .sd .sd-c.pc.pl,
+body .sd .sd-c.pc.pl.gv,
+body .sd .sd-c.pc.pl.bad {
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+body[data-rfbg] {
+  background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--a) 34%, #07102a),
+      color-mix(in srgb, var(--b) 70%, #050a1c) 50%,
+      color-mix(in srgb, var(--b) 45%, #040816)
+    )
+    fixed !important;
+}
+body[data-rfbg] #tint {
+  opacity: 1 !important;
+  background:
+    radial-gradient(130% 55% at 50% 0, color-mix(in srgb, var(--a) 20%, transparent), transparent 72%),
+    linear-gradient(0deg, color-mix(in srgb, var(--a) 6%, transparent), transparent 40%);
+}

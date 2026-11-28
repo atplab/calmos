@@ -1,0 +1,8 @@
+body.calm .wlf .wlst > *,
+body.calm .rfst *,
+body.calm .wlf .vzmid {
+  animation: none !important;
+}
+body.calm .wlf .wlart {
+  animation: wlbob 6s ease-in-out infinite !important;
+}

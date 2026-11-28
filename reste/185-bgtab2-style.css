@@ -1,0 +1,6 @@
+@media (orientation: portrait) and (min-width: 700px) {
+  #app:has(.pg-scrabble .scbw),
+  #app:has(.pg-chess .chbw) {
+    max-width: min(96vw, 920px);
+  }
+}

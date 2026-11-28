@@ -1,0 +1,25 @@
+.apw h2 {
+  margin-bottom: 4px;
+}
+.apwt {
+  margin: 0 0 12px;
+  opacity: 0.85;
+  line-height: 1.45;
+}
+.apwh {
+  flex: none;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.apwx {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  border-radius: 16px;
+  margin-bottom: 14px;
+}
+.apw .apl {
+  margin-bottom: 16px;
+}

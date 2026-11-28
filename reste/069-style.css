@@ -1,0 +1,30 @@
+.rfsel button {
+  animation: none !important;
+}
+.rfsel button i svg {
+  animation: none !important;
+}
+.rfst {
+  animation: none;
+}
+.rfst .rfpn,
+.rfst h2,
+.rfst .rft,
+.rfst .rfs,
+.rfst .rfopt {
+  animation: wlfa 0.35s ease;
+}
+.rfst .rfpn {
+  animation:
+    wlbob 6s ease-in-out infinite,
+    wlfa 0.35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rfst .rfpn,
+  .rfst h2,
+  .rfst .rft,
+  .rfst .rfs,
+  .rfst .rfopt {
+    animation: none;
+  }
+}

@@ -1,0 +1,10 @@
+.wlf {
+  padding-bottom: 20px;
+  min-height: 0;
+}
+html.nsl,
+html.nsl body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+}

@@ -1,0 +1,17 @@
+.sgr2 .sgdc {
+  display: contents;
+}
+.sgr2 .sgdc > * {
+  position: absolute !important;
+  bottom: 3px;
+  margin: 0 !important;
+}
+.sgr2 .sgdc > i {
+  left: 16px;
+}
+.sgr2 .sgdc > u:nth-of-type(1) {
+  left: 50px;
+}
+.sgr2 .sgdc > u:nth-of-type(2) {
+  right: 18px;
+}

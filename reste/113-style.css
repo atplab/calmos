@@ -1,0 +1,205 @@
+.mmh {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 2px 18px;
+}
+.mmbar {
+  flex: 1;
+  height: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+}
+.mmbar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffd27a, #ffb347);
+  box-shadow: 0 0 8px rgba(255, 190, 90, 0.7);
+  transition: width 0.6s ease;
+}
+#mmn {
+  font: 700 13.5px system-ui;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.mmg {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: 22px clamp(6px, 2.2vw, 11px);
+  perspective: 1000px;
+  margin: 6px 0 8px;
+}
+.mmc {
+  position: relative;
+  aspect-ratio: 3/4;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: mmin 0.55s var(--d) both;
+}
+.mmc::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -8px;
+  left: 50%;
+  width: 56%;
+  height: 9px;
+  transform: translateX(-50%);
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(#f2f5ff, #a3aed6);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.mmc::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: -16px;
+  left: 50%;
+  width: 12px;
+  height: 10px;
+  transform: translateX(-50%);
+  border: 2.5px solid #c9d2ee;
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  box-sizing: border-box;
+}
+@keyframes mmin {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+  }
+}
+.mmi {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.3, 1.25, 0.5, 1);
+}
+.mmc.open .mmi {
+  transform: rotateY(180deg);
+}
+.mmf {
+  position: absolute;
+  inset: 0;
+  border-radius: 14px 14px 20px 20px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.mmbk {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 31%, rgba(160, 175, 230, 0.22) 31% 34%),
+    radial-gradient(circle at 50% 42%, rgba(140, 160, 255, 0.25), transparent 60%),
+    linear-gradient(170deg, #2c3572, #1a1f4a);
+  border: 2px solid #9aa6d6;
+  box-shadow:
+    0 5px 0 #5d6799,
+    0 8px 16px rgba(0, 0, 0, 0.4);
+}
+.mmbk::before {
+  content: "";
+  width: 34%;
+  aspect-ratio: 1;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3c3 4 5 6.5 5 9.5a5 5 0 0 1-10 0C7 9.5 9 7 12 3z' fill='none' stroke='%23c9d2ff' stroke-width='1.8'/%3E%3C/svg%3E")
+    center/contain no-repeat;
+  opacity: 0.75;
+}
+.mmc:active:not(.open) .mmi {
+  transform: scale(0.95);
+}
+.mmfr {
+  transform: rotateY(180deg);
+  background: radial-gradient(circle at 50% 46%, #fffaf0 0, #ffe7b3 52%, #f6bd5a 100%);
+  border: 2px solid #fff0c8;
+  box-shadow:
+    0 5px 0 #c98a2a,
+    0 0 20px rgba(255, 196, 96, 0.55);
+}
+.mmfr svg {
+  width: 84%;
+  aspect-ratio: 1;
+  height: auto;
+  padding: 10%;
+  border-radius: 50%;
+  box-sizing: border-box;
+  overflow: visible;
+  box-shadow:
+    0 0 0 2.5px #8a5a14,
+    0 2px 6px rgba(120, 70, 10, 0.3);
+}
+.mmfr
+  svg
+  :is(
+    [fill="#fff"],
+    [fill="#f6efe2"],
+    [fill="#f6e6c8"],
+    [fill="#f2dcbc"],
+    [fill="#f2e2c4"],
+    [fill="#f6dcc0"],
+    [fill="#e8c9a0"],
+    [fill="#c9d3ea"],
+    [fill="#fff3b0"],
+    [fill="#f4f0f8"],
+    [fill="#e8ecf4"]
+  ) {
+  stroke: #2e3358;
+  stroke-width: 1.3;
+  paint-order: stroke;
+}
+.mmfr svg [stroke="#fff"] {
+  stroke: #fff;
+}
+.mmc.done .mmfr {
+  box-shadow:
+    0 5px 0 #c98a2a,
+    0 0 26px rgba(255, 200, 100, 0.9);
+}
+.mmc.done .mmfr::after {
+  content: "✓";
+  position: absolute;
+  right: 7%;
+  top: 5%;
+  font: 900 13px system-ui;
+  color: #7a4a08;
+}
+.mmc.pop {
+  animation: mmpop 0.5s ease;
+}
+@keyframes mmpop {
+  45% {
+    transform: scale(1.1);
+  }
+}
+.mmc.no {
+  animation: mmno 0.42s ease;
+}
+@keyframes mmno {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+body.calm .mmc {
+  animation: none !important;
+}
+body.calm .mmi {
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}

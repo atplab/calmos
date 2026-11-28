@@ -1,0 +1,53 @@
+#apsc {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 110px;
+  z-index: 9500;
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: calc(max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px)) + 18px);
+  background: linear-gradient(0deg, rgba(18, 14, 60, 0.92), rgba(18, 14, 60, 0));
+  transition: opacity 0.3s;
+}
+#apsc.off {
+  opacity: 0;
+}
+#apsc button {
+  pointer-events: auto;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+#apsc svg {
+  width: 18px;
+  height: 18px;
+  animation: apbn 1.4s ease-in-out infinite;
+}
+@keyframes apbn {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #apsc svg {
+    animation: none;
+  }
+}

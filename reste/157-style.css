@@ -1,0 +1,5 @@
+.arw {
+  padding-bottom: calc(
+    40px + max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px))
+  ) !important;
+}

@@ -1,0 +1,18 @@
+.aqsht {
+  position: sticky;
+  touch-action: none;
+}
+.aqsht::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 5px;
+  width: 44px;
+  height: 5px;
+  margin-left: -22px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.aqsht {
+  padding-top: 20px !important;
+}

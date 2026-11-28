@@ -1,0 +1,84 @@
+.rlo {
+  animation: rlf 0.45s ease-out;
+}
+.rlo.out {
+  animation: rlfo 0.38s ease-in forwards;
+}
+@keyframes rlfo {
+  to {
+    opacity: 0;
+  }
+}
+.rlp {
+  animation: rlu2 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rlo.out .rlp {
+  animation: rlu2o 0.38s cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+@keyframes rlu2 {
+  from {
+    transform: scale(0.06);
+    opacity: 0;
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
+}
+@keyframes rlu2o {
+  to {
+    transform: scale(0.06);
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+.rlp > * {
+  animation: rlc 0.5s 0.22s ease-out both;
+}
+@keyframes rlc {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rlp,
+  .rlp > *,
+  .rlo {
+    animation-duration: 0.01s !important;
+  }
+}
+body.sjin .sjw .vztp,
+body.sjin .sjw .sjpl,
+body.sjin .sjw .vzbt {
+  opacity: 0;
+  transform: translateY(8px);
+}
+body.sjin .sjw .sjar,
+body.sjin #sjwall .neon {
+  opacity: 0;
+}
+.sjw .vztp,
+.sjw .sjpl,
+.sjw .vzbt {
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.sjw .sjar {
+  transition: opacity 0.7s ease 0.25s;
+}
+.sjw .sjpl {
+  transition-delay: 0.08s;
+}
+.sjw .vzbt {
+  transition-delay: 0.18s;
+}
+#sjwall .neon {
+  transition: opacity 1s ease 0.2s;
+}
