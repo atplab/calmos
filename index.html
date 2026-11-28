@@ -36815,6 +36815,7 @@ const L =
     .map((e) => e.trim().split(" "));
 const LB =
   "abri acte aie aient aies aire aires airs ais aise ait ana are aune aîné bac baie baise baiser bal ban bar bars bec ben bis bon bonté bot cale cela censé ces cet chat ciné clin clés coeur corde cou cour couru cru crue curé côté der doré doué duc due duo dur dure décor déçu dôme entiers entrés etc euros forte gnu géant hâte inter ira ire lent les liens lier lise liée liées liés lot mai man mat mec met mets mie miel mil min mit mots naît nier nièce non néant néo oeil oie olive oui ours pal paon pie pieu pou prose ras rein reine reins rené reste retiens reçu rie rien rires rit roc rois roue roues rude rues réel sainte sait sec sein seine sent senti sera serai sert ses set sic sien sir sire soeur sous sur sénat série sûre tas tee tel tenir tes thé tic tien tiers tire tirs tirée tirés tri trou très télé tôt user vélo ème ère éclat émet épi étais été êtes être êtres api bel clé coup eut fur gale ils las leu lice lie lieu lié lue mac mâle nés opter opté opus ose pan pli plu pote pro près puce pue péri sue tan tue tué uni viole viré vole volé élu émue";
+// Phrases mystères (id « phrase ») : phrases MYS / PHT / PHC, phIdx, phGen et le jeu pPhrase(r).
 const MYS = [
   "La neige tombe doucement, le monde entier s’endort enfin.",
   "Respire lentement, laisse la lune éclairer ton chemin et ferme les yeux sans crainte.",
@@ -36867,6 +36868,408 @@ const MYS = [
   "Les feux d’artifice fleurissent dans le ciel d’hiver, puis le silence revient, doux comme une couverture de neige.",
   "Que cette année nouvelle t’apporte du repos, de la joie, des matins lents et mille raisons de sourire.",
 ];
+function pPhrase(e) {
+  const t = LVX(MYS, "phrase", phGen).split(" "),
+    a = /^([^,.:\u00a0]+)(.*)$/,
+    s = (e) => t[e].match(a)[1],
+    n = t.map((e, t) => t).filter((e) => e > 0 && s(e).length >= 4 && !/[’-]/.test(s(e))),
+    o = Math.min(
+      [
+        4, 4, 5, 6, 7, 8, 9, 12, 6, 7, 8, 8, 8, 7, 9, 9, 9, 10, 10, 11, 8, 9, 9, 10, 10, 10, 11, 11, 11, 12,
+        12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 5, 6, 7, 6, 8, 7, 9, 8, 10, 8,
+      ][lv >= 1e9 ? lvD("phrase") : -1] ?? Math.min(14, 4 + (lv >> 2)),
+      n.length,
+    ),
+    i = Array.from({ length: o }, (e, t) => n[Math.floor((t * n.length) / o)]),
+    r = ["tempête", "soleil", "bruit", "courage", "sable", "orage"]
+      .filter((e) => !i.some((t) => s(t) === e))
+      .slice(0, Math.min(5, 2 + (lv >> 1))),
+    l = e ? e.B : sh(i.map(s).concat(r));
+  let c = e ? e.F : [],
+    d = e ? e.sl : i[0],
+    f = -1,
+    u = 0,
+    h = -1;
+  snap = () => ({ B: l, F: c, sl: d });
+  const p = () => {
+      const e = i.find((e) => !c.includes(e));
+      return null == e ? -1 : e;
+    },
+    m = () =>
+      frame(
+        `<p class="sent ${u ? "fin" : ""}">${t
+          .map((e, t) => {
+            if (!i.includes(t)) return e;
+            const s = e.match(a);
+            return c.includes(t)
+              ? `<button class="bl ok${t === h ? " nw" : ""}" disabled>${s[1]}</button>${s[2]}`
+              : `<button class="bl ${d === t ? "sel" : ""}${d === t && f >= 0 ? " no" : ""}" style="--n:${s[1].length}" data-a="bs" data-v="${t}" aria-label="mot caché de ${s[1].length} lettres"></button>${s[2]}`;
+          })
+          .join(
+            " ",
+          )}</p><div class="bank">${l.map((e, t) => `<button class="ch ${c.some((t) => s(t) === e) ? "u" : ""}" data-a="bp" data-v="${t}">${e}</button>`).join("")}</div>`,
+        1,
+      ),
+    b = (e) => {
+      (c.push(e),
+        sfx(660, 0.4),
+        (d = p()),
+        (h = e),
+        c.length === i.length ? ((u = 1), m(), (h = -1), setTimeout(win, 1800)) : (m(), (h = -1)));
+    };
+  ((act.bs = (e) => {
+    c.includes(+e) || ((d = +e), m());
+  }),
+    (act.bp = (e) => {
+      if (d < 0) return msg("Touche d’abord un mot caché");
+      l[+e] === s(d)
+        ? b(d)
+        : ((f = +e),
+          m(),
+          msg("Pas tout à fait… essaie un autre mot"),
+          setTimeout(() => {
+            ((f = -1), m());
+          }, 450));
+    }),
+    (act.hint = () => {
+      const e = p();
+      e < 0 || !spend(1) || b(e);
+    }),
+    m());
+}
+const PHT = [
+  "Le {renard|lièvre|hibou|blaireau} se blottit au fond de son terrier pendant que la {neige|pluie|brume} recouvre doucement la {forêt|vallée|colline}.",
+  "Une tasse de {thé|chocolat|tisane} fumante entre les mains, je regarde la {neige|pluie} tomber derrière la {fenêtre|vitre}.",
+  "Ce soir, la {lune|lanterne|bougie} éclaire le {chemin|jardin|sentier} d’une lumière {douce|tranquille|argentée}.",
+  "Au bord du {lac|ruisseau|étang}, un {héron|canard|cygne} attend patiemment que le {soleil|matin|brouillard} se lève.",
+  "Dans la {cuisine|maison|cabane}, une odeur de {cannelle|vanille|brioche} chaude flotte jusqu’au {grenier|salon|jardin}.",
+  "Le vent souffle sur la {plage|dune|falaise} et les {mouettes|vagues|nuages} dansent au-dessus de la mer.",
+  "Sous la {couette|couverture|plaid}, le petit {chat|chien|lapin} ronronne en rêvant de {printemps|papillons|soleil}.",
+  "Les {étoiles|lucioles|lanternes} s’allument une à une au-dessus du {village|lac|jardin} endormi.",
+  "Un {écureuil|rouge-gorge|moineau} sautille sur la {branche|clôture|fenêtre} couverte de {givre|neige|rosée}.",
+  "Il suffit de fermer les yeux et d’écouter la {pluie|mer|rivière} pour que le {calme|silence|sommeil} revienne.",
+  "Le {boulanger|pâtissier|fermier} se lève avant l’aube pour préparer le {pain|lait|gâteau} du village.",
+  "Dans le {potager|verger|jardin}, les {tomates|pommes|fraises} rougissent lentement sous le soleil d’été.",
+  "La {rivière|cascade|source} chante entre les {rochers|pierres|fougères} et invite à la {rêverie|sieste|lecture}.",
+  "Au sommet de la {montagne|colline}, le {silence|vent|soleil} accueille le promeneur fatigué mais {heureux|serein|ravi}.",
+  "Un vieux {livre|carnet|album} ouvert sur la table raconte des histoires de {voyages|pirates|dragons} et de trésors.",
+  "La {grand-mère|tante|voisine} tricote une {écharpe|couverture|chaussette} bien chaude près du {feu|poêle|radiateur}.",
+  "Les {feuilles|plumes|pétales} tombent en tourbillonnant et tapissent le {chemin|jardin|parc} de couleurs {dorées|rousses|vives}.",
+  "Sur le {marché|port|quai}, on sent l’odeur des {oranges|épices|fleurs} et du café chaud.",
+  "Le {phare|bateau|voilier} veille sur la baie pendant que la {marée|nuit|brume} monte doucement.",
+  "Respire lentement, compte jusqu’à {quatre|cinq|six}, puis laisse partir les {soucis|tensions|pensées} de la journée.",
+  "Le {train|bus|tramway} glisse dans la nuit, et derrière la vitre défilent des {villages|forêts|champs} endormis.",
+  "Une {chouette|corneille|chauve-souris} traverse le ciel au moment où la {lune|nuit|brume} s’installe sur la {forêt|plaine|ferme}.",
+  "Les enfants construisent un {bonhomme|château|igloo} de neige en riant aux éclats dans la {cour|prairie|rue}.",
+  "Au fond du {jardin|verger|parc}, une {balançoire|cabane|fontaine} attend le retour des beaux jours.",
+  "Le {musicien|pianiste|violoniste} joue une {mélodie|berceuse|valse} si douce que toute la salle {sourit|ferme les yeux|se tait}.",
+  "La {montgolfière|fusée|comète} s’élève lentement au-dessus des {nuages|toits|collines} dans le ciel {rose|clair|orangé}.",
+  "Dans la {bibliothèque|librairie|classe}, on entend seulement le froissement des {pages|feuilles|cahiers}.",
+  "Le {chat|chien|perroquet} de la voisine observe la {neige|pluie|rue} avec beaucoup de {curiosité|patience|sérieux}.",
+  "Après la {tempête|pluie|neige}, un {arc-en-ciel|rayon de soleil|grand silence} se pose sur la {vallée|ville|campagne}.",
+  "Le {pêcheur|marin|capitaine} rentre au port avec un {panier|filet|seau} rempli de {poissons|coquillages|crevettes}.",
+  "Sur la {colline|prairie|falaise}, un {vieux|grand|petit} {chêne|tilleul|olivier} offre son ombre aux {promeneurs|moutons|lapins} {fatigués|curieux|endormis}.",
+  "Chaque {matin|soir|dimanche}, ma {voisine|grand-mère|tante} arrose ses {géraniums|roses|tomates} en chantant une {chanson|berceuse|mélodie} ancienne.",
+  "Le {canal|fleuve|ruisseau} serpente entre les {saules|peupliers|roseaux} et reflète les {nuages|étoiles|lanternes} du {soir|crépuscule|ciel}.",
+  "Dans le {grenier|placard|coffre}, nous avons trouvé une {boîte|malle|valise} pleine de {photos|lettres|jouets} d’autrefois.",
+  "Le {soleil|vent|brouillard} se lève sur le {port|marché|village} et les {pêcheurs|marchands|boulangers} préparent déjà leur journée.",
+  "Une {plume|feuille|graine} danse dans l’air avant de se poser {doucement|lentement|légèrement} sur l’{herbe|eau|épaule}.",
+  "Au fond de la {forêt|vallée|grotte}, une {cascade|source|rivière} murmure des {secrets|histoires|chansons} aux {fougères|rochers|mousses}.",
+  "Le {chaton|chiot|lapereau} joue avec une {pelote|plume|feuille} pendant que la {pluie|neige|nuit} tombe sur la {maison|ferme|cabane}.",
+  "Pendant les {vacances|soirées|matinées}, nous construisions des {cabanes|châteaux|radeaux} au bord de la {rivière|plage|forêt}.",
+  "Le {jardinier|fermier|berger} observe le {ciel|vent|nuage} et devine que la {pluie|neige|tempête} arrivera {demain|ce soir|bientôt}.",
+  "Un {bol|grand bol|petit bol} de {chocolat|lait|bouillon} chaud réchauffe les {mains|cœurs|joues} après une longue {promenade|journée|balade}.",
+  "Les {cloches|mouettes|cigales} chantent au-dessus du {village|port|vignoble} sous un ciel {bleu|limpide|immense}.",
+  "Il {neige|pleut|vente} depuis le {matin|réveil|lever du jour} et la {ville|campagne|montagne} semble {endormie|silencieuse|apaisée}.",
+  "Elle a {planté|semé|cueilli} des {tournesols|coquelicots|marguerites} tout le long du {chemin|muret|potager}.",
+  "Le {phoque|dauphin|pingouin} plonge sous la {glace|vague|banquise} et ressort avec un {poisson|coquillage|caillou} dans la gueule.",
+  "Sur la {table|terrasse|nappe}, les {cerises|fraises|prunes} brillent comme des {bijoux|perles|lanternes} au soleil.",
+  "Le {vieux|petit|grand} {moulin|pont|phare} raconte l’histoire du {village|port|pays} à ceux qui prennent le temps d’écouter.",
+  "Nous avons {marché|pédalé|ramé} jusqu’au {lac|refuge|sommet} pour admirer le {coucher|lever} du soleil.",
+  "La {bibliothécaire|libraire|conteuse} murmure une {histoire|légende|fable} de {dragons|fées|géants} aux enfants assis en cercle.",
+  "Dans la {serre|véranda|cuisine}, les {plantes|herbes|tomates} profitent de la chaleur pendant que dehors il {gèle|neige|pleut}.",
+  "Un {renne|traîneau|hibou} traverse la {plaine|toundra|forêt} enneigée sous les {aurores|étoiles|nuages} {boréales|scintillantes|roses}.",
+  "Le {potier|sculpteur|menuisier} façonne lentement la {terre|pierre|planche} avec des gestes {patients|précis|délicats}.",
+  "Au {marché|village|port}, on échange des {nouvelles|sourires|recettes} autour d’un {café|thé|chocolat} chaud.",
+  "Les {baleines|dauphins|tortues} glissent au large pendant que les {voiliers|pêcheurs|mouettes} rentrent au {port|rivage|quai}.",
+  "Le {vent|souffle|parfum} du {printemps|matin|soir} apporte une odeur de {lilas|pluie|pain} chaud dans toute la {rue|maison|vallée}.",
+  "Sous la {véranda|tonnelle|pergola}, une {lampe|bougie|guirlande} éclaire nos {jeux|rires|conversations} jusque tard dans la nuit.",
+  "La {rivière|neige|forêt} garde les {traces|empreintes|souvenirs} d’un {renard|chevreuil|lièvre} passé à l’aube.",
+  "Je range mes {livres|crayons|carnets} sur {l’étagère|le bureau|l’établi} avant de m’installer près du {feu|poêle|radiateur}.",
+  "Une {montgolfière|comète|étoile filante} traverse le ciel et chacun fait un {vœu|souhait|rêve} en silence.",
+  "Le {boulanger|pâtissier|chocolatier} sort du four des {brioches|croissants|madeleines} encore {tièdes|dorées|fumantes}.",
+  "Dans la {vallée|plaine|clairière}, les {chevaux|vaches|moutons} broutent paisiblement sous la {pluie|brume|lumière} du matin.",
+  "Les {lucioles|étoiles|lanternes} dessinent des {chemins|cercles|constellations} au-dessus de l’{étang|herbe|eau} tranquille.",
+  "Mon {grand-père|oncle|voisin} m’a appris à reconnaître le chant du {merle|rossignol|pinson} et de la {mésange|fauvette|grive}.",
+  "Le {vieux|grand|petit} {chat|chien|perroquet} s’endort au soleil sur le {rebord|seuil|tapis} de la {fenêtre|porte|cuisine}.",
+  "Il suffit d’une {tasse|théière|carafe} de {tisane|thé|limonade} pour transformer l’après-midi en {moment|instant|souvenir} précieux.",
+  "Sur le {quai|pont|banc}, un {musicien|accordéoniste|violoniste} joue pour les passants {pressés|souriants|rêveurs}.",
+  "La {neige|glace|gelée} recouvre les {toits|branches|clôtures} et le {village|jardin|parc} ressemble à une carte postale.",
+  "Nous avons {pique-niqué|déjeuné|goûté} sur une {nappe|couverture|serviette} à carreaux au bord du {lac|canal|ruisseau}.",
+  "Le {navire|voilier|chalutier} hisse ses {voiles|drapeaux|filets} et quitte le {port|golfe|havre} à la marée haute.",
+  "Les {enfants|écureuils|oiseaux} ramassent des {noisettes|glands|brindilles} pour préparer l’{hiver|automne|abri}.",
+  "Une {odeur|musique|lumière} douce s’échappe de la {cuisine|chapelle|boutique} et attire les {passants|voisins|curieux}.",
+  "Le {train|car|tramway} s’arrête dans une petite {gare|station|halte} entourée de {champs|vignes|forêts}.",
+  "Au loin, le {tonnerre|vent|torrent} gronde, mais nous sommes bien au {chaud|sec|calme} dans notre {cabane|refuge|chalet}.",
+  "La {lune|bougie|veilleuse} veille sur la chambre où dort un {bébé|enfant|chaton} {paisible|blotti|heureux}.",
+  "Les {feuilles|pétales|flocons} tourbillonnent dans la {cour|rue|clairière} comme une {danse|valse|ronde} silencieuse.",
+  "Mon {carnet|journal|agenda} est rempli de {dessins|poèmes|souvenirs} griffonnés pendant les {voyages|vacances|soirées}.",
+  "Le {pêcheur|batelier|passeur} attend sur la {berge|rive|jetée} que la {brume|nuit|marée} se dissipe.",
+  "Sous le {cerisier|pommier|tilleul} en fleurs, un {chat|merle|enfant} rêve les yeux {fermés|mi-clos|ouverts}.",
+  "La {rue|place|ruelle} sent le {pain|café|marron} chaud et les {vitrines|fenêtres|lanternes} brillent de mille feux.",
+  "Il fait si {calme|doux|bon} ce soir que l’on entend les {grillons|vagues|cloches} au loin.",
+  "Un {écureuil|geai|pivert} cache ses {provisions|graines|trésors} au pied du {chêne|sapin|noyer}.",
+  "Nous avons {regardé|compté|admiré} les {étoiles|nuages|bateaux} allongés {dans l’herbe|sur le sable|dans le foin}.",
+  "Le {facteur|livreur|voisin} apporte un {colis|paquet|courrier} plein de {surprises|douceurs|nouvelles}.",
+  "À la {montagne|campagne|mer}, le temps semble {s’arrêter|ralentir|suspendu} et chaque {instant|matin|repas} devient une fête.",
+  "La {neige|pluie|brise} a lavé le {ciel|paysage|jardin} et tout paraît plus {clair|neuf|lumineux}.",
+  "Le {vieux|petit|grand} {bateau|kiosque|manège} repeint en {bleu|rouge|vert} attend les premiers visiteurs.",
+  "Dans la {roulotte|caravane|péniche}, on joue aux {cartes|dés|dames} en écoutant la {pluie|rivière|radio}.",
+  "La {cigogne|hirondelle|grue} revient chaque {printemps|année|saison} sur le même {toit|clocher|nid}.",
+  "Un {nuage|rayon|arc-en-ciel} glisse au-dessus de la {mer|vallée|ville} et change la couleur des {toits|vagues|champs}.",
+  "Le {chocolatier|confiseur|glacier} prépare des {douceurs|bonbons|sorbets} aux couleurs de l’{automne|été|hiver}.",
+  "Sur la {plage|grève|dune}, les {enfants|mouettes|crabes} laissent des traces que la {mer|vague|marée} efface aussitôt.",
+  "Les {lanternes|guirlandes|bougies} de la fête se reflètent dans {l’eau|l’étang|la fontaine} du {village|parc|jardin}.",
+  "Ma {sœur|cousine|amie} m’a offert un {livre|carnet|foulard} qui sent encore la {lavande|vanille|cannelle}.",
+  "Le {cerf|chevreuil|renard} s’arrête au bord du {chemin|ruisseau|bois}, nous regarde, puis disparaît sans {bruit|hâte|crainte}.",
+  "Chaque {soir|nuit|hiver}, le {phare|clocher|moulin} allume sa lumière pour guider les {voyageurs|marins|oiseaux}.",
+  "Au {coin|creux|bord} du feu, {grand-père|papa|maman} raconte les {hivers|histoires|voyages} de son enfance.",
+  "Une {cabane|maisonnette|yourte} en bois se cache entre les {sapins|bouleaux|mélèzes}, parfaite pour {lire|rêver|dormir}.",
+  "Le {matin|lendemain|dimanche}, le {jardin|pré|verger} est couvert de {rosée|givre|pétales} qui brillent comme des {perles|diamants|étoiles}.",
+  "Le {violon|piano|hautbois} répond à la {flûte|harpe|clarinette} et la salle entière retient son {souffle|écho|silence}.",
+  "Les {abeilles|bourdons|papillons} butinent la {lavande|bruyère|sauge} sous le soleil de {juillet|juin|l’après-midi}.",
+  "Il y a des {jours|soirs|matins} où il suffit d’une {fenêtre|lampe|couverture} et d’un bon {livre|thé|disque} pour être heureux.",
+  "La {péniche|barque|gondole} avance lentement sur le {canal|lac|fleuve} bordé de {platanes|saules|maisons}.",
+  "Dans la {forêt|clairière|lande}, une {biche|chouette|hermine} veille sur ses petits jusqu’au {matin|printemps|réveil}.",
+  "Un {mot|sourire|geste} gentil peut éclairer toute une {journée|semaine|soirée} grise.",
+  "Les {pommes|poires|châtaignes} tombent dans {l’herbe|l’allée|le panier} et le {verger|jardin|chemin} sent bon l’automne.",
+  "Le {skieur|randonneur|alpiniste} s’arrête au {col|refuge|sommet} pour boire un {thé|chocolat|café} brûlant.",
+  "La {marée|vague|houle} dépose sur le sable des {galets|coquillages|algues} polis par le temps.",
+  "À la {tombée|douceur} de la nuit, les {grenouilles|grillons|chouettes} commencent leur {concert|chant|ballet}.",
+  "Un {jardin|potager|balcon} fleuri suffit à rendre le {quartier|matin|monde} un peu plus {doux|joyeux|beau}.",
+  "Dans le {salon|atelier|bureau}, la {pendule|horloge|radio} égrène les {heures|minutes|chansons} tranquillement.",
+  "Le {renardeau|faon|ourson} découvre la {neige|rivière|forêt} pour la première fois avec beaucoup de {prudence|joie|curiosité}.",
+  "Une {lettre|carte|photo} oubliée dans un {livre|tiroir|carnet} rappelle un {été|voyage|anniversaire} merveilleux.",
+  "Les {nuages|voiliers|cerfs-volants} glissent au-dessus de la {baie|plaine|colline} poussés par une brise {légère|tiède|marine}.",
+  "Le {berger|fermier|apiculteur} rentre à la {ferme|bergerie|maison} quand le {soleil|ciel|jour} devient {orange|rose|doré}.",
+  "Sur la {place|terrasse|jetée}, un {orchestre|accordéon|carillon} fait danser les {passants|enfants|amoureux}.",
+  "La {tempête|bourrasque|pluie} s’est enfin calmée et les {oiseaux|enfants|chats} ressortent prudemment.",
+  "Une {couette|couverture|écharpe} épaisse, un {chat|livre|thé} et la soirée est {parfaite|réussie|douce}.",
+  "Le {glacier|torrent|sommet} scintille sous le {soleil|ciel|clair de lune} d’hiver.",
+  "Nous avons découvert une {crique|grotte|plage} secrète où l’{eau|écume|onde} est {turquoise|transparente|cristalline}.",
+  "Le {coq|merle|réveil} chante et la {ferme|maison|ville} s’éveille doucement sous la {brume|lumière|rosée}.",
+  "Le {matin|soir|dimanche}, la {boulangerie|librairie|fromagerie} du coin sent bon le {pain|papier|lait} frais.",
+  "Une {bougie|lanterne|lampe} parfumée à la {vanille|lavande|cannelle} adoucit l’ambiance du {salon|bureau|atelier}.",
+  "Le long du {fleuve|canal|quai}, les {bouquinistes|pêcheurs|promeneurs} profitent des derniers rayons du {soleil|jour|printemps}.",
+  "Mon {chat|chien|lapin} adore se rouler dans les {feuilles|draps|coussins} quand il fait {froid|gris|frais}.",
+  "Au sommet du {phare|clocher|beffroi}, on voit la {mer|ville|campagne} s’étendre à perte de vue.",
+  "Une {cabane|maisonnette|hutte} en bois attend les {randonneurs|skieurs|voyageurs} au détour du {sentier|col|torrent}.",
+  "Les {hirondelles|cigognes|grues} partent vers le sud quand l’{automne|hiver} approche.",
+  "La {fanfare|chorale|troupe} du village répète chaque {jeudi|samedi|mercredi} dans la {salle|grange|chapelle} communale.",
+  "Un {thé|café|chocolat} chaud, une {couverture|écharpe|tisane} et une {série|lecture|musique} douce : voilà ma soirée idéale.",
+  "Il y a un {banc|rocher|ponton} au bord du {lac|ruisseau|marais} où j’aime regarder les {canards|libellules|nuages}.",
+  "Le {verger|potager|jardin} de mon {oncle|voisin|grand-père} déborde de {pommes|poires|courgettes} chaque automne.",
+  "Quand la {neige|pluie|grêle} tombe, le {quartier|village|hameau} devient {silencieux|paisible|immobile}.",
+  "Les {étoiles|planètes|comètes} brillent si fort ce soir qu’on pourrait presque les {toucher|compter|cueillir}.",
+  "Sur la {nappe|table|terrasse}, une {carafe|cruche|bouteille} de citronnade fraîche attend les {invités|enfants|amis}.",
+  "Le {vent|zéphyr|mistral} fait chanter les {roseaux|pins|voiles} tout au long de la {côte|rive|plage}.",
+  "Le {renard|blaireau|lièvre} a laissé des traces dans la {neige|boue|terre} fraîche du {chemin|potager|pré}.",
+  "Au {printemps|réveil|matin}, les {bourgeons|fleurs|feuilles} s’ouvrent doucement sur les {branches|tiges|haies}.",
+  "Un {orage|grain|coup de vent} éclate et tout le monde court se mettre à l’abri sous les {arcades|platanes|parasols}.",
+  "La {grange|ferme|bergerie} sent bon le {foin|bois|lait} et les {chats|poules|chevreaux} y dorment au chaud.",
+  "Le {pianiste|guitariste|harpiste} improvise une mélodie qui ressemble à la {pluie|mer|neige}.",
+  "Nous avons {dessiné|peint|photographié} le {lac|port|village} depuis la {colline|fenêtre|terrasse}.",
+  "Dans la {vitrine|boutique|confiserie}, les {sucres d’orge|macarons|guimauves} brillent de toutes les couleurs.",
+  "Ce {matin|midi|soir}, le {brouillard|ciel|lac} est si {épais|calme|blanc} qu’on ne voit plus l’autre rive.",
+  "Le {gardien|veilleur|berger} allume une {lanterne|lampe|bougie} et fait le tour du {domaine|troupeau|château}.",
+  "Les {canards|cygnes|foulques} glissent sur l’{étang|eau|onde} sans faire le moindre bruit.",
+  "Elle {range|trie|plie} ses {pulls|écharpes|chaussettes} en écoutant la {radio|pluie|musique}.",
+  "Le {marchand|vendeur|fermier} de {fruits|fleurs|légumes} salue chaque client avec un {sourire|mot|clin d’œil}.",
+  "Une {montagne|colline|forêt} de nuages roule au-dessus de la {mer|plaine|vallée} au coucher du soleil.",
+  "Le {héron|martin-pêcheur|cormoran} guette patiemment un poisson au bord de la {rivière|mare|lagune}.",
+  "Au fond du {tiroir|carton|grenier}, une {boîte|enveloppe|pochette} renferme des {boutons|billes|timbres} anciens.",
+  "Les {flocons|pétales|confettis} tombent si lentement qu’ils semblent {flotter|danser|hésiter} dans l’air.",
+  "Le {chalet|refuge|gîte} est perché si haut qu’on voit les {nuages|aigles|glaciers} de près.",
+  "La {lune|marée|nuit} monte doucement et argente les {vagues|toits|champs} endormis.",
+  "Un {cerf-volant|ballon|oiseau} rouge se balance au-dessus de la {plage|prairie|dune}.",
+  "Le {vieux|petit|joli} {carrousel|manège|kiosque} tourne au son d’une {valse|musique|ritournelle} ancienne.",
+  "Nous avons fait un {feu|thé|gâteau} et raconté des {histoires|blagues|souvenirs} jusqu’à minuit.",
+  "Au {café|marché|kiosque}, on parle de la {météo|récolte|fête} du dimanche suivant.",
+  "La {bruyère|lavande|garrigue} colore les {collines|landes|champs} de mauve pendant tout l’été.",
+  "Les {cloches|carillons|grelots} sonnent pour annoncer la {fête|foire|saison} des {récoltes|lumières|fleurs}.",
+  "Mon {ami|cousin|frère} a construit une {cabane|maquette|niche} avec des planches de récupération.",
+  "La {tortue|limace|chenille} avance lentement mais sûrement vers la {salade|feuille|fraise} tant convoitée.",
+  "Les {vagues|marées|courants} ramènent sur la {grève|plage|rive} du bois flotté tout blanc.",
+  "Le {torrent|ruisseau|glacier} descend de la montagne en {chantant|grondant|scintillant}.",
+  "Il {fait|reste} encore {chaud|doux|clair} quand les premières {étoiles|chauves-souris|lucioles} apparaissent.",
+  "Le {château|manoir|moulin} abandonné se dresse au milieu des {ronces|herbes|lierres} comme dans un conte.",
+  "Une {chèvre|vache|brebis} curieuse passe la tête par-dessus la {clôture|barrière|haie} pour nous saluer.",
+  "La {maîtresse|bibliothécaire|maman} lit une {histoire|fable|légende} d’une voix {douce|calme|chantante}.",
+  "Nous avons {cueilli|ramassé|trouvé} des {mûres|framboises|myrtilles} le long du {chemin|talus|bois}.",
+  "Le {lac|bassin|ruisseau} est gelé et les {patineurs|enfants|canards} glissent en riant.",
+  "Une {odeur|bouffée|brise} de {pin|mer|foin} entre par la fenêtre ouverte.",
+  "Le {jardin|parc|square} s’illumine de {guirlandes|lampions|lucioles} quand la nuit tombe.",
+  "La {cascade|fontaine|rivière} éclabousse les {rochers|mousses|fougères} de mille gouttelettes.",
+  "Au {matin|lever|réveil}, la {rosée|gelée|brume} dessine des perles sur les {toiles|herbes|vitres}.",
+  "Les {voiliers|kayaks|barques} dansent dans la baie sous un ciel {sans nuage|tout bleu|limpide}.",
+  "Mon {grand-père|parrain|voisin} répare les {horloges|vélos|radios} dans son petit atelier.",
+  "Le {soleil|jour|ciel} d’{hiver|automne} est pâle mais il réchauffe doucement les {joues|mains|pierres}.",
+  "Le {pêcheur|marin|garde} raconte que la {mer|rivière|baie} était si calme qu’on aurait dit un {miroir|lac|tableau}.",
+  "Un {pont|chemin|escalier} de pierre mène au {jardin|belvédère|verger} caché derrière le mur.",
+  "La {neige|glace|gelée} craque sous nos {bottes|pas|raquettes} pendant la promenade du soir.",
+  "Le {soir|samedi|lundi}, nous jouons aux {cartes|dames|dés} près de la {cheminée|fenêtre|lampe}.",
+  "Une {lettre|carte|invitation} arrive avec un {timbre|cachet|dessin} venu de très loin.",
+  "Les {coquelicots|bleuets|marguerites} bordent la route qui mène au {village|lac|moulin}.",
+  "Le {hamac|transat|banc} se balance doucement à l’ombre du {figuier|pommier|noyer}.",
+  "Le {chef|cuisinier|pâtissier} goûte sa {sauce|crème|soupe} et ajoute une pincée de {sel|sucre|poivre}.",
+  "Au {loin|large|bout}, on aperçoit les {lumières|voiles|toits} d’un petit port de pêche.",
+  "Ce {printemps|matin|soir}, une famille de {mésanges|moineaux|rouges-gorges} s’est installée dans le nichoir.",
+  "La {pluie|bruine|averse} chante sur le toit de la {véranda|cabane|tente} comme une berceuse.",
+  "Sur le {marché|quai|parvis}, un {accordéoniste|conteur|jongleur} fait sourire les passants.",
+  "Le {sentier|chemin|raidillon} grimpe entre les {pins|rochers|châtaigniers} jusqu’à la chapelle.",
+  "Les {montagnes|collines|dunes} rosissent au {crépuscule|couchant|soir} comme si elles {rougissaient|souriaient|rêvaient}.",
+  "Le {facteur|boulanger|maire} connaît chaque {maison|famille|chien} du village par son nom.",
+  "Il y avait tant de {neige|fleurs|feuilles} que le {chemin|jardin|parc} avait disparu.",
+  "Un {rayon|filet|éclat} de lumière traverse les {vitraux|nuages|branches} et colore le sol.",
+  "La {chorale|fanfare|classe} chante une chanson pour {fêter|saluer|accueillir} le printemps.",
+  "Le {koala|panda|paresseux} dort tranquillement accroché à sa {branche|liane|corde} préférée.",
+  "Nous {pique-niquons|lisons|rêvons} à l’ombre d’un {saule|marronnier|cèdre} au bord de l’eau.",
+  "Le {canoë|pédalo|radeau} glisse sur la rivière entre les {nénuphars|roseaux|libellules}.",
+  "Le {jour|matin|soleil} se lève à peine et la {mer|ville|forêt} est encore {grise|endormie|immobile}.",
+  "La {mamie|tatie|cousine} prépare une {tarte|compote|confiture} avec les {pommes|prunes|abricots} du jardin.",
+  "Le {poney|âne|cheval} attend patiemment sa {carotte|pomme|caresse} près de la barrière.",
+  "Sur la {colline|falaise|lande}, {une éolienne|un moulin|un phare} tourne {doucement|lentement|tranquillement} dans le vent.",
+  "Les bulles de savon s’envolent et éclatent dans un rire d’{enfant|été|oiseau}.",
+  "Une {abeille|coccinelle|libellule} se pose sur ma main puis repart vers les {fleurs|roses|lilas}.",
+  "Au {creux|coin|fond} de la {vallée|forêt|baie}, un {village|hameau|refuge} fume tranquillement.",
+  "Le {vieux|grand|petit} {cerisier|platane|tilleul} du square a vu passer des générations d’{enfants|amoureux|promeneurs}.",
+  "Le {gâteau|pain|pudding} gonfle dans le four et toute la maison sent le {beurre|sucre|caramel}.",
+  "Nous avons {navigué|ramé|nagé} jusqu’à l’{îlot|île|épave} au milieu de la baie.",
+  "Les {lumières|étoiles|lanternes} de la ville s’allument une à une comme des {lucioles|bougies|perles}.",
+  "Un {chat|écureuil|rouge-gorge} observe la {neige|pluie|rue} depuis le rebord de la fenêtre.",
+  "Le {potier|verrier|tisserand} montre aux enfants comment {façonner|souffler|tisser} avec patience.",
+  "La {forêt|jungle|prairie} résonne du chant des {oiseaux|grillons|grenouilles} après la pluie.",
+  "Il est {doux|bon|agréable} de marcher pieds nus dans l’{herbe|eau|écume} fraîche.",
+  "Le {vieux|grand|beau} {voilier|bateau|navire} reprend la mer après un long hiver au {port|chantier|bassin}.",
+  "Le {four|poêle|feu} ronronne et la {soupe|tisane|bouilloire} chauffe tranquillement.",
+  "Une {étoile|lanterne|lueur} solitaire brille au-dessus du {lac|toit|clocher}.",
+  "La {vendeuse|fleuriste|marchande} compose un {bouquet|panier|cadeau} avec beaucoup de soin.",
+  "Le {bus|train|car} serpente sur la route de montagne entre les {sapins|lacets|rochers}.",
+  "Les {enfants|chiots|chatons} s’endorment enfin, épuisés par une longue {journée|promenade|aventure}.",
+  "Le {murmure|clapotis|chant} de la {source|fontaine|rivière} accompagne notre {sieste|lecture|pause}.",
+  "Un {nuage|voile|manteau} de brume enveloppe le {lac|village|port} au petit matin.",
+  "Mon {carnet|cahier|journal} de voyage est plein de {croquis|tickets|feuilles} séchées.",
+  "La {récolte|cueillette|moisson} a été bonne et toute la {ferme|famille|vallée} fait la fête.",
+  "Le {chocolat|thé|cidre} chaud fume dans les {tasses|bols|gobelets} posés sur la table.",
+  "Le {soleil|vent|jour} décline et les {montagnes|arbres|bateaux} projettent de longues ombres.",
+  "Nous avons vu un {cerf|chamois|bouquetin} sur la crête au lever du jour.",
+  "La {pluie|neige|lumière} d’{avril|octobre|hiver} donne au jardin des couleurs {nouvelles|douces|tendres}.",
+  "Le {vieux|petit|beau} {pont|moulin|lavoir} de pierre est couvert de {mousse|lierre|fleurs}.",
+  "Un {marin|voyageur|explorateur} raconte ses aventures au bout du {monde|quai|comptoir}.",
+  "Les {lucioles|étoiles|braises} scintillent pendant que nous chantons autour du feu.",
+  "Le {lapin|hérisson|écureuil} se cache dans les {feuilles|buissons|fougères} au moindre bruit.",
+  "Il fait {gris|frais|humide}, mais le {thé|feu|plaid} rend la journée {douce|agréable|chaleureuse}.",
+  "La {plage|baie|côte} est déserte en {hiver|novembre|février} et la mer y paraît plus {grande|sauvage|calme}.",
+  "La {rivière|brume|lumière} serpente entre les {collines|vignes|prés} comme un ruban.",
+  "Le {jardinier|paysagiste|fermier} plante un {arbre|rosier|pommier} qui fleurira dans {quelques années|un an|trois printemps}.",
+  "Les {cloches|carillons|mouettes} saluent le retour des bateaux au {port|quai|bassin}.",
+  "Un {parfum|souffle|air} de {cannelle|gaufre|pain d’épices} flotte sur le marché de {Noël|l’hiver|décembre}.",
+  "Le {chaton|chiot|lapereau} découvre son reflet dans la {flaque|vitre|gamelle} et reste perplexe.",
+  "La {neige|glace|gelée} transforme les branches en {dentelle|sculptures|cristal}.",
+  "Nous {marchons|flânons|avançons} sans but, juste pour le plaisir de sentir le {soleil|vent|printemps}.",
+  "Le {ciel|lac|champ} est si {bleu|vaste|calme} qu’on a envie d’y plonger.",
+  "Une {chanson|mélodie|berceuse} venue de la maison voisine accompagne la tombée de la nuit.",
+  "La {péniche|barque|navette} transporte des {fleurs|légumes|voyageurs} d’une rive à l’autre.",
+  "Le {bonhomme|château|igloo} de neige fond doucement sous le premier soleil de {mars|printemps|février}.",
+  "Les {grenouilles|cigales|grillons} donnent un concert dès que le soleil {se couche|disparaît|décline}.",
+  "Au {cœur|bout|creux} de l’hiver, un {bouquet|pot|panier} de jacinthes annonce déjà le printemps.",
+  "Le {randonneur|promeneur|pèlerin} s’assoit sur un rocher pour {admirer|contempler|dessiner} la vallée.",
+  "La {mer|marée|rivière} a sculpté les {rochers|falaises|galets} pendant des milliers d’années.",
+  "Dans la {véranda|serre|cuisine}, les {oranges|citrons|clémentines} mûrissent tranquillement.",
+  "Le {chant|cri|appel} des {mouettes|oies|grues} résonne au-dessus du {port|lac|marais}.",
+  "Un {livre|roman|recueil} ouvert sur les genoux, elle s’est endormie au {soleil|coin du feu|jardin}.",
+  "Le {vieux|beau|grand} {chêne|hêtre|sapin} perd ses feuilles une à une avec élégance.",
+  "Les {skieurs|lugeurs|patineurs} rentrent au chalet les joues {rouges|roses|glacées}.",
+  "La {fête|kermesse|foire} du village attire tout le monde sur la {place|prairie|plage}.",
+  "Le {potager|jardin|balcon} offre ses premières {fraises|tomates|radis} au mois de {juin|mai|juillet}.",
+  "Une {balade|promenade|sortie} en forêt suffit souvent à {apaiser|alléger|éclaircir} les pensées.",
+  "Le {navire|ferry|voilier} quitte le quai sous les {applaudissements|cris|signes} des passagers.",
+  "La {neige|grêle|pluie} frappe doucement les {carreaux|tuiles|volets} pendant que nous jouons.",
+  "Mon {chien|chat|canari} me réveille chaque {matin|dimanche|jour} avec beaucoup d’enthousiasme.",
+  "Le {jardin|parc|bois} est plein de {champignons|feuilles|marrons} après les pluies d’octobre.",
+  "Les {montagnes|falaises|dunes} se reflètent dans le lac comme dans un miroir.",
+  "Le {soleil|feu|four} dore les {tartes|brioches|châtaignes} et embaume toute la maison.",
+  "Une {chouette|hulotte|effraie} hulule au loin pendant que le village s’endort.",
+  "La {brise|marée|lumière} du soir ramène les {bateaux|mouettes|promeneurs} vers le port.",
+  "Le {meunier|boulanger|berger} se lève avant le {jour|coq|soleil} depuis toujours.",
+  "Les {pétales|feuilles|flocons} recouvrent le {banc|chemin|bassin} d’un tapis {rose|doré|blanc}.",
+  "Une {tasse|théière|bouilloire} siffle dans la cuisine et appelle à la {pause|sieste|lecture}.",
+  "La {ville|campagne|forêt} s’éveille sous un ciel {pastel|rosé|nacré}.",
+  "Le {chat|chien|lapin} du voisin vient chaque {soir|matin|midi} réclamer une caresse.",
+  "Un {fil|ruban|chemin} de lumière court sur la mer jusqu’à la {lune|plage|jetée}.",
+  "Les {voyageurs|marins|pèlerins} se réchauffent autour d’une soupe bien {chaude|épaisse|parfumée}.",
+  "La {forêt|clairière|lande} est si calme qu’on entend tomber les {aiguilles|feuilles|gouttes}.",
+  "Le {printemps|matin|soleil} réveille les {abeilles|jonquilles|marmottes} une à une.",
+  "Nous avons {fabriqué|décoré|accroché} des {lanternes|guirlandes|mangeoires} pour l’hiver.",
+  "Le {vieux|petit|grand} {marché|port|quartier} garde le charme des {cartes postales|vieux films|souvenirs}.",
+  "Une {mésange|fauvette|sittelle} picore les graines déposées sur le {rebord|balcon|muret}.",
+  "La {neige|pluie|nuit} efface les bruits de la ville et laisse place au {silence|repos|calme}.",
+  "Le {bateau|ferry|navire} trace un long sillage {blanc|argenté|écumant} sur la mer.",
+  "Les {grands-parents|voisins|amis} se retrouvent sur la place pour jouer aux {boules|cartes|échecs}.",
+  "Le {soleil|ciel|vent} de la {Provence|Bretagne|montagne} change de couleur à chaque heure.",
+  "Un {chant|carillon|refrain} joyeux s’élève de la {chapelle|maison|grange} voisine.",
+  "La {rivière|cascade|source} est si claire qu’on voit les {galets|truites|algues} au fond.",
+  "Le {vieux|petit|joli} {jardin|cloître|verger} est un refuge pour les {oiseaux|abeilles|papillons}.",
+  "Une {pluie|averse|giboulée} d’été rafraîchit la terre et fait sortir les {escargots|vers|grenouilles}.",
+  "Il suffit parfois {d’écouter|de regarder|de sentir} la {pluie|mer|forêt} pour retrouver son calme.",
+  "Le {train|bateau|car} de nuit berce les {passagers|voyageurs|enfants} jusqu’à l’aube.",
+  "Les {nuages|oiseaux|feuilles} filent vers l’ouest, poussés par un vent {léger|frais|joueur}.",
+  "Le {fromager|crémier|boulanger} propose de goûter ses {spécialités|nouveautés|merveilles} du jour.",
+  "Au {bord|creux|pied} de la falaise, une petite {crique|grotte|plage} attend les {nageurs|curieux|rêveurs}.",
+  "La {lune|veilleuse|bougie} dessine des ombres douces sur les {murs|rideaux|draps} de la chambre.",
+  "Le {vent|souffle|parfum} d’{automne|hiver|été} apporte une odeur de {bois|pluie|feu} brûlé.",
+  "Une {licorne|fée|sirène} de papier décore la chambre de ma petite {sœur|cousine|voisine}.",
+  "Le {chevreuil|lièvre|renard} traverse la clairière et s’arrête un instant pour {écouter|observer|humer}.",
+  "La {plage|prairie|rue} se vide et le {soleil|ciel|silence} prend toute la place.",
+  "Le {petit|vieux|beau} {café|bistrot|salon de thé} du port sert le meilleur {chocolat|thé|gâteau} de la ville.",
+  "Les {lumières|fenêtres|étoiles} du chalet clignotent dans la nuit comme pour nous {accueillir|saluer|guider}.",
+  "Le {fleuve|ruisseau|torrent} grossi par la fonte des neiges chante plus fort au {printemps|réveil|matin}.",
+  "Une {douce|légère|fine} neige tombe sur le {marché|square|village} et les enfants tirent la langue.",
+  "La {pendule|horloge|montre} de grand-mère sonne {doucement|joyeusement|gravement} les heures.",
+  "Les {mouettes|pigeons|moineaux} se disputent une miette sur le {quai|parvis|trottoir} ensoleillé.",
+  "Au {bout|détour|creux} du chemin, une {fontaine|statue|chapelle} veille sur les voyageurs.",
+  "La {lumière|chaleur|douceur} du soir enveloppe le {jardin|village|lac} comme une {écharpe|couverture|caresse}.",
+];
+let PHC = null;
+function phIdx(i) {
+  if (!PHC) {
+    PHC = PHT.map((t) => (t.match(/\{[^}]+\}/g) || []).reduce((m, x) => m * x.split("|").length, 1));
+    PHC.S = PHC.reduce((a, b) => a + b, 0);
+    let P = 1000003;
+    const g = (a, b) => (b ? g(b, a % b) : a);
+    for (; g(P, PHC.S) !== 1;) P += 2;
+    PHC.P = P;
+  }
+  let k = Number((BigInt(i) * BigInt(PHC.P)) % BigInt(PHC.S)),
+    t = 0;
+  for (; k >= PHC[t];) k -= PHC[t++];
+  return PHT[t].replace(/\{([^}]+)\}/g, (m, x) => {
+    const o = x.split("|"),
+      v = o[k % o.length];
+    return ((k = Math.floor(k / o.length)), v);
+  });
+}
+function phGen(a) {
+  phIdx(0);
+  const S = PHC.S;
+  if (a < S) return phIdx(a);
+  const k = a - S,
+    i = k % S,
+    j = (i + 1 + Math.floor(k / S)) % S;
+  return phIdx(i) + " " + phIdx(j);
+}
+
+// Mots croisés (id « croises ») : grilles CW, génération cwGen et le jeu pCross(r).
 const CW = [
   [
     ["LEWIS", "Auteur des Chroniques de Narnia", 4, 0, "h"],
@@ -37332,6 +37735,210 @@ const CW = [
     ["PAIX", "Grande tranquillité, sans conflit", 1, 0, "h"],
   ],
 ];
+function pCross(e) {
+  const t = LVX(CW, "croises", cwGen).map((e, t) => ({
+      w: e[0],
+      c: e[1],
+      r: e[2],
+      x: e[3],
+      h: "h" === e[4],
+      i: t,
+    })),
+    a = {},
+    s = new Set(e ? e.ok : []),
+    n = (e) => [...e.w].map((t, a) => e.r + (e.h ? 0 : a) + "," + (e.x + (e.h ? a : 0)));
+  t.forEach((e) =>
+    n(e).forEach((t, s) => {
+      const [n, o] = t.split(",").map(Number);
+      (a[t] = a[t] || { r: n, x: o, ch: e.w[s], v: "", E: [] }).E.push(e.i);
+    }),
+  );
+  const o = (e) => e.E.some((e) => s.has(e)),
+    i = (e) => !!e.g || o(e);
+  {
+    const e = Object.values(a),
+      s = t.map(() => 0),
+      n = rng(2654435761 * (lv + 1)),
+      o = Math.ceil(0.2 * e.length),
+      i = Math.floor(0.3 * e.length),
+      r = o + Math.floor(n() * (i - o + 1)),
+      l = (e) => e.E.filter((e) => !s[e]).length,
+      c = (e) => e.E.reduce((e, t) => e + s[t], 0);
+    for (let a = 0; a < r; a++) {
+      const a = e.filter((e) => !e.g && e.E.every((e) => s[e] < t[e].w.length - 1));
+      if (!a.length) break;
+      const o = Math.max(...a.map(l));
+      let i = a.filter((e) => l(e) === o);
+      const r = Math.min(...i.map(c));
+      i = i.filter((e) => c(e) === r);
+      const d = i[Math.floor(n() * i.length)];
+      ((d.g = 1), (d.v = d.ch), d.E.forEach((e) => s[e]++));
+    }
+  }
+  e &&
+    Object.entries(e.v).forEach(([e, t]) => {
+      a[e] && (a[e].v = t);
+    });
+  const r = [...new Set(t.map((e) => 100 * e.r + e.x))].sort((e, t) => e - t);
+  t.forEach((e) => (e.n = r.indexOf(100 * e.r + e.x) + 1));
+  const l = Math.max(...t.map((e) => e.r + (e.h ? 1 : e.w.length))),
+    c = Math.max(...t.map((e) => e.x + (e.h ? e.w.length : 1)));
+  let d = e ? e.s : 0,
+    f = e ? e.cu : "",
+    u = 0,
+    h = !1,
+    K = [];
+  const p = () => n(t[d]),
+    m = () => {
+      f = p().find((e) => !a[e].v && !i(a[e])) || p()[0];
+      K = [];
+      const P = p();
+      for (let j = P.indexOf(f) - 1; j >= 0 && i(a[P[j]]); j--) K.unshift(a[P[j]].ch);
+    };
+  (e || m(),
+    (snap = () => ({
+      v: Object.fromEntries(
+        Object.entries(a)
+          .filter(([e, t]) => t.v && !t.g)
+          .map(([e, t]) => [e, t.v]),
+      ),
+      ok: [...s],
+      s: d,
+      cu: f,
+    })));
+  const b = (e) => e.replace(/[&<>]/g, (e) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[e]),
+    g = (e) => {
+      const n = new Set(p()),
+        i = t[d],
+        r = new Set(i.w);
+      (frame(
+        `<div class="cg" style="--c:${c}">${Array.from({ length: l * c }, (e, s) => {
+          const i = (s / c) | 0,
+            r = s % c,
+            l = i + "," + r,
+            d = a[l],
+            u = t.find((e) => e.r === i && e.x === r);
+          return d
+            ? `<button class="cl ${o(d) ? "ok" : ""} ${d.g && !o(d) ? "g" : ""} ${n.has(l) ? "on" : ""} ${l !== f || d.g ? "" : "cur"}" data-a="cs" data-v="${l}">${u ? "<sup>" + u.n + "</sup>" : ""}${d.v}</button>`
+            : "<i></i>";
+        }).join(
+          "",
+        )}</div><div class="cc"><button data-a="cpv" aria-label="Définition précédente">‹</button><button class="cq" data-a="clist" aria-expanded="${h}" aria-label="Toutes les définitions">${i.n} ${i.h ? "Horizontalement" : "Verticalement"} (${i.w.length}) : ${b(i.c).replace(/…/g, `<span class="bk2" style="--n:${i.w.length}"></span>`)}<i>${h ? "▴" : "▾"}</i></button><button data-a="cnx" aria-label="Définition suivante">›</button></div>${
+          h
+            ? `<div class="cls">${t
+                .map((e, t) => [e, t])
+                .sort((e, t) => e[0].n - t[0].n || t[0].h - e[0].h)
+                .map(
+                  ([e, t]) =>
+                    `<button class="cle ${t === d ? "on" : ""} ${s.has(t) ? "ok" : ""}" data-a="csel" data-v="${t}"><b>${e.n}${e.h ? "→" : "↓"}</b><span>${b(e.c)} (${e.w.length})</span></button>`,
+                )
+                .join("")}</div>`
+            : `<div class="kb">${["AZERTYUIOP", "QSDFGHJKLM", "WXCVBN"].map((e, t) => "<div>" + [...e].map((e) => `<button data-a="ck" data-v="${e}" ${r.has(e) ? "" : "disabled"}>${e}</button>`).join("") + (2 === t ? '<button data-a="ck" data-v="⌫" aria-label="Effacer">⌫</button>' : "") + "</div>").join("")}</div>`
+        }`,
+        1,
+      ),
+        e && msg(e));
+    },
+    E = (e, H) => {
+      if (!H && K.length && e === K[0]) return (K.shift(), g());
+      K = [];
+      const o = a[f];
+      if (!o) return;
+      i(o) || (o.v = e);
+      const r = p(),
+        l = r.slice(r.indexOf(f) + 1).find((e) => !i(a[e]));
+      l && (K = r.slice(r.indexOf(f) + 1, r.indexOf(l)).map((e) => a[e].ch));
+      let c = "";
+      (o.E.slice().forEach((e) => {
+        c =
+          ((e) => {
+            const o = t[e];
+            if (s.has(e)) return "";
+            const r = n(o).map((e) => a[e]);
+            return r.some((e) => !e.v)
+              ? ""
+              : r.map((e) => e.v).join("") === o.w
+                ? (s.add(e), sfx(660, 0.4), "Bien vu ✦")
+                : ((u = 1),
+                  r.forEach((e) => {
+                    i(e) || (e.v = "");
+                  }),
+                  "Pas tout à fait…");
+          })(e) || c;
+      }),
+        u && (K = []),
+        (f = u ? r.find((e) => !a[e].v && !i(a[e])) || r[0] : l || f),
+        (u = 0),
+        g(c),
+        t.every((e) => s.has(e.i)) && setTimeout(win, 900));
+    };
+  ((act.cs = (e) => {
+    K = [];
+    const t = a[e];
+    t &&
+      ((h = !1),
+      p().includes(e)
+        ? t.E.length > 1 && (f === e || i(t))
+          ? ((d = t.E.find((e) => e !== d)), i(t) ? m() : (f = e))
+          : i(t) || (f = e)
+        : ((d = t.E.find((e) => !s.has(e))), null == d && (d = t.E[0]), i(t) ? m() : (f = e)),
+      g());
+  }),
+    (act.clist = () => {
+      ((h = !h), g());
+    }),
+    (act.csel = (e) => {
+      ((d = +e), (h = !1), m(), g());
+    }),
+    (act.cpv = () => {
+      ((d = (d + t.length - 1) % t.length), (h = !1), m(), g());
+    }),
+    (act.cnx = () => {
+      ((d = (d + 1) % t.length), (h = !1), m(), g());
+    }),
+    (act.ck = (e) => {
+      if ("⌫" !== e) return E(e);
+      K = [];
+      const t = p(),
+        s = a[f];
+      if (s.v && !i(s)) s.v = "";
+      else {
+        const e = t
+          .slice(0, t.indexOf(f))
+          .reverse()
+          .find((e) => !i(a[e]));
+        e && ((f = e), (a[e].v = ""));
+      }
+      g();
+    }),
+    (act.hint = () => {
+      const e = p().find((e) => {
+        const t = a[e];
+        return !i(t) && t.v !== t.ch;
+      });
+      e && spend(1) && ((f = e), E(a[e].ch, 1));
+    }),
+    g());
+}
+function cwGen(a) {
+  const R = rng(6151 * a + 29),
+    A = THM[thOrd(a)],
+    B = THM[thOrd(a + 17)],
+    tg = Math.min(11, 6 + Math.floor(a / 8));
+  let best = null;
+  for (let t = 0; t < 40; t++) {
+    const W = lvShuf(A.w, R)
+        .concat(lvShuf(B.w, R))
+        .map((e) => ({ k: e[0], c: e[1] }))
+        .filter((e) => e.k.length >= 3 && e.k.length <= 11)
+        .sort((x, y) => y.k.length - x.k.length + (R() - 0.5) * 3),
+      P = lvLay(W, R, 11, tg);
+    if (!best || P.length > best.length) best = P;
+    if (P.length >= tg) break;
+  }
+  return best.map((p) => [p.w.k, p.w.c, p.r, p.c, p.h ? "h" : "v"]);
+}
+
 const E = [
   "🌲",
   "🌙",
@@ -38026,73 +38633,8 @@ function s67() {
     vib([20, 40, 20, 40, 20]),
     setTimeout(() => e.remove(), 3400));
 }
+// Mots cachés (id « caches ») : grille classique (msBuild, pSearch0) et mode cascade (ca*, pCasc) ; pSearch(r) choisit le mode.
 let msP = null;
-let wsG = null;
-let wsSw = !1;
-function confetti(e) {
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  let t = $("#cf");
-  t ||
-    ((t = document.createElement("canvas")),
-    (t.id = "cf"),
-    t.setAttribute("aria-hidden", "true"),
-    document.body.appendChild(t));
-  const a = (confetti.n = (confetti.n || 0) + 1),
-    s = (t.width = innerWidth),
-    n = (t.height = innerHeight),
-    o = t.getContext("2d"),
-    i = e ? e.getBoundingClientRect() : null,
-    r = s / 2,
-    l = i ? Math.max(90, Math.min(n - 140, i.top + i.height / 2)) : 0.4 * n,
-    c = ["#a99cf0", "#7fb6e6", "#e0a3cc", "#e8c47e", "#8fcdc4", "#ffffff", "#f4d9ff"],
-    d = Array.from({ length: 120 }, (e, t) => {
-      const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.25,
-        s = 3 + 9 * Math.random();
-      return {
-        x: r,
-        y: l,
-        vx: Math.cos(a) * s,
-        vy: Math.sin(a) * s,
-        w: 6 + 7 * Math.random(),
-        h: 3 + 5 * Math.random(),
-        a: 6 * Math.random(),
-        va: 0.1 * (Math.random() - 0.5),
-        ph: 6 * Math.random(),
-        c: c[t % c.length],
-        round: t % 5 == 0,
-      };
-    });
-  let f = 0,
-    u = 0;
-  const h = (e) => {
-    if (a !== confetti.n) return;
-    f || (f = u = e);
-    const t = e - f,
-      i = Math.min(3, (e - u) / 16.667);
-    ((u = e), o.clearRect(0, 0, s, n));
-    let r = 0;
-    for (const e of d)
-      ((e.vx *= Math.pow(0.965, i)),
-        (e.vy = (e.vy + 0.055 * i) * Math.pow(0.965, i)),
-        (e.ph += 0.045 * i),
-        (e.x += (e.vx + 0.55 * Math.sin(e.ph)) * i),
-        (e.y += e.vy * i),
-        (e.a += e.va * i),
-        e.y < n + 20 && r++,
-        o.save(),
-        o.translate(e.x, e.y),
-        o.rotate(e.a),
-        o.scale(1, 0.8 * Math.cos(1.3 * e.ph) + 0.2),
-        (o.globalAlpha = Math.max(0, Math.min(1, (9500 - t) / 1800))),
-        (o.fillStyle = e.c),
-        e.round
-          ? (o.beginPath(), o.arc(0, 0, 0.8 * e.h, 0, 7), o.fill())
-          : o.fillRect(-e.w / 2, -e.h / 2, e.w, e.h),
-        o.restore());
-    t < 9500 && r ? requestAnimationFrame(h) : o.clearRect(0, 0, s, n);
-  };
-  requestAnimationFrame(h);
-}
 const MSN = [
   6, 6, 7, 7, 8, 8, 9, 9, 7, 8, 8, 8, 9, 8, 9, 9, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10,
   10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 10, 10, 10, 11, 10, 10, 10, 10, 10, 10, 11, 10, 10,
@@ -38281,7 +38823,6 @@ const MSL = [
   ["MANDARINE", "VISITE", "PLATEAU", "COUSSIN", "FEVE", "CALIN"],
   ["SANTE", "BONHEUR", "AMOUR", "CHANCE", "AMITIE", "PROMESSE"],
 ];
-const MST = "22021112110112212212202111112012112222200221112221101210021022222212";
 function msBuild(e) {
   if (msP && msP.l === e) return msP;
   const E0 = e;
@@ -38418,25 +38959,12 @@ function msBuild(e) {
     for (let s = 0; s < t; s++) h[e][s] || (h[e][s] = b ? b() : "ABCDEFGHILMNOPRSTUV"[Math.floor(19 * a())]);
   return (msP = { l: e, N: t, WS: u, g: h, pos: p, DC: m });
 }
-const CAW = 8;
-const CAH = 8;
-const CANL = 115;
-const CAHARD = 49;
-const CAHX = 3;
 const CADIR = [
   [1, 0],
   [0, 1],
   [1, 1],
   [1, -1],
 ];
-const caUnl = () => !0;
-function caOn() {
-  try {
-    return "cascade" === st.get("ca:mode", "") && caUnl();
-  } catch (e) {
-    return !1;
-  }
-}
 const caRng = (e) => {
   let t = e >>> 0;
   return () => {
@@ -38867,9 +39395,6 @@ function pCasc(e) {
         }, 120);
       })());
 }
-function caTier(e) {
-  return caOn() ? (e < 16 ? 0 : e < 49 ? 1 : 2) : (e >= 99 && e < 167 && +MST[e - 99]) || 0;
-}
 function pSearch(e) {
   return caOn() || "caches" === INFG ? pCasc(e) : pSearch0(e);
 }
@@ -38993,6 +39518,90 @@ function pSearch0(e) {
     },
   }),
     h());
+}
+
+let wsG = null;
+let wsSw = !1;
+function confetti(e) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let t = $("#cf");
+  t ||
+    ((t = document.createElement("canvas")),
+    (t.id = "cf"),
+    t.setAttribute("aria-hidden", "true"),
+    document.body.appendChild(t));
+  const a = (confetti.n = (confetti.n || 0) + 1),
+    s = (t.width = innerWidth),
+    n = (t.height = innerHeight),
+    o = t.getContext("2d"),
+    i = e ? e.getBoundingClientRect() : null,
+    r = s / 2,
+    l = i ? Math.max(90, Math.min(n - 140, i.top + i.height / 2)) : 0.4 * n,
+    c = ["#a99cf0", "#7fb6e6", "#e0a3cc", "#e8c47e", "#8fcdc4", "#ffffff", "#f4d9ff"],
+    d = Array.from({ length: 120 }, (e, t) => {
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.25,
+        s = 3 + 9 * Math.random();
+      return {
+        x: r,
+        y: l,
+        vx: Math.cos(a) * s,
+        vy: Math.sin(a) * s,
+        w: 6 + 7 * Math.random(),
+        h: 3 + 5 * Math.random(),
+        a: 6 * Math.random(),
+        va: 0.1 * (Math.random() - 0.5),
+        ph: 6 * Math.random(),
+        c: c[t % c.length],
+        round: t % 5 == 0,
+      };
+    });
+  let f = 0,
+    u = 0;
+  const h = (e) => {
+    if (a !== confetti.n) return;
+    f || (f = u = e);
+    const t = e - f,
+      i = Math.min(3, (e - u) / 16.667);
+    ((u = e), o.clearRect(0, 0, s, n));
+    let r = 0;
+    for (const e of d)
+      ((e.vx *= Math.pow(0.965, i)),
+        (e.vy = (e.vy + 0.055 * i) * Math.pow(0.965, i)),
+        (e.ph += 0.045 * i),
+        (e.x += (e.vx + 0.55 * Math.sin(e.ph)) * i),
+        (e.y += e.vy * i),
+        (e.a += e.va * i),
+        e.y < n + 20 && r++,
+        o.save(),
+        o.translate(e.x, e.y),
+        o.rotate(e.a),
+        o.scale(1, 0.8 * Math.cos(1.3 * e.ph) + 0.2),
+        (o.globalAlpha = Math.max(0, Math.min(1, (9500 - t) / 1800))),
+        (o.fillStyle = e.c),
+        e.round
+          ? (o.beginPath(), o.arc(0, 0, 0.8 * e.h, 0, 7), o.fill())
+          : o.fillRect(-e.w / 2, -e.h / 2, e.w, e.h),
+        o.restore());
+    t < 9500 && r ? requestAnimationFrame(h) : o.clearRect(0, 0, s, n);
+  };
+  requestAnimationFrame(h);
+}
+const MST = "22021112110112212212202111112012112222200221112221101210021022222212";
+const CAW = 8;
+const CAH = 8;
+const CANL = 115;
+const CAHARD = 49;
+const CAHX = 3;
+const caUnl = () => !0;
+function caOn() {
+  try {
+    return "cascade" === st.get("ca:mode", "") && caUnl();
+  } catch (e) {
+    return !1;
+  }
+}
+function caTier(e) {
+  return caOn() ? (e < 16 ? 0 : e < 49 ? 1 : 2) : (e >= 99 && e < 167 && +MST[e - 99]) || 0;
 }
 const SDK = {};
 function sdkSolve(e, t) {
@@ -69719,6 +70328,7 @@ const rng = (e) => {
     );
   };
 };
+// Jeu de mots (id « mots ») : roue de lettres, génération roueGen et le jeu pRoue(r).
 function pRoue(e) {
   const t = [...new Set(LVX(L, "mots", roueGen))],
     a = nk(t[0]),
@@ -69791,16 +70401,6 @@ function pRoue(e) {
         }
       v();
     };
-  (b.addEventListener("pointerdown", (e) => {
-    ((u = !0), (f = []));
-    try {
-      b.setPointerCapture(e.pointerId);
-    } catch (e) {}
-    (A(e), e.preventDefault());
-  }),
-    b.addEventListener("pointermove", (e) => {
-      u && A(e);
-    }));
   const S = () => {
     u &&
       ((u = !1),
@@ -69820,9 +70420,21 @@ function pRoue(e) {
       (f = []),
       v());
   };
-  (b.addEventListener("pointerup", S),
-    b.addEventListener("pointercancel", S),
-    b.addEventListener("contextmenu", (e) => e.preventDefault()),
+  // Contrôles via Input : appuyer sur la roue puis glisser de lettre en lettre, lâcher pour proposer le mot.
+  (Input.sur(
+    ["toucher", "glisser", "survoler", "lacher", "menu"],
+    (x, i) => {
+      const e = i.evt;
+      if ("toucher" === x) {
+        ((u = !0), (f = []));
+        try {
+          b.setPointerCapture(e.pointerId);
+        } catch (e) {}
+        (A(e), e.preventDefault());
+      } else "lacher" === x ? S() : "menu" === x ? e.preventDefault() : u && A(e);
+    },
+    { cible: b, annulation: !0 },
+  ),
     (act.shuf = () => {
       (d.sort(() => Math.random() - 0.5), y(), (f = []), v());
     }),
@@ -69836,6 +70448,15 @@ function pRoue(e) {
     m(),
     v());
 }
+function roueGen(a) {
+  const n = wfLen(a),
+    N = wfN(a, n),
+    R = rng(7919 * a + 101),
+    c = wfCand(n, n <= 5 ? 6e3 : 12e3, Math.min(N, n <= 4 ? 3 : 4), a);
+  if (!c) return L[a % NLS.mots];
+  return [c.b.w, ...wfPick(c, N, R).map((w) => w.w)];
+}
+
 const ANL = [
   ["lune", "", "Elle éclaire la nuit."],
   ["nuit unit", "", "Deux mots, mêmes lettres."],
@@ -81702,260 +82323,6 @@ function pBlocs(e) {
     ),
     k() && setTimeout(w, 400));
 }
-function pCross(e) {
-  const t = LVX(CW, "croises", cwGen).map((e, t) => ({
-      w: e[0],
-      c: e[1],
-      r: e[2],
-      x: e[3],
-      h: "h" === e[4],
-      i: t,
-    })),
-    a = {},
-    s = new Set(e ? e.ok : []),
-    n = (e) => [...e.w].map((t, a) => e.r + (e.h ? 0 : a) + "," + (e.x + (e.h ? a : 0)));
-  t.forEach((e) =>
-    n(e).forEach((t, s) => {
-      const [n, o] = t.split(",").map(Number);
-      (a[t] = a[t] || { r: n, x: o, ch: e.w[s], v: "", E: [] }).E.push(e.i);
-    }),
-  );
-  const o = (e) => e.E.some((e) => s.has(e)),
-    i = (e) => !!e.g || o(e);
-  {
-    const e = Object.values(a),
-      s = t.map(() => 0),
-      n = rng(2654435761 * (lv + 1)),
-      o = Math.ceil(0.2 * e.length),
-      i = Math.floor(0.3 * e.length),
-      r = o + Math.floor(n() * (i - o + 1)),
-      l = (e) => e.E.filter((e) => !s[e]).length,
-      c = (e) => e.E.reduce((e, t) => e + s[t], 0);
-    for (let a = 0; a < r; a++) {
-      const a = e.filter((e) => !e.g && e.E.every((e) => s[e] < t[e].w.length - 1));
-      if (!a.length) break;
-      const o = Math.max(...a.map(l));
-      let i = a.filter((e) => l(e) === o);
-      const r = Math.min(...i.map(c));
-      i = i.filter((e) => c(e) === r);
-      const d = i[Math.floor(n() * i.length)];
-      ((d.g = 1), (d.v = d.ch), d.E.forEach((e) => s[e]++));
-    }
-  }
-  e &&
-    Object.entries(e.v).forEach(([e, t]) => {
-      a[e] && (a[e].v = t);
-    });
-  const r = [...new Set(t.map((e) => 100 * e.r + e.x))].sort((e, t) => e - t);
-  t.forEach((e) => (e.n = r.indexOf(100 * e.r + e.x) + 1));
-  const l = Math.max(...t.map((e) => e.r + (e.h ? 1 : e.w.length))),
-    c = Math.max(...t.map((e) => e.x + (e.h ? e.w.length : 1)));
-  let d = e ? e.s : 0,
-    f = e ? e.cu : "",
-    u = 0,
-    h = !1,
-    K = [];
-  const p = () => n(t[d]),
-    m = () => {
-      f = p().find((e) => !a[e].v && !i(a[e])) || p()[0];
-      K = [];
-      const P = p();
-      for (let j = P.indexOf(f) - 1; j >= 0 && i(a[P[j]]); j--) K.unshift(a[P[j]].ch);
-    };
-  (e || m(),
-    (snap = () => ({
-      v: Object.fromEntries(
-        Object.entries(a)
-          .filter(([e, t]) => t.v && !t.g)
-          .map(([e, t]) => [e, t.v]),
-      ),
-      ok: [...s],
-      s: d,
-      cu: f,
-    })));
-  const b = (e) => e.replace(/[&<>]/g, (e) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[e]),
-    g = (e) => {
-      const n = new Set(p()),
-        i = t[d],
-        r = new Set(i.w);
-      (frame(
-        `<div class="cg" style="--c:${c}">${Array.from({ length: l * c }, (e, s) => {
-          const i = (s / c) | 0,
-            r = s % c,
-            l = i + "," + r,
-            d = a[l],
-            u = t.find((e) => e.r === i && e.x === r);
-          return d
-            ? `<button class="cl ${o(d) ? "ok" : ""} ${d.g && !o(d) ? "g" : ""} ${n.has(l) ? "on" : ""} ${l !== f || d.g ? "" : "cur"}" data-a="cs" data-v="${l}">${u ? "<sup>" + u.n + "</sup>" : ""}${d.v}</button>`
-            : "<i></i>";
-        }).join(
-          "",
-        )}</div><div class="cc"><button data-a="cpv" aria-label="Définition précédente">‹</button><button class="cq" data-a="clist" aria-expanded="${h}" aria-label="Toutes les définitions">${i.n} ${i.h ? "Horizontalement" : "Verticalement"} (${i.w.length}) : ${b(i.c).replace(/…/g, `<span class="bk2" style="--n:${i.w.length}"></span>`)}<i>${h ? "▴" : "▾"}</i></button><button data-a="cnx" aria-label="Définition suivante">›</button></div>${
-          h
-            ? `<div class="cls">${t
-                .map((e, t) => [e, t])
-                .sort((e, t) => e[0].n - t[0].n || t[0].h - e[0].h)
-                .map(
-                  ([e, t]) =>
-                    `<button class="cle ${t === d ? "on" : ""} ${s.has(t) ? "ok" : ""}" data-a="csel" data-v="${t}"><b>${e.n}${e.h ? "→" : "↓"}</b><span>${b(e.c)} (${e.w.length})</span></button>`,
-                )
-                .join("")}</div>`
-            : `<div class="kb">${["AZERTYUIOP", "QSDFGHJKLM", "WXCVBN"].map((e, t) => "<div>" + [...e].map((e) => `<button data-a="ck" data-v="${e}" ${r.has(e) ? "" : "disabled"}>${e}</button>`).join("") + (2 === t ? '<button data-a="ck" data-v="⌫" aria-label="Effacer">⌫</button>' : "") + "</div>").join("")}</div>`
-        }`,
-        1,
-      ),
-        e && msg(e));
-    },
-    E = (e, H) => {
-      if (!H && K.length && e === K[0]) return (K.shift(), g());
-      K = [];
-      const o = a[f];
-      if (!o) return;
-      i(o) || (o.v = e);
-      const r = p(),
-        l = r.slice(r.indexOf(f) + 1).find((e) => !i(a[e]));
-      l && (K = r.slice(r.indexOf(f) + 1, r.indexOf(l)).map((e) => a[e].ch));
-      let c = "";
-      (o.E.slice().forEach((e) => {
-        c =
-          ((e) => {
-            const o = t[e];
-            if (s.has(e)) return "";
-            const r = n(o).map((e) => a[e]);
-            return r.some((e) => !e.v)
-              ? ""
-              : r.map((e) => e.v).join("") === o.w
-                ? (s.add(e), sfx(660, 0.4), "Bien vu ✦")
-                : ((u = 1),
-                  r.forEach((e) => {
-                    i(e) || (e.v = "");
-                  }),
-                  "Pas tout à fait…");
-          })(e) || c;
-      }),
-        u && (K = []),
-        (f = u ? r.find((e) => !a[e].v && !i(a[e])) || r[0] : l || f),
-        (u = 0),
-        g(c),
-        t.every((e) => s.has(e.i)) && setTimeout(win, 900));
-    };
-  ((act.cs = (e) => {
-    K = [];
-    const t = a[e];
-    t &&
-      ((h = !1),
-      p().includes(e)
-        ? t.E.length > 1 && (f === e || i(t))
-          ? ((d = t.E.find((e) => e !== d)), i(t) ? m() : (f = e))
-          : i(t) || (f = e)
-        : ((d = t.E.find((e) => !s.has(e))), null == d && (d = t.E[0]), i(t) ? m() : (f = e)),
-      g());
-  }),
-    (act.clist = () => {
-      ((h = !h), g());
-    }),
-    (act.csel = (e) => {
-      ((d = +e), (h = !1), m(), g());
-    }),
-    (act.cpv = () => {
-      ((d = (d + t.length - 1) % t.length), (h = !1), m(), g());
-    }),
-    (act.cnx = () => {
-      ((d = (d + 1) % t.length), (h = !1), m(), g());
-    }),
-    (act.ck = (e) => {
-      if ("⌫" !== e) return E(e);
-      K = [];
-      const t = p(),
-        s = a[f];
-      if (s.v && !i(s)) s.v = "";
-      else {
-        const e = t
-          .slice(0, t.indexOf(f))
-          .reverse()
-          .find((e) => !i(a[e]));
-        e && ((f = e), (a[e].v = ""));
-      }
-      g();
-    }),
-    (act.hint = () => {
-      const e = p().find((e) => {
-        const t = a[e];
-        return !i(t) && t.v !== t.ch;
-      });
-      e && spend(1) && ((f = e), E(a[e].ch, 1));
-    }),
-    g());
-}
-function pPhrase(e) {
-  const t = LVX(MYS, "phrase", phGen).split(" "),
-    a = /^([^,.:\u00a0]+)(.*)$/,
-    s = (e) => t[e].match(a)[1],
-    n = t.map((e, t) => t).filter((e) => e > 0 && s(e).length >= 4 && !/[’-]/.test(s(e))),
-    o = Math.min(
-      [
-        4, 4, 5, 6, 7, 8, 9, 12, 6, 7, 8, 8, 8, 7, 9, 9, 9, 10, 10, 11, 8, 9, 9, 10, 10, 10, 11, 11, 11, 12,
-        12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 5, 6, 7, 6, 8, 7, 9, 8, 10, 8,
-      ][lv >= 1e9 ? lvD("phrase") : -1] ?? Math.min(14, 4 + (lv >> 2)),
-      n.length,
-    ),
-    i = Array.from({ length: o }, (e, t) => n[Math.floor((t * n.length) / o)]),
-    r = ["tempête", "soleil", "bruit", "courage", "sable", "orage"]
-      .filter((e) => !i.some((t) => s(t) === e))
-      .slice(0, Math.min(5, 2 + (lv >> 1))),
-    l = e ? e.B : sh(i.map(s).concat(r));
-  let c = e ? e.F : [],
-    d = e ? e.sl : i[0],
-    f = -1,
-    u = 0,
-    h = -1;
-  snap = () => ({ B: l, F: c, sl: d });
-  const p = () => {
-      const e = i.find((e) => !c.includes(e));
-      return null == e ? -1 : e;
-    },
-    m = () =>
-      frame(
-        `<p class="sent ${u ? "fin" : ""}">${t
-          .map((e, t) => {
-            if (!i.includes(t)) return e;
-            const s = e.match(a);
-            return c.includes(t)
-              ? `<button class="bl ok${t === h ? " nw" : ""}" disabled>${s[1]}</button>${s[2]}`
-              : `<button class="bl ${d === t ? "sel" : ""}${d === t && f >= 0 ? " no" : ""}" style="--n:${s[1].length}" data-a="bs" data-v="${t}" aria-label="mot caché de ${s[1].length} lettres"></button>${s[2]}`;
-          })
-          .join(
-            " ",
-          )}</p><div class="bank">${l.map((e, t) => `<button class="ch ${c.some((t) => s(t) === e) ? "u" : ""}" data-a="bp" data-v="${t}">${e}</button>`).join("")}</div>`,
-        1,
-      ),
-    b = (e) => {
-      (c.push(e),
-        sfx(660, 0.4),
-        (d = p()),
-        (h = e),
-        c.length === i.length ? ((u = 1), m(), (h = -1), setTimeout(win, 1800)) : (m(), (h = -1)));
-    };
-  ((act.bs = (e) => {
-    c.includes(+e) || ((d = +e), m());
-  }),
-    (act.bp = (e) => {
-      if (d < 0) return msg("Touche d’abord un mot caché");
-      l[+e] === s(d)
-        ? b(d)
-        : ((f = +e),
-          m(),
-          msg("Pas tout à fait… essaie un autre mot"),
-          setTimeout(() => {
-            ((f = -1), m());
-          }, 450));
-    }),
-    (act.hint = () => {
-      const e = p();
-      e < 0 || !spend(1) || b(e);
-    }),
-    m());
-}
 let brT = null;
 let brGo = null;
 let BR = 2;
@@ -90281,309 +90648,6 @@ const THM = [
     ],
   },
 ];
-const PHT = [
-  "Le {renard|lièvre|hibou|blaireau} se blottit au fond de son terrier pendant que la {neige|pluie|brume} recouvre doucement la {forêt|vallée|colline}.",
-  "Une tasse de {thé|chocolat|tisane} fumante entre les mains, je regarde la {neige|pluie} tomber derrière la {fenêtre|vitre}.",
-  "Ce soir, la {lune|lanterne|bougie} éclaire le {chemin|jardin|sentier} d’une lumière {douce|tranquille|argentée}.",
-  "Au bord du {lac|ruisseau|étang}, un {héron|canard|cygne} attend patiemment que le {soleil|matin|brouillard} se lève.",
-  "Dans la {cuisine|maison|cabane}, une odeur de {cannelle|vanille|brioche} chaude flotte jusqu’au {grenier|salon|jardin}.",
-  "Le vent souffle sur la {plage|dune|falaise} et les {mouettes|vagues|nuages} dansent au-dessus de la mer.",
-  "Sous la {couette|couverture|plaid}, le petit {chat|chien|lapin} ronronne en rêvant de {printemps|papillons|soleil}.",
-  "Les {étoiles|lucioles|lanternes} s’allument une à une au-dessus du {village|lac|jardin} endormi.",
-  "Un {écureuil|rouge-gorge|moineau} sautille sur la {branche|clôture|fenêtre} couverte de {givre|neige|rosée}.",
-  "Il suffit de fermer les yeux et d’écouter la {pluie|mer|rivière} pour que le {calme|silence|sommeil} revienne.",
-  "Le {boulanger|pâtissier|fermier} se lève avant l’aube pour préparer le {pain|lait|gâteau} du village.",
-  "Dans le {potager|verger|jardin}, les {tomates|pommes|fraises} rougissent lentement sous le soleil d’été.",
-  "La {rivière|cascade|source} chante entre les {rochers|pierres|fougères} et invite à la {rêverie|sieste|lecture}.",
-  "Au sommet de la {montagne|colline}, le {silence|vent|soleil} accueille le promeneur fatigué mais {heureux|serein|ravi}.",
-  "Un vieux {livre|carnet|album} ouvert sur la table raconte des histoires de {voyages|pirates|dragons} et de trésors.",
-  "La {grand-mère|tante|voisine} tricote une {écharpe|couverture|chaussette} bien chaude près du {feu|poêle|radiateur}.",
-  "Les {feuilles|plumes|pétales} tombent en tourbillonnant et tapissent le {chemin|jardin|parc} de couleurs {dorées|rousses|vives}.",
-  "Sur le {marché|port|quai}, on sent l’odeur des {oranges|épices|fleurs} et du café chaud.",
-  "Le {phare|bateau|voilier} veille sur la baie pendant que la {marée|nuit|brume} monte doucement.",
-  "Respire lentement, compte jusqu’à {quatre|cinq|six}, puis laisse partir les {soucis|tensions|pensées} de la journée.",
-  "Le {train|bus|tramway} glisse dans la nuit, et derrière la vitre défilent des {villages|forêts|champs} endormis.",
-  "Une {chouette|corneille|chauve-souris} traverse le ciel au moment où la {lune|nuit|brume} s’installe sur la {forêt|plaine|ferme}.",
-  "Les enfants construisent un {bonhomme|château|igloo} de neige en riant aux éclats dans la {cour|prairie|rue}.",
-  "Au fond du {jardin|verger|parc}, une {balançoire|cabane|fontaine} attend le retour des beaux jours.",
-  "Le {musicien|pianiste|violoniste} joue une {mélodie|berceuse|valse} si douce que toute la salle {sourit|ferme les yeux|se tait}.",
-  "La {montgolfière|fusée|comète} s’élève lentement au-dessus des {nuages|toits|collines} dans le ciel {rose|clair|orangé}.",
-  "Dans la {bibliothèque|librairie|classe}, on entend seulement le froissement des {pages|feuilles|cahiers}.",
-  "Le {chat|chien|perroquet} de la voisine observe la {neige|pluie|rue} avec beaucoup de {curiosité|patience|sérieux}.",
-  "Après la {tempête|pluie|neige}, un {arc-en-ciel|rayon de soleil|grand silence} se pose sur la {vallée|ville|campagne}.",
-  "Le {pêcheur|marin|capitaine} rentre au port avec un {panier|filet|seau} rempli de {poissons|coquillages|crevettes}.",
-  "Sur la {colline|prairie|falaise}, un {vieux|grand|petit} {chêne|tilleul|olivier} offre son ombre aux {promeneurs|moutons|lapins} {fatigués|curieux|endormis}.",
-  "Chaque {matin|soir|dimanche}, ma {voisine|grand-mère|tante} arrose ses {géraniums|roses|tomates} en chantant une {chanson|berceuse|mélodie} ancienne.",
-  "Le {canal|fleuve|ruisseau} serpente entre les {saules|peupliers|roseaux} et reflète les {nuages|étoiles|lanternes} du {soir|crépuscule|ciel}.",
-  "Dans le {grenier|placard|coffre}, nous avons trouvé une {boîte|malle|valise} pleine de {photos|lettres|jouets} d’autrefois.",
-  "Le {soleil|vent|brouillard} se lève sur le {port|marché|village} et les {pêcheurs|marchands|boulangers} préparent déjà leur journée.",
-  "Une {plume|feuille|graine} danse dans l’air avant de se poser {doucement|lentement|légèrement} sur l’{herbe|eau|épaule}.",
-  "Au fond de la {forêt|vallée|grotte}, une {cascade|source|rivière} murmure des {secrets|histoires|chansons} aux {fougères|rochers|mousses}.",
-  "Le {chaton|chiot|lapereau} joue avec une {pelote|plume|feuille} pendant que la {pluie|neige|nuit} tombe sur la {maison|ferme|cabane}.",
-  "Pendant les {vacances|soirées|matinées}, nous construisions des {cabanes|châteaux|radeaux} au bord de la {rivière|plage|forêt}.",
-  "Le {jardinier|fermier|berger} observe le {ciel|vent|nuage} et devine que la {pluie|neige|tempête} arrivera {demain|ce soir|bientôt}.",
-  "Un {bol|grand bol|petit bol} de {chocolat|lait|bouillon} chaud réchauffe les {mains|cœurs|joues} après une longue {promenade|journée|balade}.",
-  "Les {cloches|mouettes|cigales} chantent au-dessus du {village|port|vignoble} sous un ciel {bleu|limpide|immense}.",
-  "Il {neige|pleut|vente} depuis le {matin|réveil|lever du jour} et la {ville|campagne|montagne} semble {endormie|silencieuse|apaisée}.",
-  "Elle a {planté|semé|cueilli} des {tournesols|coquelicots|marguerites} tout le long du {chemin|muret|potager}.",
-  "Le {phoque|dauphin|pingouin} plonge sous la {glace|vague|banquise} et ressort avec un {poisson|coquillage|caillou} dans la gueule.",
-  "Sur la {table|terrasse|nappe}, les {cerises|fraises|prunes} brillent comme des {bijoux|perles|lanternes} au soleil.",
-  "Le {vieux|petit|grand} {moulin|pont|phare} raconte l’histoire du {village|port|pays} à ceux qui prennent le temps d’écouter.",
-  "Nous avons {marché|pédalé|ramé} jusqu’au {lac|refuge|sommet} pour admirer le {coucher|lever} du soleil.",
-  "La {bibliothécaire|libraire|conteuse} murmure une {histoire|légende|fable} de {dragons|fées|géants} aux enfants assis en cercle.",
-  "Dans la {serre|véranda|cuisine}, les {plantes|herbes|tomates} profitent de la chaleur pendant que dehors il {gèle|neige|pleut}.",
-  "Un {renne|traîneau|hibou} traverse la {plaine|toundra|forêt} enneigée sous les {aurores|étoiles|nuages} {boréales|scintillantes|roses}.",
-  "Le {potier|sculpteur|menuisier} façonne lentement la {terre|pierre|planche} avec des gestes {patients|précis|délicats}.",
-  "Au {marché|village|port}, on échange des {nouvelles|sourires|recettes} autour d’un {café|thé|chocolat} chaud.",
-  "Les {baleines|dauphins|tortues} glissent au large pendant que les {voiliers|pêcheurs|mouettes} rentrent au {port|rivage|quai}.",
-  "Le {vent|souffle|parfum} du {printemps|matin|soir} apporte une odeur de {lilas|pluie|pain} chaud dans toute la {rue|maison|vallée}.",
-  "Sous la {véranda|tonnelle|pergola}, une {lampe|bougie|guirlande} éclaire nos {jeux|rires|conversations} jusque tard dans la nuit.",
-  "La {rivière|neige|forêt} garde les {traces|empreintes|souvenirs} d’un {renard|chevreuil|lièvre} passé à l’aube.",
-  "Je range mes {livres|crayons|carnets} sur {l’étagère|le bureau|l’établi} avant de m’installer près du {feu|poêle|radiateur}.",
-  "Une {montgolfière|comète|étoile filante} traverse le ciel et chacun fait un {vœu|souhait|rêve} en silence.",
-  "Le {boulanger|pâtissier|chocolatier} sort du four des {brioches|croissants|madeleines} encore {tièdes|dorées|fumantes}.",
-  "Dans la {vallée|plaine|clairière}, les {chevaux|vaches|moutons} broutent paisiblement sous la {pluie|brume|lumière} du matin.",
-  "Les {lucioles|étoiles|lanternes} dessinent des {chemins|cercles|constellations} au-dessus de l’{étang|herbe|eau} tranquille.",
-  "Mon {grand-père|oncle|voisin} m’a appris à reconnaître le chant du {merle|rossignol|pinson} et de la {mésange|fauvette|grive}.",
-  "Le {vieux|grand|petit} {chat|chien|perroquet} s’endort au soleil sur le {rebord|seuil|tapis} de la {fenêtre|porte|cuisine}.",
-  "Il suffit d’une {tasse|théière|carafe} de {tisane|thé|limonade} pour transformer l’après-midi en {moment|instant|souvenir} précieux.",
-  "Sur le {quai|pont|banc}, un {musicien|accordéoniste|violoniste} joue pour les passants {pressés|souriants|rêveurs}.",
-  "La {neige|glace|gelée} recouvre les {toits|branches|clôtures} et le {village|jardin|parc} ressemble à une carte postale.",
-  "Nous avons {pique-niqué|déjeuné|goûté} sur une {nappe|couverture|serviette} à carreaux au bord du {lac|canal|ruisseau}.",
-  "Le {navire|voilier|chalutier} hisse ses {voiles|drapeaux|filets} et quitte le {port|golfe|havre} à la marée haute.",
-  "Les {enfants|écureuils|oiseaux} ramassent des {noisettes|glands|brindilles} pour préparer l’{hiver|automne|abri}.",
-  "Une {odeur|musique|lumière} douce s’échappe de la {cuisine|chapelle|boutique} et attire les {passants|voisins|curieux}.",
-  "Le {train|car|tramway} s’arrête dans une petite {gare|station|halte} entourée de {champs|vignes|forêts}.",
-  "Au loin, le {tonnerre|vent|torrent} gronde, mais nous sommes bien au {chaud|sec|calme} dans notre {cabane|refuge|chalet}.",
-  "La {lune|bougie|veilleuse} veille sur la chambre où dort un {bébé|enfant|chaton} {paisible|blotti|heureux}.",
-  "Les {feuilles|pétales|flocons} tourbillonnent dans la {cour|rue|clairière} comme une {danse|valse|ronde} silencieuse.",
-  "Mon {carnet|journal|agenda} est rempli de {dessins|poèmes|souvenirs} griffonnés pendant les {voyages|vacances|soirées}.",
-  "Le {pêcheur|batelier|passeur} attend sur la {berge|rive|jetée} que la {brume|nuit|marée} se dissipe.",
-  "Sous le {cerisier|pommier|tilleul} en fleurs, un {chat|merle|enfant} rêve les yeux {fermés|mi-clos|ouverts}.",
-  "La {rue|place|ruelle} sent le {pain|café|marron} chaud et les {vitrines|fenêtres|lanternes} brillent de mille feux.",
-  "Il fait si {calme|doux|bon} ce soir que l’on entend les {grillons|vagues|cloches} au loin.",
-  "Un {écureuil|geai|pivert} cache ses {provisions|graines|trésors} au pied du {chêne|sapin|noyer}.",
-  "Nous avons {regardé|compté|admiré} les {étoiles|nuages|bateaux} allongés {dans l’herbe|sur le sable|dans le foin}.",
-  "Le {facteur|livreur|voisin} apporte un {colis|paquet|courrier} plein de {surprises|douceurs|nouvelles}.",
-  "À la {montagne|campagne|mer}, le temps semble {s’arrêter|ralentir|suspendu} et chaque {instant|matin|repas} devient une fête.",
-  "La {neige|pluie|brise} a lavé le {ciel|paysage|jardin} et tout paraît plus {clair|neuf|lumineux}.",
-  "Le {vieux|petit|grand} {bateau|kiosque|manège} repeint en {bleu|rouge|vert} attend les premiers visiteurs.",
-  "Dans la {roulotte|caravane|péniche}, on joue aux {cartes|dés|dames} en écoutant la {pluie|rivière|radio}.",
-  "La {cigogne|hirondelle|grue} revient chaque {printemps|année|saison} sur le même {toit|clocher|nid}.",
-  "Un {nuage|rayon|arc-en-ciel} glisse au-dessus de la {mer|vallée|ville} et change la couleur des {toits|vagues|champs}.",
-  "Le {chocolatier|confiseur|glacier} prépare des {douceurs|bonbons|sorbets} aux couleurs de l’{automne|été|hiver}.",
-  "Sur la {plage|grève|dune}, les {enfants|mouettes|crabes} laissent des traces que la {mer|vague|marée} efface aussitôt.",
-  "Les {lanternes|guirlandes|bougies} de la fête se reflètent dans {l’eau|l’étang|la fontaine} du {village|parc|jardin}.",
-  "Ma {sœur|cousine|amie} m’a offert un {livre|carnet|foulard} qui sent encore la {lavande|vanille|cannelle}.",
-  "Le {cerf|chevreuil|renard} s’arrête au bord du {chemin|ruisseau|bois}, nous regarde, puis disparaît sans {bruit|hâte|crainte}.",
-  "Chaque {soir|nuit|hiver}, le {phare|clocher|moulin} allume sa lumière pour guider les {voyageurs|marins|oiseaux}.",
-  "Au {coin|creux|bord} du feu, {grand-père|papa|maman} raconte les {hivers|histoires|voyages} de son enfance.",
-  "Une {cabane|maisonnette|yourte} en bois se cache entre les {sapins|bouleaux|mélèzes}, parfaite pour {lire|rêver|dormir}.",
-  "Le {matin|lendemain|dimanche}, le {jardin|pré|verger} est couvert de {rosée|givre|pétales} qui brillent comme des {perles|diamants|étoiles}.",
-  "Le {violon|piano|hautbois} répond à la {flûte|harpe|clarinette} et la salle entière retient son {souffle|écho|silence}.",
-  "Les {abeilles|bourdons|papillons} butinent la {lavande|bruyère|sauge} sous le soleil de {juillet|juin|l’après-midi}.",
-  "Il y a des {jours|soirs|matins} où il suffit d’une {fenêtre|lampe|couverture} et d’un bon {livre|thé|disque} pour être heureux.",
-  "La {péniche|barque|gondole} avance lentement sur le {canal|lac|fleuve} bordé de {platanes|saules|maisons}.",
-  "Dans la {forêt|clairière|lande}, une {biche|chouette|hermine} veille sur ses petits jusqu’au {matin|printemps|réveil}.",
-  "Un {mot|sourire|geste} gentil peut éclairer toute une {journée|semaine|soirée} grise.",
-  "Les {pommes|poires|châtaignes} tombent dans {l’herbe|l’allée|le panier} et le {verger|jardin|chemin} sent bon l’automne.",
-  "Le {skieur|randonneur|alpiniste} s’arrête au {col|refuge|sommet} pour boire un {thé|chocolat|café} brûlant.",
-  "La {marée|vague|houle} dépose sur le sable des {galets|coquillages|algues} polis par le temps.",
-  "À la {tombée|douceur} de la nuit, les {grenouilles|grillons|chouettes} commencent leur {concert|chant|ballet}.",
-  "Un {jardin|potager|balcon} fleuri suffit à rendre le {quartier|matin|monde} un peu plus {doux|joyeux|beau}.",
-  "Dans le {salon|atelier|bureau}, la {pendule|horloge|radio} égrène les {heures|minutes|chansons} tranquillement.",
-  "Le {renardeau|faon|ourson} découvre la {neige|rivière|forêt} pour la première fois avec beaucoup de {prudence|joie|curiosité}.",
-  "Une {lettre|carte|photo} oubliée dans un {livre|tiroir|carnet} rappelle un {été|voyage|anniversaire} merveilleux.",
-  "Les {nuages|voiliers|cerfs-volants} glissent au-dessus de la {baie|plaine|colline} poussés par une brise {légère|tiède|marine}.",
-  "Le {berger|fermier|apiculteur} rentre à la {ferme|bergerie|maison} quand le {soleil|ciel|jour} devient {orange|rose|doré}.",
-  "Sur la {place|terrasse|jetée}, un {orchestre|accordéon|carillon} fait danser les {passants|enfants|amoureux}.",
-  "La {tempête|bourrasque|pluie} s’est enfin calmée et les {oiseaux|enfants|chats} ressortent prudemment.",
-  "Une {couette|couverture|écharpe} épaisse, un {chat|livre|thé} et la soirée est {parfaite|réussie|douce}.",
-  "Le {glacier|torrent|sommet} scintille sous le {soleil|ciel|clair de lune} d’hiver.",
-  "Nous avons découvert une {crique|grotte|plage} secrète où l’{eau|écume|onde} est {turquoise|transparente|cristalline}.",
-  "Le {coq|merle|réveil} chante et la {ferme|maison|ville} s’éveille doucement sous la {brume|lumière|rosée}.",
-  "Le {matin|soir|dimanche}, la {boulangerie|librairie|fromagerie} du coin sent bon le {pain|papier|lait} frais.",
-  "Une {bougie|lanterne|lampe} parfumée à la {vanille|lavande|cannelle} adoucit l’ambiance du {salon|bureau|atelier}.",
-  "Le long du {fleuve|canal|quai}, les {bouquinistes|pêcheurs|promeneurs} profitent des derniers rayons du {soleil|jour|printemps}.",
-  "Mon {chat|chien|lapin} adore se rouler dans les {feuilles|draps|coussins} quand il fait {froid|gris|frais}.",
-  "Au sommet du {phare|clocher|beffroi}, on voit la {mer|ville|campagne} s’étendre à perte de vue.",
-  "Une {cabane|maisonnette|hutte} en bois attend les {randonneurs|skieurs|voyageurs} au détour du {sentier|col|torrent}.",
-  "Les {hirondelles|cigognes|grues} partent vers le sud quand l’{automne|hiver} approche.",
-  "La {fanfare|chorale|troupe} du village répète chaque {jeudi|samedi|mercredi} dans la {salle|grange|chapelle} communale.",
-  "Un {thé|café|chocolat} chaud, une {couverture|écharpe|tisane} et une {série|lecture|musique} douce : voilà ma soirée idéale.",
-  "Il y a un {banc|rocher|ponton} au bord du {lac|ruisseau|marais} où j’aime regarder les {canards|libellules|nuages}.",
-  "Le {verger|potager|jardin} de mon {oncle|voisin|grand-père} déborde de {pommes|poires|courgettes} chaque automne.",
-  "Quand la {neige|pluie|grêle} tombe, le {quartier|village|hameau} devient {silencieux|paisible|immobile}.",
-  "Les {étoiles|planètes|comètes} brillent si fort ce soir qu’on pourrait presque les {toucher|compter|cueillir}.",
-  "Sur la {nappe|table|terrasse}, une {carafe|cruche|bouteille} de citronnade fraîche attend les {invités|enfants|amis}.",
-  "Le {vent|zéphyr|mistral} fait chanter les {roseaux|pins|voiles} tout au long de la {côte|rive|plage}.",
-  "Le {renard|blaireau|lièvre} a laissé des traces dans la {neige|boue|terre} fraîche du {chemin|potager|pré}.",
-  "Au {printemps|réveil|matin}, les {bourgeons|fleurs|feuilles} s’ouvrent doucement sur les {branches|tiges|haies}.",
-  "Un {orage|grain|coup de vent} éclate et tout le monde court se mettre à l’abri sous les {arcades|platanes|parasols}.",
-  "La {grange|ferme|bergerie} sent bon le {foin|bois|lait} et les {chats|poules|chevreaux} y dorment au chaud.",
-  "Le {pianiste|guitariste|harpiste} improvise une mélodie qui ressemble à la {pluie|mer|neige}.",
-  "Nous avons {dessiné|peint|photographié} le {lac|port|village} depuis la {colline|fenêtre|terrasse}.",
-  "Dans la {vitrine|boutique|confiserie}, les {sucres d’orge|macarons|guimauves} brillent de toutes les couleurs.",
-  "Ce {matin|midi|soir}, le {brouillard|ciel|lac} est si {épais|calme|blanc} qu’on ne voit plus l’autre rive.",
-  "Le {gardien|veilleur|berger} allume une {lanterne|lampe|bougie} et fait le tour du {domaine|troupeau|château}.",
-  "Les {canards|cygnes|foulques} glissent sur l’{étang|eau|onde} sans faire le moindre bruit.",
-  "Elle {range|trie|plie} ses {pulls|écharpes|chaussettes} en écoutant la {radio|pluie|musique}.",
-  "Le {marchand|vendeur|fermier} de {fruits|fleurs|légumes} salue chaque client avec un {sourire|mot|clin d’œil}.",
-  "Une {montagne|colline|forêt} de nuages roule au-dessus de la {mer|plaine|vallée} au coucher du soleil.",
-  "Le {héron|martin-pêcheur|cormoran} guette patiemment un poisson au bord de la {rivière|mare|lagune}.",
-  "Au fond du {tiroir|carton|grenier}, une {boîte|enveloppe|pochette} renferme des {boutons|billes|timbres} anciens.",
-  "Les {flocons|pétales|confettis} tombent si lentement qu’ils semblent {flotter|danser|hésiter} dans l’air.",
-  "Le {chalet|refuge|gîte} est perché si haut qu’on voit les {nuages|aigles|glaciers} de près.",
-  "La {lune|marée|nuit} monte doucement et argente les {vagues|toits|champs} endormis.",
-  "Un {cerf-volant|ballon|oiseau} rouge se balance au-dessus de la {plage|prairie|dune}.",
-  "Le {vieux|petit|joli} {carrousel|manège|kiosque} tourne au son d’une {valse|musique|ritournelle} ancienne.",
-  "Nous avons fait un {feu|thé|gâteau} et raconté des {histoires|blagues|souvenirs} jusqu’à minuit.",
-  "Au {café|marché|kiosque}, on parle de la {météo|récolte|fête} du dimanche suivant.",
-  "La {bruyère|lavande|garrigue} colore les {collines|landes|champs} de mauve pendant tout l’été.",
-  "Les {cloches|carillons|grelots} sonnent pour annoncer la {fête|foire|saison} des {récoltes|lumières|fleurs}.",
-  "Mon {ami|cousin|frère} a construit une {cabane|maquette|niche} avec des planches de récupération.",
-  "La {tortue|limace|chenille} avance lentement mais sûrement vers la {salade|feuille|fraise} tant convoitée.",
-  "Les {vagues|marées|courants} ramènent sur la {grève|plage|rive} du bois flotté tout blanc.",
-  "Le {torrent|ruisseau|glacier} descend de la montagne en {chantant|grondant|scintillant}.",
-  "Il {fait|reste} encore {chaud|doux|clair} quand les premières {étoiles|chauves-souris|lucioles} apparaissent.",
-  "Le {château|manoir|moulin} abandonné se dresse au milieu des {ronces|herbes|lierres} comme dans un conte.",
-  "Une {chèvre|vache|brebis} curieuse passe la tête par-dessus la {clôture|barrière|haie} pour nous saluer.",
-  "La {maîtresse|bibliothécaire|maman} lit une {histoire|fable|légende} d’une voix {douce|calme|chantante}.",
-  "Nous avons {cueilli|ramassé|trouvé} des {mûres|framboises|myrtilles} le long du {chemin|talus|bois}.",
-  "Le {lac|bassin|ruisseau} est gelé et les {patineurs|enfants|canards} glissent en riant.",
-  "Une {odeur|bouffée|brise} de {pin|mer|foin} entre par la fenêtre ouverte.",
-  "Le {jardin|parc|square} s’illumine de {guirlandes|lampions|lucioles} quand la nuit tombe.",
-  "La {cascade|fontaine|rivière} éclabousse les {rochers|mousses|fougères} de mille gouttelettes.",
-  "Au {matin|lever|réveil}, la {rosée|gelée|brume} dessine des perles sur les {toiles|herbes|vitres}.",
-  "Les {voiliers|kayaks|barques} dansent dans la baie sous un ciel {sans nuage|tout bleu|limpide}.",
-  "Mon {grand-père|parrain|voisin} répare les {horloges|vélos|radios} dans son petit atelier.",
-  "Le {soleil|jour|ciel} d’{hiver|automne} est pâle mais il réchauffe doucement les {joues|mains|pierres}.",
-  "Le {pêcheur|marin|garde} raconte que la {mer|rivière|baie} était si calme qu’on aurait dit un {miroir|lac|tableau}.",
-  "Un {pont|chemin|escalier} de pierre mène au {jardin|belvédère|verger} caché derrière le mur.",
-  "La {neige|glace|gelée} craque sous nos {bottes|pas|raquettes} pendant la promenade du soir.",
-  "Le {soir|samedi|lundi}, nous jouons aux {cartes|dames|dés} près de la {cheminée|fenêtre|lampe}.",
-  "Une {lettre|carte|invitation} arrive avec un {timbre|cachet|dessin} venu de très loin.",
-  "Les {coquelicots|bleuets|marguerites} bordent la route qui mène au {village|lac|moulin}.",
-  "Le {hamac|transat|banc} se balance doucement à l’ombre du {figuier|pommier|noyer}.",
-  "Le {chef|cuisinier|pâtissier} goûte sa {sauce|crème|soupe} et ajoute une pincée de {sel|sucre|poivre}.",
-  "Au {loin|large|bout}, on aperçoit les {lumières|voiles|toits} d’un petit port de pêche.",
-  "Ce {printemps|matin|soir}, une famille de {mésanges|moineaux|rouges-gorges} s’est installée dans le nichoir.",
-  "La {pluie|bruine|averse} chante sur le toit de la {véranda|cabane|tente} comme une berceuse.",
-  "Sur le {marché|quai|parvis}, un {accordéoniste|conteur|jongleur} fait sourire les passants.",
-  "Le {sentier|chemin|raidillon} grimpe entre les {pins|rochers|châtaigniers} jusqu’à la chapelle.",
-  "Les {montagnes|collines|dunes} rosissent au {crépuscule|couchant|soir} comme si elles {rougissaient|souriaient|rêvaient}.",
-  "Le {facteur|boulanger|maire} connaît chaque {maison|famille|chien} du village par son nom.",
-  "Il y avait tant de {neige|fleurs|feuilles} que le {chemin|jardin|parc} avait disparu.",
-  "Un {rayon|filet|éclat} de lumière traverse les {vitraux|nuages|branches} et colore le sol.",
-  "La {chorale|fanfare|classe} chante une chanson pour {fêter|saluer|accueillir} le printemps.",
-  "Le {koala|panda|paresseux} dort tranquillement accroché à sa {branche|liane|corde} préférée.",
-  "Nous {pique-niquons|lisons|rêvons} à l’ombre d’un {saule|marronnier|cèdre} au bord de l’eau.",
-  "Le {canoë|pédalo|radeau} glisse sur la rivière entre les {nénuphars|roseaux|libellules}.",
-  "Le {jour|matin|soleil} se lève à peine et la {mer|ville|forêt} est encore {grise|endormie|immobile}.",
-  "La {mamie|tatie|cousine} prépare une {tarte|compote|confiture} avec les {pommes|prunes|abricots} du jardin.",
-  "Le {poney|âne|cheval} attend patiemment sa {carotte|pomme|caresse} près de la barrière.",
-  "Sur la {colline|falaise|lande}, {une éolienne|un moulin|un phare} tourne {doucement|lentement|tranquillement} dans le vent.",
-  "Les bulles de savon s’envolent et éclatent dans un rire d’{enfant|été|oiseau}.",
-  "Une {abeille|coccinelle|libellule} se pose sur ma main puis repart vers les {fleurs|roses|lilas}.",
-  "Au {creux|coin|fond} de la {vallée|forêt|baie}, un {village|hameau|refuge} fume tranquillement.",
-  "Le {vieux|grand|petit} {cerisier|platane|tilleul} du square a vu passer des générations d’{enfants|amoureux|promeneurs}.",
-  "Le {gâteau|pain|pudding} gonfle dans le four et toute la maison sent le {beurre|sucre|caramel}.",
-  "Nous avons {navigué|ramé|nagé} jusqu’à l’{îlot|île|épave} au milieu de la baie.",
-  "Les {lumières|étoiles|lanternes} de la ville s’allument une à une comme des {lucioles|bougies|perles}.",
-  "Un {chat|écureuil|rouge-gorge} observe la {neige|pluie|rue} depuis le rebord de la fenêtre.",
-  "Le {potier|verrier|tisserand} montre aux enfants comment {façonner|souffler|tisser} avec patience.",
-  "La {forêt|jungle|prairie} résonne du chant des {oiseaux|grillons|grenouilles} après la pluie.",
-  "Il est {doux|bon|agréable} de marcher pieds nus dans l’{herbe|eau|écume} fraîche.",
-  "Le {vieux|grand|beau} {voilier|bateau|navire} reprend la mer après un long hiver au {port|chantier|bassin}.",
-  "Le {four|poêle|feu} ronronne et la {soupe|tisane|bouilloire} chauffe tranquillement.",
-  "Une {étoile|lanterne|lueur} solitaire brille au-dessus du {lac|toit|clocher}.",
-  "La {vendeuse|fleuriste|marchande} compose un {bouquet|panier|cadeau} avec beaucoup de soin.",
-  "Le {bus|train|car} serpente sur la route de montagne entre les {sapins|lacets|rochers}.",
-  "Les {enfants|chiots|chatons} s’endorment enfin, épuisés par une longue {journée|promenade|aventure}.",
-  "Le {murmure|clapotis|chant} de la {source|fontaine|rivière} accompagne notre {sieste|lecture|pause}.",
-  "Un {nuage|voile|manteau} de brume enveloppe le {lac|village|port} au petit matin.",
-  "Mon {carnet|cahier|journal} de voyage est plein de {croquis|tickets|feuilles} séchées.",
-  "La {récolte|cueillette|moisson} a été bonne et toute la {ferme|famille|vallée} fait la fête.",
-  "Le {chocolat|thé|cidre} chaud fume dans les {tasses|bols|gobelets} posés sur la table.",
-  "Le {soleil|vent|jour} décline et les {montagnes|arbres|bateaux} projettent de longues ombres.",
-  "Nous avons vu un {cerf|chamois|bouquetin} sur la crête au lever du jour.",
-  "La {pluie|neige|lumière} d’{avril|octobre|hiver} donne au jardin des couleurs {nouvelles|douces|tendres}.",
-  "Le {vieux|petit|beau} {pont|moulin|lavoir} de pierre est couvert de {mousse|lierre|fleurs}.",
-  "Un {marin|voyageur|explorateur} raconte ses aventures au bout du {monde|quai|comptoir}.",
-  "Les {lucioles|étoiles|braises} scintillent pendant que nous chantons autour du feu.",
-  "Le {lapin|hérisson|écureuil} se cache dans les {feuilles|buissons|fougères} au moindre bruit.",
-  "Il fait {gris|frais|humide}, mais le {thé|feu|plaid} rend la journée {douce|agréable|chaleureuse}.",
-  "La {plage|baie|côte} est déserte en {hiver|novembre|février} et la mer y paraît plus {grande|sauvage|calme}.",
-  "La {rivière|brume|lumière} serpente entre les {collines|vignes|prés} comme un ruban.",
-  "Le {jardinier|paysagiste|fermier} plante un {arbre|rosier|pommier} qui fleurira dans {quelques années|un an|trois printemps}.",
-  "Les {cloches|carillons|mouettes} saluent le retour des bateaux au {port|quai|bassin}.",
-  "Un {parfum|souffle|air} de {cannelle|gaufre|pain d’épices} flotte sur le marché de {Noël|l’hiver|décembre}.",
-  "Le {chaton|chiot|lapereau} découvre son reflet dans la {flaque|vitre|gamelle} et reste perplexe.",
-  "La {neige|glace|gelée} transforme les branches en {dentelle|sculptures|cristal}.",
-  "Nous {marchons|flânons|avançons} sans but, juste pour le plaisir de sentir le {soleil|vent|printemps}.",
-  "Le {ciel|lac|champ} est si {bleu|vaste|calme} qu’on a envie d’y plonger.",
-  "Une {chanson|mélodie|berceuse} venue de la maison voisine accompagne la tombée de la nuit.",
-  "La {péniche|barque|navette} transporte des {fleurs|légumes|voyageurs} d’une rive à l’autre.",
-  "Le {bonhomme|château|igloo} de neige fond doucement sous le premier soleil de {mars|printemps|février}.",
-  "Les {grenouilles|cigales|grillons} donnent un concert dès que le soleil {se couche|disparaît|décline}.",
-  "Au {cœur|bout|creux} de l’hiver, un {bouquet|pot|panier} de jacinthes annonce déjà le printemps.",
-  "Le {randonneur|promeneur|pèlerin} s’assoit sur un rocher pour {admirer|contempler|dessiner} la vallée.",
-  "La {mer|marée|rivière} a sculpté les {rochers|falaises|galets} pendant des milliers d’années.",
-  "Dans la {véranda|serre|cuisine}, les {oranges|citrons|clémentines} mûrissent tranquillement.",
-  "Le {chant|cri|appel} des {mouettes|oies|grues} résonne au-dessus du {port|lac|marais}.",
-  "Un {livre|roman|recueil} ouvert sur les genoux, elle s’est endormie au {soleil|coin du feu|jardin}.",
-  "Le {vieux|beau|grand} {chêne|hêtre|sapin} perd ses feuilles une à une avec élégance.",
-  "Les {skieurs|lugeurs|patineurs} rentrent au chalet les joues {rouges|roses|glacées}.",
-  "La {fête|kermesse|foire} du village attire tout le monde sur la {place|prairie|plage}.",
-  "Le {potager|jardin|balcon} offre ses premières {fraises|tomates|radis} au mois de {juin|mai|juillet}.",
-  "Une {balade|promenade|sortie} en forêt suffit souvent à {apaiser|alléger|éclaircir} les pensées.",
-  "Le {navire|ferry|voilier} quitte le quai sous les {applaudissements|cris|signes} des passagers.",
-  "La {neige|grêle|pluie} frappe doucement les {carreaux|tuiles|volets} pendant que nous jouons.",
-  "Mon {chien|chat|canari} me réveille chaque {matin|dimanche|jour} avec beaucoup d’enthousiasme.",
-  "Le {jardin|parc|bois} est plein de {champignons|feuilles|marrons} après les pluies d’octobre.",
-  "Les {montagnes|falaises|dunes} se reflètent dans le lac comme dans un miroir.",
-  "Le {soleil|feu|four} dore les {tartes|brioches|châtaignes} et embaume toute la maison.",
-  "Une {chouette|hulotte|effraie} hulule au loin pendant que le village s’endort.",
-  "La {brise|marée|lumière} du soir ramène les {bateaux|mouettes|promeneurs} vers le port.",
-  "Le {meunier|boulanger|berger} se lève avant le {jour|coq|soleil} depuis toujours.",
-  "Les {pétales|feuilles|flocons} recouvrent le {banc|chemin|bassin} d’un tapis {rose|doré|blanc}.",
-  "Une {tasse|théière|bouilloire} siffle dans la cuisine et appelle à la {pause|sieste|lecture}.",
-  "La {ville|campagne|forêt} s’éveille sous un ciel {pastel|rosé|nacré}.",
-  "Le {chat|chien|lapin} du voisin vient chaque {soir|matin|midi} réclamer une caresse.",
-  "Un {fil|ruban|chemin} de lumière court sur la mer jusqu’à la {lune|plage|jetée}.",
-  "Les {voyageurs|marins|pèlerins} se réchauffent autour d’une soupe bien {chaude|épaisse|parfumée}.",
-  "La {forêt|clairière|lande} est si calme qu’on entend tomber les {aiguilles|feuilles|gouttes}.",
-  "Le {printemps|matin|soleil} réveille les {abeilles|jonquilles|marmottes} une à une.",
-  "Nous avons {fabriqué|décoré|accroché} des {lanternes|guirlandes|mangeoires} pour l’hiver.",
-  "Le {vieux|petit|grand} {marché|port|quartier} garde le charme des {cartes postales|vieux films|souvenirs}.",
-  "Une {mésange|fauvette|sittelle} picore les graines déposées sur le {rebord|balcon|muret}.",
-  "La {neige|pluie|nuit} efface les bruits de la ville et laisse place au {silence|repos|calme}.",
-  "Le {bateau|ferry|navire} trace un long sillage {blanc|argenté|écumant} sur la mer.",
-  "Les {grands-parents|voisins|amis} se retrouvent sur la place pour jouer aux {boules|cartes|échecs}.",
-  "Le {soleil|ciel|vent} de la {Provence|Bretagne|montagne} change de couleur à chaque heure.",
-  "Un {chant|carillon|refrain} joyeux s’élève de la {chapelle|maison|grange} voisine.",
-  "La {rivière|cascade|source} est si claire qu’on voit les {galets|truites|algues} au fond.",
-  "Le {vieux|petit|joli} {jardin|cloître|verger} est un refuge pour les {oiseaux|abeilles|papillons}.",
-  "Une {pluie|averse|giboulée} d’été rafraîchit la terre et fait sortir les {escargots|vers|grenouilles}.",
-  "Il suffit parfois {d’écouter|de regarder|de sentir} la {pluie|mer|forêt} pour retrouver son calme.",
-  "Le {train|bateau|car} de nuit berce les {passagers|voyageurs|enfants} jusqu’à l’aube.",
-  "Les {nuages|oiseaux|feuilles} filent vers l’ouest, poussés par un vent {léger|frais|joueur}.",
-  "Le {fromager|crémier|boulanger} propose de goûter ses {spécialités|nouveautés|merveilles} du jour.",
-  "Au {bord|creux|pied} de la falaise, une petite {crique|grotte|plage} attend les {nageurs|curieux|rêveurs}.",
-  "La {lune|veilleuse|bougie} dessine des ombres douces sur les {murs|rideaux|draps} de la chambre.",
-  "Le {vent|souffle|parfum} d’{automne|hiver|été} apporte une odeur de {bois|pluie|feu} brûlé.",
-  "Une {licorne|fée|sirène} de papier décore la chambre de ma petite {sœur|cousine|voisine}.",
-  "Le {chevreuil|lièvre|renard} traverse la clairière et s’arrête un instant pour {écouter|observer|humer}.",
-  "La {plage|prairie|rue} se vide et le {soleil|ciel|silence} prend toute la place.",
-  "Le {petit|vieux|beau} {café|bistrot|salon de thé} du port sert le meilleur {chocolat|thé|gâteau} de la ville.",
-  "Les {lumières|fenêtres|étoiles} du chalet clignotent dans la nuit comme pour nous {accueillir|saluer|guider}.",
-  "Le {fleuve|ruisseau|torrent} grossi par la fonte des neiges chante plus fort au {printemps|réveil|matin}.",
-  "Une {douce|légère|fine} neige tombe sur le {marché|square|village} et les enfants tirent la langue.",
-  "La {pendule|horloge|montre} de grand-mère sonne {doucement|joyeusement|gravement} les heures.",
-  "Les {mouettes|pigeons|moineaux} se disputent une miette sur le {quai|parvis|trottoir} ensoleillé.",
-  "Au {bout|détour|creux} du chemin, une {fontaine|statue|chapelle} veille sur les voyageurs.",
-  "La {lumière|chaleur|douceur} du soir enveloppe le {jardin|village|lac} comme une {écharpe|couverture|caresse}.",
-];
 const GENC = {};
 function lvB(g) {
   return "caches" === g && caOn() ? CANL : NLS[g];
@@ -90690,14 +90754,6 @@ function wfLen(a, ana) {
 function wfN(a, n) {
   return Math.min({ 4: 5, 5: 6, 6: 8, 7: 10, 8: 12 }[n], 3 + Math.floor(Math.log2(a + 2)));
 }
-function roueGen(a) {
-  const n = wfLen(a),
-    N = wfN(a, n),
-    R = rng(7919 * a + 101),
-    c = wfCand(n, n <= 5 ? 6e3 : 12e3, Math.min(N, n <= 4 ? 3 : 4), a);
-  if (!c) return L[a % NLS.mots];
-  return [c.b.w, ...wfPick(c, N, R).map((w) => w.w)];
-}
 function lvLay(W, R, mx, tg) {
   const G = new Map(),
     D = new Map(),
@@ -90790,52 +90846,7 @@ function anaGen(a) {
 }
 const thOrd = (a, n) =>
   lvShuf([...Array(THM.length).keys()], rng(53 + Math.floor(a / THM.length)))[a % THM.length];
-function cwGen(a) {
-  const R = rng(6151 * a + 29),
-    A = THM[thOrd(a)],
-    B = THM[thOrd(a + 17)],
-    tg = Math.min(11, 6 + Math.floor(a / 8));
-  let best = null;
-  for (let t = 0; t < 40; t++) {
-    const W = lvShuf(A.w, R)
-        .concat(lvShuf(B.w, R))
-        .map((e) => ({ k: e[0], c: e[1] }))
-        .filter((e) => e.k.length >= 3 && e.k.length <= 11)
-        .sort((x, y) => y.k.length - x.k.length + (R() - 0.5) * 3),
-      P = lvLay(W, R, 11, tg);
-    if (!best || P.length > best.length) best = P;
-    if (P.length >= tg) break;
-  }
-  return best.map((p) => [p.w.k, p.w.c, p.r, p.c, p.h ? "h" : "v"]);
-}
-let PHC = null;
-function phIdx(i) {
-  if (!PHC) {
-    PHC = PHT.map((t) => (t.match(/\{[^}]+\}/g) || []).reduce((m, x) => m * x.split("|").length, 1));
-    PHC.S = PHC.reduce((a, b) => a + b, 0);
-    let P = 1000003;
-    const g = (a, b) => (b ? g(b, a % b) : a);
-    for (; g(P, PHC.S) !== 1;) P += 2;
-    PHC.P = P;
-  }
-  let k = Number((BigInt(i) * BigInt(PHC.P)) % BigInt(PHC.S)),
-    t = 0;
-  for (; k >= PHC[t];) k -= PHC[t++];
-  return PHT[t].replace(/\{([^}]+)\}/g, (m, x) => {
-    const o = x.split("|"),
-      v = o[k % o.length];
-    return ((k = Math.floor(k / o.length)), v);
-  });
-}
-function phGen(a) {
-  phIdx(0);
-  const S = PHC.S;
-  if (a < S) return phIdx(a);
-  const k = a - S,
-    i = k % S,
-    j = (i + 1 + Math.floor(k / S)) % S;
-  return phIdx(i) + " " + phIdx(j);
-}
+// Mots cachés : mots des thèmes THW (tirés de THM, donc calculés à cette place) et génération des grilles msGen.
 const THW = THM.map((t) => t.w.map((e) => e[0]));
 function msGen(e) {
   const R = rng(131 * e + 7),
@@ -90847,6 +90858,7 @@ function msGen(e) {
   while (w.length < Math.min(4, N) && k < 50);
   return { n: n, w: lvShuf(w, R).slice(0, N) };
 }
+
 function start(e, t, a, s) {
   return (
     (INFG = ""),
@@ -94757,15 +94769,13 @@ function bookOpen() {
     ? ((window.__bkAn = 1),
       bkEnd(a, a.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 800, easing: BKE, fill: "forwards" })),
       bkFly(s, t, !1),
-      document
-        .querySelectorAll("#app>.top.stk,#app>.bkn")
-        .forEach((e) =>
-          e.animate([{ opacity: 0 }, { opacity: 0, offset: 0.5 }, { opacity: 1 }], {
-            duration: 800,
-            easing: BKE,
-            fill: "backwards",
-          }),
-        ))
+      document.querySelectorAll("#app>.top.stk,#app>.bkn").forEach((e) =>
+        e.animate([{ opacity: 0 }, { opacity: 0, offset: 0.5 }, { opacity: 1 }], {
+          duration: 800,
+          easing: BKE,
+          fill: "backwards",
+        }),
+      ))
     : a.remove();
 }
 function bookClose() {
@@ -94780,15 +94790,13 @@ function bookClose() {
   const n = a.getBoundingClientRect();
   ((window.__bkAn = 1),
     bkEnd(t, bkFly(s, n, !0, !0)),
-    t
-      .querySelectorAll(".top.stk,.bkn")
-      .forEach((e) =>
-        e.animate([{ opacity: 1 }, { opacity: 0, offset: 0.5 }, { opacity: 0 }], {
-          duration: 800,
-          easing: BKE,
-          fill: "forwards",
-        }),
-      ),
+    t.querySelectorAll(".top.stk,.bkn").forEach((e) =>
+      e.animate([{ opacity: 1 }, { opacity: 0, offset: 0.5 }, { opacity: 0 }], {
+        duration: 800,
+        easing: BKE,
+        fill: "forwards",
+      }),
+    ),
     app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 800, easing: BKE, fill: "backwards" }));
 }
 function bkStrip(n) {
@@ -95596,7 +95604,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1256 · gs508${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1257 · gs509${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
@@ -96691,15 +96699,21 @@ function sfx(e = 520, t = 0.25) {
 const vib = (e) => {
   prefs().vib && navigator.vibrate && navigator.vibrate(e);
 };
-(document.addEventListener("pointerdown", (e) => {
-  wsG && (wsG.all || (e.target.closest && e.target.closest(".sg,.mz-b"))) && wsG.down(e);
-}),
-  document.addEventListener("pointermove", (e) => {
-    wsG && wsG.move(e);
-  }),
-  document.addEventListener("pointerup", (e) => {
-    wsG && wsG.up(e);
-  }),
+// Glisser sur une grille (Mots cachés, Labyrinthe) : le jeu en cours expose wsG { down, move, up, cancel, … }.
+(Input.sur(
+  ["toucher", "glisser", "survoler", "lacher"],
+  (a, i) => {
+    const e = i.evt;
+    "toucher" === a
+      ? wsG && (wsG.all || (e.target.closest && e.target.closest(".sg,.mz-b"))) && wsG.down(e)
+      : "lacher" !== a
+        ? wsG && wsG.move(e)
+        : "pointercancel" === e.type
+          ? wsG && wsG.cancel(e)
+          : wsG && wsG.up(e);
+  },
+  { cible: document, annulation: !0 },
+),
   document.addEventListener(
     "touchstart",
     (e) => {
@@ -96727,9 +96741,6 @@ const vib = (e) => {
     void 0 === t ||
       (a && ("INPUT" === a.tagName || "TEXTAREA" === a.tagName)) ||
       (e.preventDefault(), wsG.key(t));
-  }),
-  document.addEventListener("pointercancel", (e) => {
-    wsG && wsG.cancel(e);
   }),
   document.addEventListener(
     "click",
@@ -101586,26 +101597,24 @@ async function socPush() {
   if (e && e.code) {
     SO.busy = !0;
     try {
-      (await SO.col
-        .doc(SO.uid)
-        .set({
-          code: e.code,
-          name: e.name,
-          nt: e.nt,
-          fr: e.fr,
-          s: e.s,
-          d: e.d,
-          sg: e.sg || {},
-          cg: e.cg || {},
-          cf: e.cf || {},
-          av: e.av || { k: "", v: "", t: 0 },
-          fv: e.fv || { l: [], t: 0 },
-          hs: e.hs || { v: "", t: 0, k: {} },
-          g: Object.assign(socProg(), { t: Date.now() }),
-          w: socWord(),
-          q: socAq(),
-          at: Date.now(),
-        }),
+      (await SO.col.doc(SO.uid).set({
+        code: e.code,
+        name: e.name,
+        nt: e.nt,
+        fr: e.fr,
+        s: e.s,
+        d: e.d,
+        sg: e.sg || {},
+        cg: e.cg || {},
+        cf: e.cf || {},
+        av: e.av || { k: "", v: "", t: 0 },
+        fv: e.fv || { l: [], t: 0 },
+        hs: e.hs || { v: "", t: 0, k: {} },
+        g: Object.assign(socProg(), { t: Date.now() }),
+        w: socWord(),
+        q: socAq(),
+        at: Date.now(),
+      }),
         (SO.we = !1),
         (SO.tries = 0));
     } catch (e) {

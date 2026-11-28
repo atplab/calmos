@@ -69,4 +69,4 @@ function units(src) {
   return U;
 }
 
-module.exports = { segments, units, parse, norm };
+module.exports = { segments, units, parse, norm, inert };
