@@ -71,10 +71,10 @@ const frame = (e, t) => {
         ? "Mode infini"
         : isX(cur, lv)
           ? "Fêtes " + xn(cur, lv)
-          : "Niveau " + (lv + 1 - (1e9 <= nl(cur) ? st.get("ski:" + cur, 0) : 0));
+          : "Niveau " + (lv + 1);
       return daily || INFG || "quiz" === cur || "match3" === cur
         ? `<span class="tl">${e}</span>`
-        : `<button class="tl tlk" data-a="skip" aria-label="${e} : toucher pour passer ce niveau">${isX(cur, lv) ? e : '<span class="tlf">Niveau</span><span class="tls">Niv.</span>&nbsp;' + (lv + 1 - (1e9 <= nl(cur) ? st.get("ski:" + cur, 0) : 0))}<i aria-hidden="true">⏭</i></button>`;
+        : `<button class="tl tlk" data-a="skip" aria-label="${e} : toucher pour passer ce niveau">${isX(cur, lv) ? e : '<span class="tlf">Niveau</span><span class="tls">Niv.</span>&nbsp;' + (lv + 1)}<i aria-hidden="true">⏭</i></button>`;
     })()}<div class="tr">${t ? `<button class="hb hintb" data-a="hint" aria-label="Indice : coûte ${t} bulle${t > 1 ? "s" : ""}">${HBI(t)}</button>` : ""}<div class="chip">🫧 ${FLX()}</div></div></div><section class="glass play pg-${cur}" aria-label="${ALL.find((e) => e.id === cur).n}"><p class="m" id="m" role="status" aria-live="polite"></p>${e}</section>${daily ? "" : '<div class="skw" id="skw"></div>'}`));
 };
 const favs = () => {
