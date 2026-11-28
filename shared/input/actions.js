@@ -1,0 +1,35 @@
+// Catalogue des actions abstraites. La logique des jeux ne parle QUE de ces actions, jamais du clavier,
+// de la souris, du tactile ou de la manette. Chaque jeu peut en ajouter (ex. « tourner ») au moment de s'abonner.
+const InputActions = {
+  liste: {
+    bougerGauche: "Aller à gauche",
+    bougerDroite: "Aller à droite",
+    monter: "Aller en haut",
+    descendre: "Aller en bas",
+    sauter: "Action principale (sauter, lancer, tirer…)",
+    valider: "Valider",
+    annuler: "Annuler / revenir",
+    pause: "Mettre en pause",
+    effacer: "Effacer la dernière lettre",
+    saisir: "Taper un caractère (info.touche)",
+    toucher: "Appuyer sur un point de l’écran (info.x, info.y, info.cible)",
+    glisser: "Déplacer le doigt ou la souris en restant appuyé",
+    lacher: "Relâcher le doigt ou le bouton",
+    survoler: "Déplacer la souris sans appuyer",
+    defiler: "Molette ou défilement (info.dx, info.dy)",
+    menu: "Clic droit / appui long (menu contextuel)",
+    balayer: "Geste de balayage tactile (info.direction : gauche, droite, haut, bas)",
+  },
+  // Touches par défaut : les mêmes que celles simulées par la manette (flèches, Espace, Entrée, Échap).
+  touches: {
+    ArrowLeft: "bougerGauche",
+    ArrowRight: "bougerDroite",
+    ArrowUp: "monter",
+    ArrowDown: "descendre",
+    " ": "sauter",
+    Enter: "valider",
+    Escape: "annuler",
+    Backspace: "effacer",
+    Delete: "effacer",
+  },
+};

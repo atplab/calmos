@@ -1,13 +1,7 @@
 (function () {
   var bk = null,
     cx = null;
-  function pc() {
-    try {
-      return !matchMedia("(pointer:coarse)").matches && innerWidth >= 900;
-    } catch (e) {
-      return !1;
-    }
-  }
+  var pc = Appareil.pc;
   function tick() {
     try {
       var src = document.getElementById("gfc"),

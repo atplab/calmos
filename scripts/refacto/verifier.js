@@ -8,7 +8,10 @@ const fs = require('fs');
 const { segments, units } = require('./lib');
 const { transform } = require('lightningcss');
 
-const [a, b] = process.argv.slice(2).map(f => fs.readFileSync(f, 'utf8'));
+// --ajouts=Nom1,Nom2 : nouvelles déclarations permises (elles doivent être inertes : rien ne s'exécute au chargement).
+const args = process.argv.slice(2), opt = args.find(x => x.startsWith('--ajouts='));
+const permis = new Set(opt ? opt.slice(9).split(',') : []);
+const [a, b] = args.filter(x => !x.startsWith('--')).map(f => fs.readFileSync(f, 'utf8'));
 const A = segments(a), B = segments(b);
 let err = 0;
 const bad = m => { err++; if (err <= 30) console.log('✗ ' + m); };
@@ -34,6 +37,10 @@ for (let k = 0; k < Math.min(A.length, B.length); k++) {
   const seq = [];
   for (const u of UB) {
     const l = pool.get(u.key);
+    if ((!l || !l.length) && u.names.length && u.names.every(n => permis.has(n))) {
+      if (!u.inert) bad(`bloc ${k} : ajout non inerte : ${u.names}`); else { console.log(`bloc ${k} : ajout inerte permis : ${u.names}`); u.ajout = 1; }
+      continue;
+    }
     if (!l || !l.length) { bad(`bloc ${k} : unité ajoutée ou modifiée : ${u.code.slice(0, 80)}`); continue; }
     seq.push(l.shift());
   }

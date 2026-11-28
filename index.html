@@ -1,6 +1,265 @@
 <!doctype html>
 <html lang="fr">
-<head><script>(() => {
+<head><script>// Catalogue des actions abstraites. La logique des jeux ne parle QUE de ces actions, jamais du clavier,
+// de la souris, du tactile ou de la manette. Chaque jeu peut en ajouter (ex. « tourner ») au moment de s'abonner.
+const InputActions = {
+  liste: {
+    bougerGauche: "Aller à gauche",
+    bougerDroite: "Aller à droite",
+    monter: "Aller en haut",
+    descendre: "Aller en bas",
+    sauter: "Action principale (sauter, lancer, tirer…)",
+    valider: "Valider",
+    annuler: "Annuler / revenir",
+    pause: "Mettre en pause",
+    effacer: "Effacer la dernière lettre",
+    saisir: "Taper un caractère (info.touche)",
+    toucher: "Appuyer sur un point de l’écran (info.x, info.y, info.cible)",
+    glisser: "Déplacer le doigt ou la souris en restant appuyé",
+    lacher: "Relâcher le doigt ou le bouton",
+    survoler: "Déplacer la souris sans appuyer",
+    defiler: "Molette ou défilement (info.dx, info.dy)",
+    menu: "Clic droit / appui long (menu contextuel)",
+    balayer: "Geste de balayage tactile (info.direction : gauche, droite, haut, bas)",
+  },
+  // Touches par défaut : les mêmes que celles simulées par la manette (flèches, Espace, Entrée, Échap).
+  touches: {
+    ArrowLeft: "bougerGauche",
+    ArrowRight: "bougerDroite",
+    ArrowUp: "monter",
+    ArrowDown: "descendre",
+    " ": "sauter",
+    Enter: "valider",
+    Escape: "annuler",
+    Backspace: "effacer",
+    Delete: "effacer",
+  },
+};
+
+// Point d'entrée unique des contrôles pour la logique des jeux.
+//   const stop = Input.sur(["bougerGauche", "bougerDroite"], (action, info) => …, options);
+//   stop();  // se désabonner
+// options :
+//   cible    : élément / document / window écouté (défaut : window ; le canvas du jeu pour toucher/glisser…)
+//   capture, passive : mêmes réglages que addEventListener
+//   touches  : { "a": "bougerGauche", … } touches propres au jeu (prioritaires sur InputActions.touches)
+//   relache  : true pour recevoir aussi les relâchements de touche (info.phase = "relache")
+//   sources  : ["clavier", "souris", "tactile"] pour limiter les méthodes de contrôle écoutées
+// info contient toujours : source, phase, evt (l'événement d'origine, pour preventDefault si besoin).
+// La manette (manette.js) passe par le clavier et le pointeur simulés : elle marche donc partout sans rien faire.
+// Rien n'est écouté tant que personne n'est abonné : charger cette couche ne change aucun comportement.
+const Input = {
+  abos: [],
+  tenues: {},
+  modules: () => [InputClavier, InputSouris, InputTactile],
+  sur(actions, fn, opts = {}) {
+    const abo = { liste: actions === "*" ? null : [].concat(actions), fn, opts, arrets: [] };
+    for (const m of Input.modules())
+      if (!opts.sources || opts.sources.includes(m.nom)) {
+        const arret = m.brancher(abo);
+        arret && abo.arrets.push(arret);
+      }
+    Input.abos.push(abo);
+    return () => Input.quitter(abo);
+  },
+  quitter(abo) {
+    const i = Input.abos.indexOf(abo);
+    if (i < 0) return;
+    Input.abos.splice(i, 1);
+    abo.arrets.forEach((f) => f());
+  },
+  veut(abo, action) {
+    return !abo.liste || abo.liste.includes(action);
+  },
+  emettre(abo, action, info) {
+    if (!action || !Input.veut(abo, action)) return;
+    if (info.phase === "appui") Input.tenues[action] = 1;
+    else if (info.phase === "relache") delete Input.tenues[action];
+    return abo.fn(action, info);
+  },
+  // Vrai tant que la touche liée à l'action est enfoncée (pour les jeux qui lisent l'état à chaque image).
+  enfonce(action) {
+    return !!Input.tenues[action];
+  },
+  // Branche un écouteur natif et renvoie la fonction qui le retire.
+  ecouter(cible, type, h, opts) {
+    const o = { capture: !!opts.capture, passive: opts.passive };
+    cible.addEventListener(type, h, o);
+    return () => cible.removeEventListener(type, h, o);
+  },
+};
+
+// Clavier → actions. Une touche connue donne son action ; un caractère seul donne « saisir » (info.touche).
+const InputClavier = {
+  nom: "clavier",
+  action(e, opts) {
+    const t = opts.touches;
+    if (t && t[e.key] !== undefined) return t[e.key];
+    if (t && t[e.code] !== undefined) return t[e.code];
+    if (InputActions.touches[e.key]) return InputActions.touches[e.key];
+    return e.key && e.key.length === 1 ? "saisir" : null;
+  },
+  brancher(abo) {
+    const o = abo.opts,
+      cible = o.cible || window,
+      veutClavier =
+        !abo.liste ||
+        abo.liste.some((a) => !InputSouris.actions.includes(a) && !InputTactile.actions.includes(a));
+    if (!veutClavier) return null;
+    const h = (phase) => (e) => {
+      const info = { source: "clavier", phase, touche: e.key, code: e.code, repeat: e.repeat, evt: e };
+      return Input.emettre(abo, InputClavier.action(e, o), info);
+    };
+    const a = Input.ecouter(cible, "keydown", h("appui"), o),
+      b = o.relache ? Input.ecouter(cible, "keyup", h("relache"), o) : null;
+    return () => (a(), b && b());
+  },
+};
+
+// Souris (et stylet) → actions : toucher / glisser / lacher / survoler, defiler (molette), menu (clic droit).
+const InputSouris = {
+  nom: "souris",
+  actions: ["toucher", "glisser", "lacher", "survoler", "defiler", "menu"],
+  brancher(abo) {
+    const o = abo.opts,
+      cible = o.cible || window,
+      arrets = [],
+      veut = (a) => Input.veut(abo, a),
+      pt = (e, phase) => ({ source: "souris", phase, x: e.clientX, y: e.clientY, cible: e.target, evt: e });
+    const ptr = (type, action, phase) =>
+      arrets.push(
+        Input.ecouter(
+          cible,
+          type,
+          (e) => {
+            if (e.pointerType === "touch") return;
+            const a = action === "glisser" && !e.buttons ? "survoler" : action;
+            return veut(a) ? Input.emettre(abo, a, pt(e, phase)) : undefined;
+          },
+          o,
+        ),
+      );
+    if (veut("toucher")) ptr("pointerdown", "toucher", "appui");
+    if (veut("glisser") || veut("survoler")) ptr("pointermove", "glisser", "mouvement");
+    if (veut("lacher")) ptr("pointerup", "lacher", "relache");
+    if (veut("defiler"))
+      arrets.push(
+        Input.ecouter(
+          cible,
+          "wheel",
+          (e) =>
+            Input.emettre(abo, "defiler", {
+              source: "souris",
+              phase: "mouvement",
+              dx: e.deltaX,
+              dy: e.deltaY,
+              x: e.clientX,
+              y: e.clientY,
+              cible: e.target,
+              evt: e,
+            }),
+          o,
+        ),
+      );
+    if (veut("menu"))
+      arrets.push(
+        Input.ecouter(
+          cible,
+          "contextmenu",
+          (e) => (e.pointerType === "touch" ? undefined : Input.emettre(abo, "menu", pt(e, "appui"))),
+          o,
+        ),
+      );
+    return arrets.length ? () => arrets.forEach((f) => f()) : null;
+  },
+};
+
+// Écran tactile → actions : toucher / glisser / lacher, menu (appui long du navigateur) et balayer (geste).
+const InputTactile = {
+  nom: "tactile",
+  actions: ["toucher", "glisser", "lacher", "menu", "balayer"],
+  seuil: 40, // distance minimale (px) d'un balayage
+  brancher(abo) {
+    const o = abo.opts,
+      cible = o.cible || window,
+      arrets = [],
+      veut = (a) => Input.veut(abo, a),
+      pt = (e, phase) => ({ source: "tactile", phase, x: e.clientX, y: e.clientY, cible: e.target, evt: e });
+    let depart = null;
+    const ptr = (type, action, phase) =>
+      arrets.push(
+        Input.ecouter(
+          cible,
+          type,
+          (e) => {
+            if (e.pointerType !== "touch") return;
+            if (type === "pointerdown") depart = { x: e.clientX, y: e.clientY };
+            let r;
+            if (action && veut(action)) r = Input.emettre(abo, action, pt(e, phase));
+            if (type === "pointerup" && depart && veut("balayer")) {
+              const dx = e.clientX - depart.x,
+                dy = e.clientY - depart.y;
+              if (Math.max(Math.abs(dx), Math.abs(dy)) >= InputTactile.seuil)
+                Input.emettre(
+                  abo,
+                  "balayer",
+                  Object.assign(pt(e, "geste"), {
+                    dx,
+                    dy,
+                    direction:
+                      Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "droite" : "gauche") : dy > 0 ? "bas" : "haut",
+                  }),
+                );
+            }
+            if (type === "pointerup" || type === "pointercancel") depart = null;
+            return r;
+          },
+          o,
+        ),
+      );
+    const balaye = veut("balayer");
+    if (veut("toucher") || balaye) ptr("pointerdown", veut("toucher") ? "toucher" : null, "appui");
+    if (veut("glisser")) ptr("pointermove", "glisser", "mouvement");
+    if (veut("lacher") || balaye) ptr("pointerup", veut("lacher") ? "lacher" : null, "relache");
+    if (balaye) ptr("pointercancel", null, "relache");
+    if (veut("menu"))
+      arrets.push(
+        Input.ecouter(
+          cible,
+          "contextmenu",
+          (e) => (e.pointerType === "touch" ? Input.emettre(abo, "menu", pt(e, "appui")) : undefined),
+          o,
+        ),
+      );
+    return arrets.length ? () => arrets.forEach((f) => f()) : null;
+  },
+};
+
+// Détection du type d'appareil, en un seul endroit (avant : le même test recopié dans plusieurs scripts).
+const Appareil = {
+  // Écran tactile principal (téléphone, tablette).
+  tactile() {
+    try {
+      return matchMedia("(pointer:coarse)").matches;
+    } catch (e) {
+      return !1;
+    }
+  },
+  // Ordinateur : souris et fenêtre d'au moins 900 px de large.
+  pc() {
+    try {
+      return !matchMedia("(pointer:coarse)").matches && innerWidth >= 900;
+    } catch (e) {
+      return !1;
+    }
+  },
+  // Manette en cours d'utilisation (classe posée par manette.js).
+  manette() {
+    return document.body.classList.contains("gpon");
+  },
+};
+
+(() => {
   try {
     const oR = window.requestAnimationFrame.bind(window),
       oC = window.cancelAnimationFrame.bind(window),
@@ -95328,7 +95587,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1253 · gs505${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1254 · gs506${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
@@ -105884,7 +106143,11 @@ ${cc ? '<div class="rmsb" aria-hidden="true">🎲🃏🎴♟️🎲🃏🎴</div
     };
 })();
 </script>
-<script>(function () {
+<script>// Manette (Gamepad API). Mode « navigation » : déplace le focus et clique les boutons ; mode « curseur » : pointeur
+// virtuel ; mode « jeu » : simule les touches du clavier (flèches, Espace, Entrée, Échap) et le pointeur.
+// Les jeux branchés sur Input reçoivent donc la manette via clavier.js / souris.js sans code en plus.
+// Le bouton Sélect. change de mode. Doit rester tôt dans la page : il observe les écouteurs keydown ajoutés ensuite.
+(function () {
   "use strict";
   const _a = EventTarget.prototype.addEventListener,
     _r = EventTarget.prototype.removeEventListener,
@@ -141584,9 +141847,7 @@ body.bkon .sfr.pro {
       var w = innerWidth,
         h = innerHeight,
         ok =
-          !!window.matchMedia &&
-          !matchMedia("(pointer:coarse)").matches &&
-          w >= 900 &&
+          Appareil.pc() &&
           typeof cur !== "undefined" &&
           cur !== "flow" &&
           !!document.getElementById("app") &&
@@ -141614,7 +141875,7 @@ body.bkon .sfr.pro {
 </script>
 <script>window.PCK = function () {
   try {
-    return matchMedia("(pointer:coarse)").matches || innerWidth < 900
+    return !Appareil.pc()
       ? 1
       : Math.min(1.8, Math.max(1, ((innerHeight || 700) - 86) / 760));
   } catch (e) {
@@ -141623,7 +141884,7 @@ body.bkon .sfr.pro {
 };
 window.PCW = function (h) {
   try {
-    return matchMedia("(pointer:coarse)").matches || innerWidth < 900
+    return !Appareil.pc()
       ? 560
       : Math.max(560, Math.min(1000, Math.round(h * 1.05)));
   } catch (e) {
@@ -141638,13 +141899,7 @@ window.PCW = function (h) {
 }
 </style>
 <script>(function () {
-  var pc = function () {
-    try {
-      return !matchMedia("(pointer:coarse)").matches && innerWidth >= 900;
-    } catch (e) {
-      return !1;
-    }
-  };
+  var pc = Appareil.pc;
   window.NM = function () {
     return pc() ? 72 : 64;
   };
@@ -141702,13 +141957,7 @@ window.PCW = function (h) {
 <script>(function () {
   var bk = null,
     cx = null;
-  function pc() {
-    try {
-      return !matchMedia("(pointer:coarse)").matches && innerWidth >= 900;
-    } catch (e) {
-      return !1;
-    }
-  }
+  var pc = Appareil.pc;
   function tick() {
     try {
       var src = document.getElementById("gfc"),

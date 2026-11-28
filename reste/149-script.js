@@ -1,11 +1,5 @@
 (function () {
-  var pc = function () {
-    try {
-      return !matchMedia("(pointer:coarse)").matches && innerWidth >= 900;
-    } catch (e) {
-      return !1;
-    }
-  };
+  var pc = Appareil.pc;
   window.NM = function () {
     return pc() ? 72 : 64;
   };

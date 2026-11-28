@@ -1,3 +1,7 @@
+// Manette (Gamepad API). Mode « navigation » : déplace le focus et clique les boutons ; mode « curseur » : pointeur
+// virtuel ; mode « jeu » : simule les touches du clavier (flèches, Espace, Entrée, Échap) et le pointeur.
+// Les jeux branchés sur Input reçoivent donc la manette via clavier.js / souris.js sans code en plus.
+// Le bouton Sélect. change de mode. Doit rester tôt dans la page : il observe les écouteurs keydown ajoutés ensuite.
 (function () {
   "use strict";
   const _a = EventTarget.prototype.addEventListener,

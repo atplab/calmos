@@ -6,9 +6,7 @@
       var w = innerWidth,
         h = innerHeight,
         ok =
-          !!window.matchMedia &&
-          !matchMedia("(pointer:coarse)").matches &&
-          w >= 900 &&
+          Appareil.pc() &&
           typeof cur !== "undefined" &&
           cur !== "flow" &&
           !!document.getElementById("app") &&
