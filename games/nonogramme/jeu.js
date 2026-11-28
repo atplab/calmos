@@ -2302,30 +2302,6 @@
       chk(x, y);
       sfx(v ? 480 + 20 * Math.max(0, v) : 360, 0.025);
     };
-    G.addEventListener("pointerdown", (ev) => {
-      const c = ev.target.closest(".nnc");
-      if (!c || done) return;
-      ev.preventDefault();
-      const i = +c.dataset.i;
-      D = {
-        s: i,
-        sx: i % W,
-        sy: (i / W) | 0,
-        ax: null,
-        seen: new Set(),
-        m: tool < 0 ? (g[i] < 0 ? "c" : "x") : g[i] === tool ? "c" : "p",
-      };
-      try {
-        G.setPointerCapture(ev.pointerId);
-      } catch (e) {}
-      set(i);
-    });
-    G.addEventListener("pointermove", (ev) => {
-      if (!D) return;
-      const el = document.elementFromPoint(ev.clientX, ev.clientY),
-        c = el && el.closest && el.closest(".nnc");
-      c && set(+c.dataset.i);
-    });
     const up = () => {
       if (D) {
         D = null;
@@ -2333,8 +2309,38 @@
         fin();
       }
     };
-    G.addEventListener("pointerup", up);
-    G.addEventListener("pointercancel", up);
+    // Contrôles via Input : appuyer sur une case puis glisser pour en remplir plusieurs, lâcher pour finir.
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (k, inf) => {
+        const ev = inf.evt;
+        if ("toucher" === k) {
+          const c = ev.target.closest(".nnc");
+          if (!c || done) return;
+          ev.preventDefault();
+          const i = +c.dataset.i;
+          D = {
+            s: i,
+            sx: i % W,
+            sy: (i / W) | 0,
+            ax: null,
+            seen: new Set(),
+            m: tool < 0 ? (g[i] < 0 ? "c" : "x") : g[i] === tool ? "c" : "p",
+          };
+          try {
+            G.setPointerCapture(ev.pointerId);
+          } catch (e) {}
+          set(i);
+        } else if ("lacher" === k) up(ev);
+        else {
+          if (!D) return;
+          const el = document.elementFromPoint(ev.clientX, ev.clientY),
+            c = el && el.closest && el.closest(".nnc");
+          c && set(+c.dataset.i);
+        }
+      },
+      { cible: G, annulation: !0 },
+    );
     act.hint = () => {
       if (done) return;
       const bad = [];

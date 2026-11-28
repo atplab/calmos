@@ -39603,6 +39603,7 @@ function caOn() {
 function caTier(e) {
   return caOn() ? (e < 16 ? 0 : e < 49 ? 1 : 2) : (e >= 99 && e < 167 && +MST[e - 99]) || 0;
 }
+// Sudoku (id « sudoku ») : grilles SDK, résolution sdkSolve, génération sdkPuzzle, écran pSudoku.
 const SDK = {};
 function sdkSolve(e, t) {
   const a = new Int16Array(9),
@@ -39688,6 +39689,118 @@ function sdkPuzzle(e) {
   }
   return (SDK[e] = { g: d, sol: l });
 }
+const sdPxC = (e, t) => {
+  const a = sdPx(e, t),
+    s = parseInt(a.slice(1), 16);
+  return (0.299 * (s >> 16) + 0.587 * ((s >> 8) & 255) + 0.114 * (255 & s)) / 255 > 0.62 ? "pk" : "pl";
+};
+let SDRE = !1;
+function pSudoku(e) {
+  const SL = sdMo() ? (lv >= nl("sudoku") ? 2e5 + lv - nl("sudoku") : 1e5 + lv) : lv;
+  if (!e && !daily && !SDRE && st.get(ckey("sudoku") + ":" + lv, !1)) {
+    const { sol: e } = sdkPuzzle(SL);
+    return (
+      (snap = null),
+      frame(
+        `<p class="lit">Niveau terminé : tu avais fait apparaître ${sdPxN(SL)}.</p><div class="sd sdpxr sdview" aria-label="Image de ${sdPxN(SL)}">${e.map((e, t) => `<span class="sd-c pc ${sdPxC(SL, t)}" style="--pc:${sdPx(SL, t)}">${e}</span>`).join("")}</div><button class="btn" data-a="sdre">Recommencer le niveau</button>`,
+      ),
+      void (act.sdre = () => {
+        ((SDRE = !0), pSudoku(null));
+      })
+    );
+  }
+  SDRE = !1;
+  const { g: t, sol: a } = sdkPuzzle(SL),
+    s = e && Array.isArray(e.v) && 81 === e.v.length && (e.m || lv) === SL ? e.v.slice() : t.slice();
+  let n = -1;
+  const H = [];
+  t.forEach((v, i) => v && !s[i] && (s[i] = v));
+  snap = () => ({ v: s, m: SL });
+  const o = (e) => 3 * ((e / 27) | 0) + (((e % 9) / 3) | 0),
+    i = () => {
+      const e = new Set(),
+        t = [];
+      for (let e = 0; e < 9; e++)
+        t.push(
+          [...Array(9)].map((t, a) => 9 * e + a),
+          [...Array(9)].map((t, a) => 9 * a + e),
+          [...Array(9)].map((t, a) => 27 * ((e / 3) | 0) + (e % 3) * 3 + 9 * ((a / 3) | 0) + (a % 3)),
+        );
+      for (const a of t) {
+        const t = {};
+        (a.forEach((e) => {
+          const a = s[e];
+          a && (t[a] = t[a] || []).push(e);
+        }),
+          Object.values(t).forEach((t) => {
+            t.length > 1 && t.forEach((t) => e.add(t));
+          }));
+      }
+      return e;
+    },
+    r = () => {
+      const e = i(),
+        a = Array(10).fill(0),
+        r = n >= 0 ? s[n] : 0;
+      (s.forEach((e) => a[e]++),
+        frame(
+          `<div class="sd" role="grid" aria-label="Grille de sudoku">${s
+            .map((a, s) => {
+              const i = (s / 9) | 0,
+                l = s % 9,
+                c = n >= 0 && s !== n && (i === ((n / 9) | 0) || l === n % 9 || o(s) === o(n));
+              return `<button style="${a ? "--pc:" + sdPx(SL, s) : ""}" class="sd-c ${a ? "pc " + sdPxC(SL, s) : ""} ${t[s] ? "gv" : ""} ${s === n ? "sel" : ""} ${c ? "rel" : ""} ${r && a === r && s !== n ? "same" : ""} ${e.has(s) ? "bad" : ""} ${l % 3 == 2 && l < 8 ? "rb" : ""} ${i % 3 == 2 && i < 8 ? "bb" : ""}" data-a="sdc" data-v="${s}" aria-label="Ligne ${i + 1}, colonne ${l + 1}${a ? ", " + a : ", vide"}">${a || ""}</button>`;
+            })
+            .join(
+              "",
+            )}</div><div class="np">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((e) => `<button data-a="sdn" data-v="${e}" ${a[e] >= 9 ? "disabled" : ""}>${e}</button>`).join("")}<button data-a="sde" aria-label="Effacer la case">⌫</button><button class="npw" data-a="sdu" ${H.length ? "" : "disabled"}>↶ Annuler</button><button class="npw npx" data-a="sdx">Tout effacer</button></div>`,
+          1,
+        ));
+    },
+    l = () => {
+      if (s.every((e, t) => e === a[t])) {
+        msg("Tu as fait apparaître " + sdPxN(SL) + " !");
+        const e = document.querySelector(".sd");
+        (e && requestAnimationFrame(() => e.classList.add("sdpxr")), setTimeout(win, 2600));
+      } else s.every((e) => e) && !i().size && msg("Presque… une case est à revoir.");
+    };
+  ((act.sdc = (e) => {
+    ((n = +e), r());
+  }),
+    (act.sdn = (e) => {
+      if (n < 0 || t[n]) return msg(n < 0 ? "Touche d’abord une case." : "Cette case est déjà donnée.");
+      (H.push([n, s[n]]), (s[n] = s[n] === +e ? 0 : +e), r(), l());
+    }),
+    (act.sde = () => {
+      if (n < 0) return msg("Touche d’abord une case.");
+      if (t[n]) return msg("Cette case est donnée.");
+      s[n] && (H.push([n, s[n]]), (s[n] = 0));
+      r();
+    }),
+    (act.sdu = () => {
+      const m = H.pop();
+      if (!m) return msg("Rien à annuler.");
+      if (m[0] === "all") m[1].forEach((v, i) => (s[i] = v));
+      else {
+        s[m[0]] = m[1];
+        n = m[0];
+      }
+      r();
+    }),
+    (act.sdx = () => {
+      if (!s.some((v, i) => v !== t[i])) return msg("Rien à effacer.");
+      H.push(["all", s.slice()]);
+      t.forEach((v, i) => (s[i] = v));
+      r();
+      msg("Tout effacé · « Annuler » pour revenir.");
+    }),
+    (act.hint = () => {
+      let e = n >= 0 && !t[n] && s[n] !== a[n] ? n : s.findIndex((e, t) => e !== a[t]);
+      e < 0 || !spend(1) || (H.push([e, s[e]]), (s[e] = a[e]), (n = e), r(), l());
+    }),
+    r());
+}
+
 const SDPAL = {
   p: "#f7c6d5",
   r: "#e04f5f",
@@ -41907,12 +42020,6 @@ const sdPxI = (e) =>
       : SDPX[((e % SDPX.length) + SDPX.length) % SDPX.length];
 const sdPx = (e, t) => SDPAL[sdPxI(e)[1][(t / 9) | 0][t % 9]];
 const sdPxN = (e) => sdPxI(e)[0];
-const sdPxC = (e, t) => {
-  const a = sdPx(e, t),
-    s = parseInt(a.slice(1), 16);
-  return (0.299 * (s >> 16) + 0.587 * ((s >> 8) & 255) + 0.114 * (255 & s)) / 255 > 0.62 ? "pk" : "pl";
-};
-let SDRE = !1;
 const SDMC = {};
 function sdMotif(n, X) {
   const K = (X ? "x" : "") + n;
@@ -42042,111 +42149,7 @@ function sdAlbV(e) {
     (s.innerHTML = `<img alt="${sdPxN(e)}" src="${sdPic(e, 630)}" style="image-rendering:pixelated"><b>${sdPxN(e)[0].toUpperCase() + sdPxN(e).slice(1)} · niveau ${e + 1}</b><div class="chrow">${a > 0 ? `<button class="btn alt" data-a="sdAlbV" data-v="${t[a - 1]}" aria-label="Image précédente">‹</button>` : ""}${a < t.length - 1 ? `<button class="btn alt" data-a="sdAlbV" data-v="${t[a + 1]}" aria-label="Image suivante">›</button>` : ""}<button class="btn alt" data-a="play" data-v="${e}">Rejouer</button><button class="btn" data-a="cdAlbX">Fermer</button></div>`));
 }
 setTimeout(() => Object.assign(act, { sdAlb: () => sdAlbPg(), sdAlbV: (e) => sdAlbV(e) }));
-function pSudoku(e) {
-  const SL = sdMo() ? (lv >= nl("sudoku") ? 2e5 + lv - nl("sudoku") : 1e5 + lv) : lv;
-  if (!e && !daily && !SDRE && st.get(ckey("sudoku") + ":" + lv, !1)) {
-    const { sol: e } = sdkPuzzle(SL);
-    return (
-      (snap = null),
-      frame(
-        `<p class="lit">Niveau terminé : tu avais fait apparaître ${sdPxN(SL)}.</p><div class="sd sdpxr sdview" aria-label="Image de ${sdPxN(SL)}">${e.map((e, t) => `<span class="sd-c pc ${sdPxC(SL, t)}" style="--pc:${sdPx(SL, t)}">${e}</span>`).join("")}</div><button class="btn" data-a="sdre">Recommencer le niveau</button>`,
-      ),
-      void (act.sdre = () => {
-        ((SDRE = !0), pSudoku(null));
-      })
-    );
-  }
-  SDRE = !1;
-  const { g: t, sol: a } = sdkPuzzle(SL),
-    s = e && Array.isArray(e.v) && 81 === e.v.length && (e.m || lv) === SL ? e.v.slice() : t.slice();
-  let n = -1;
-  const H = [];
-  t.forEach((v, i) => v && !s[i] && (s[i] = v));
-  snap = () => ({ v: s, m: SL });
-  const o = (e) => 3 * ((e / 27) | 0) + (((e % 9) / 3) | 0),
-    i = () => {
-      const e = new Set(),
-        t = [];
-      for (let e = 0; e < 9; e++)
-        t.push(
-          [...Array(9)].map((t, a) => 9 * e + a),
-          [...Array(9)].map((t, a) => 9 * a + e),
-          [...Array(9)].map((t, a) => 27 * ((e / 3) | 0) + (e % 3) * 3 + 9 * ((a / 3) | 0) + (a % 3)),
-        );
-      for (const a of t) {
-        const t = {};
-        (a.forEach((e) => {
-          const a = s[e];
-          a && (t[a] = t[a] || []).push(e);
-        }),
-          Object.values(t).forEach((t) => {
-            t.length > 1 && t.forEach((t) => e.add(t));
-          }));
-      }
-      return e;
-    },
-    r = () => {
-      const e = i(),
-        a = Array(10).fill(0),
-        r = n >= 0 ? s[n] : 0;
-      (s.forEach((e) => a[e]++),
-        frame(
-          `<div class="sd" role="grid" aria-label="Grille de sudoku">${s
-            .map((a, s) => {
-              const i = (s / 9) | 0,
-                l = s % 9,
-                c = n >= 0 && s !== n && (i === ((n / 9) | 0) || l === n % 9 || o(s) === o(n));
-              return `<button style="${a ? "--pc:" + sdPx(SL, s) : ""}" class="sd-c ${a ? "pc " + sdPxC(SL, s) : ""} ${t[s] ? "gv" : ""} ${s === n ? "sel" : ""} ${c ? "rel" : ""} ${r && a === r && s !== n ? "same" : ""} ${e.has(s) ? "bad" : ""} ${l % 3 == 2 && l < 8 ? "rb" : ""} ${i % 3 == 2 && i < 8 ? "bb" : ""}" data-a="sdc" data-v="${s}" aria-label="Ligne ${i + 1}, colonne ${l + 1}${a ? ", " + a : ", vide"}">${a || ""}</button>`;
-            })
-            .join(
-              "",
-            )}</div><div class="np">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((e) => `<button data-a="sdn" data-v="${e}" ${a[e] >= 9 ? "disabled" : ""}>${e}</button>`).join("")}<button data-a="sde" aria-label="Effacer la case">⌫</button><button class="npw" data-a="sdu" ${H.length ? "" : "disabled"}>↶ Annuler</button><button class="npw npx" data-a="sdx">Tout effacer</button></div>`,
-          1,
-        ));
-    },
-    l = () => {
-      if (s.every((e, t) => e === a[t])) {
-        msg("Tu as fait apparaître " + sdPxN(SL) + " !");
-        const e = document.querySelector(".sd");
-        (e && requestAnimationFrame(() => e.classList.add("sdpxr")), setTimeout(win, 2600));
-      } else s.every((e) => e) && !i().size && msg("Presque… une case est à revoir.");
-    };
-  ((act.sdc = (e) => {
-    ((n = +e), r());
-  }),
-    (act.sdn = (e) => {
-      if (n < 0 || t[n]) return msg(n < 0 ? "Touche d’abord une case." : "Cette case est déjà donnée.");
-      (H.push([n, s[n]]), (s[n] = s[n] === +e ? 0 : +e), r(), l());
-    }),
-    (act.sde = () => {
-      if (n < 0) return msg("Touche d’abord une case.");
-      if (t[n]) return msg("Cette case est donnée.");
-      s[n] && (H.push([n, s[n]]), (s[n] = 0));
-      r();
-    }),
-    (act.sdu = () => {
-      const m = H.pop();
-      if (!m) return msg("Rien à annuler.");
-      if (m[0] === "all") m[1].forEach((v, i) => (s[i] = v));
-      else {
-        s[m[0]] = m[1];
-        n = m[0];
-      }
-      r();
-    }),
-    (act.sdx = () => {
-      if (!s.some((v, i) => v !== t[i])) return msg("Rien à effacer.");
-      H.push(["all", s.slice()]);
-      t.forEach((v, i) => (s[i] = v));
-      r();
-      msg("Tout effacé · « Annuler » pour revenir.");
-    }),
-    (act.hint = () => {
-      let e = n >= 0 && !t[n] && s[n] !== a[n] ? n : s.findIndex((e, t) => e !== a[t]);
-      e < 0 || !spend(1) || (H.push([e, s[e]]), (s[e] = a[e]), (n = e), r(), l());
-    }),
-    r());
-}
+// Mémoire (id « memo ») : écran pMemo.
 function pMemo(e) {
   const t = isX("memo", lv),
     a = t
@@ -42221,6 +42224,7 @@ function pMemo(e) {
   }),
     up());
 }
+
 const M3KX = ["#3fae6a", "#e3534f", "#b8742f", "#f4ead2", "#d9a066", "#f2c14e"];
 const M3W = ["Bien !", "Super !", "Magnifique !", "Splendide !", "Incroyable !"];
 const M3P = [
@@ -70883,6 +70887,7 @@ function anaGen(a) {
   return ANL2[a % ANL2.length];
 }
 
+// Relie les points (id « flow ») : niveaux FLC/FLO, génération flGen, écran pFlow.
 const FLC = [
   "#ff5a5f",
   "#4f8cff",
@@ -71057,61 +71062,6 @@ function pFlow(e) {
             (t.push(e), 0)
           );
     };
-  (E.addEventListener("pointerdown", (e) => {
-    if (u) return;
-    const t = A(e),
-      a = S(t);
-    if (a < 0) return;
-    const s = h();
-    let n, i;
-    if (void 0 !== o[a]) ((n = o[a]), (i = [a]));
-    else {
-      if (!(s[a] >= 0)) return;
-      ((n = s[a]), (i = r[n].slice(0, r[n].indexOf(a) + 1)));
-    }
-    d = { c: n, p: i, base: r.map((e) => e.slice()), b0: JSON.stringify(r) };
-    try {
-      E.setPointerCapture(e.pointerId);
-    } catch (e) {}
-    (y.setAttribute("cx", t[0]),
-      y.setAttribute("cy", t[1]),
-      (y.style.fill = p(n)),
-      E.classList.add("drg"),
-      x(),
-      v(),
-      e.preventDefault());
-  }),
-    E.addEventListener("pointermove", (e) => {
-      if (!d) return;
-      const t = A(e);
-      (y.setAttribute("cx", t[0]),
-        y.setAttribute("cy", t[1]),
-        ((e) => {
-          let t = d.p[d.p.length - 1],
-            s = 0;
-          for (; t !== e && s++ < 20;) {
-            if (d.p.includes(e)) {
-              M(e);
-              break;
-            }
-            const s = ((e / a) | 0) - ((t / a) | 0),
-              o = (e % a) - (t % a),
-              r =
-                Math.abs(s) >= Math.abs(o)
-                  ? [t + Math.sign(s) * a, t + Math.sign(o)]
-                  : [t + Math.sign(o), t + Math.sign(s) * a];
-            let l = !1;
-            for (const e of r)
-              if (e !== t && e >= 0 && e < n && i(t, e) && M(e)) {
-                l = !0;
-                break;
-              }
-            if (!l) break;
-            t = d.p[d.p.length - 1];
-          }
-          (x(), v());
-        })(S([Math.min(a - 0.01, Math.max(0, t[0])), Math.min(a - 0.01, Math.max(0, t[1]))])));
-    }));
   const L = () => {
     if (!d) return;
     const e = JSON.stringify(r) !== d.b0;
@@ -71119,7 +71069,71 @@ function pFlow(e) {
     const t = v();
     (e && sv(), T(t));
   };
-  ["pointerup", "pointercancel", "lostpointercapture"].forEach((e) => E.addEventListener(e, L));
+  // Contrôles via Input : appuyer sur un point ou un tuyau, glisser pour le tracer, lâcher pour finir.
+  // lostpointercapture n’est pas une action d’entrée : il reste un écouteur direct (L ne fait rien deux fois).
+  (Input.sur(
+    ["toucher", "glisser", "survoler", "lacher"],
+    (k, inf) => {
+      const e = inf.evt;
+      if ("toucher" === k) {
+        if (u) return;
+        const t = A(e),
+          a = S(t);
+        if (a < 0) return;
+        const s = h();
+        let n, i;
+        if (void 0 !== o[a]) ((n = o[a]), (i = [a]));
+        else {
+          if (!(s[a] >= 0)) return;
+          ((n = s[a]), (i = r[n].slice(0, r[n].indexOf(a) + 1)));
+        }
+        d = { c: n, p: i, base: r.map((e) => e.slice()), b0: JSON.stringify(r) };
+        try {
+          E.setPointerCapture(e.pointerId);
+        } catch (e) {}
+        (y.setAttribute("cx", t[0]),
+          y.setAttribute("cy", t[1]),
+          (y.style.fill = p(n)),
+          E.classList.add("drg"),
+          x(),
+          v(),
+          e.preventDefault());
+      } else if ("lacher" === k) L(e);
+      else {
+        if (!d) return;
+        const t = A(e);
+        (y.setAttribute("cx", t[0]),
+          y.setAttribute("cy", t[1]),
+          ((e) => {
+            let t = d.p[d.p.length - 1],
+              s = 0;
+            for (; t !== e && s++ < 20;) {
+              if (d.p.includes(e)) {
+                M(e);
+                break;
+              }
+              const s = ((e / a) | 0) - ((t / a) | 0),
+                o = (e % a) - (t % a),
+                r =
+                  Math.abs(s) >= Math.abs(o)
+                    ? [t + Math.sign(s) * a, t + Math.sign(o)]
+                    : [t + Math.sign(o), t + Math.sign(s) * a];
+              let l = !1;
+              for (const e of r)
+                if (e !== t && e >= 0 && e < n && i(t, e) && M(e)) {
+                  l = !0;
+                  break;
+                }
+              if (!l) break;
+              t = d.p[d.p.length - 1];
+            }
+            (x(), v());
+          })(S([Math.min(a - 0.01, Math.max(0, t[0])), Math.min(a - 0.01, Math.max(0, t[1]))])));
+      }
+    },
+    { cible: E, annulation: !0 },
+  ),
+    E.addEventListener("lostpointercapture", L));
   const T = (e) => {
     u ||
       (e.ok.every(Boolean) &&
@@ -71144,6 +71158,7 @@ function pFlow(e) {
   }),
     v());
 }
+
 const G2L = [
   [4, 64],
   [4, 128],
@@ -95614,7 +95629,7 @@ function prefScreen() {
     )
     .join(
       "",
-    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1258 · gs510${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
+    )}</div></div><button class="tg" data-a="kbl"><span>Clavier du mot du jour</span><b>${"azerty" === e.kbd ? "AZERTY" : "QWERTY"}</b></button></section>${syncHTML()}<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="ntSet"><span>Notifications<small>Choisir celles reçues hors de l’appli</small></span><b>›</b></button></section>${window.CalmosUpdate ? '<section class="glass play pf" style="margin:0 0 12px"><button class="tg" data-a="otaCheck"><span>Mettre à jour l’application<small id="otas">Vérifier si une nouvelle version est disponible</small></span><b>↻</b></button></section>' : ""}<section class="glass play pf"><button class="tg" data-a="oth"><span>Autres paramètres et informations<small>Âge et protection familiale, publicité, à propos, compte</small></span><b>›</b></button></section><p id="appv" style="text-align:center;font-size:12px;opacity:.55;margin:18px 0 6px">Version v1259 · gs511${window.__ota ? " · maj : " + window.__ota : ""}</p>`),
     (() => {
       try {
         caches.keys().then((k) => {
@@ -130503,30 +130518,6 @@ body.calm .xmfl.adv .advlid {
       chk(x, y);
       sfx(v ? 480 + 20 * Math.max(0, v) : 360, 0.025);
     };
-    G.addEventListener("pointerdown", (ev) => {
-      const c = ev.target.closest(".nnc");
-      if (!c || done) return;
-      ev.preventDefault();
-      const i = +c.dataset.i;
-      D = {
-        s: i,
-        sx: i % W,
-        sy: (i / W) | 0,
-        ax: null,
-        seen: new Set(),
-        m: tool < 0 ? (g[i] < 0 ? "c" : "x") : g[i] === tool ? "c" : "p",
-      };
-      try {
-        G.setPointerCapture(ev.pointerId);
-      } catch (e) {}
-      set(i);
-    });
-    G.addEventListener("pointermove", (ev) => {
-      if (!D) return;
-      const el = document.elementFromPoint(ev.clientX, ev.clientY),
-        c = el && el.closest && el.closest(".nnc");
-      c && set(+c.dataset.i);
-    });
     const up = () => {
       if (D) {
         D = null;
@@ -130534,8 +130525,38 @@ body.calm .xmfl.adv .advlid {
         fin();
       }
     };
-    G.addEventListener("pointerup", up);
-    G.addEventListener("pointercancel", up);
+    // Contrôles via Input : appuyer sur une case puis glisser pour en remplir plusieurs, lâcher pour finir.
+    Input.sur(
+      ["toucher", "glisser", "survoler", "lacher"],
+      (k, inf) => {
+        const ev = inf.evt;
+        if ("toucher" === k) {
+          const c = ev.target.closest(".nnc");
+          if (!c || done) return;
+          ev.preventDefault();
+          const i = +c.dataset.i;
+          D = {
+            s: i,
+            sx: i % W,
+            sy: (i / W) | 0,
+            ax: null,
+            seen: new Set(),
+            m: tool < 0 ? (g[i] < 0 ? "c" : "x") : g[i] === tool ? "c" : "p",
+          };
+          try {
+            G.setPointerCapture(ev.pointerId);
+          } catch (e) {}
+          set(i);
+        } else if ("lacher" === k) up(ev);
+        else {
+          if (!D) return;
+          const el = document.elementFromPoint(ev.clientX, ev.clientY),
+            c = el && el.closest && el.closest(".nnc");
+          c && set(+c.dataset.i);
+        }
+      },
+      { cible: G, annulation: !0 },
+    );
     act.hint = () => {
       if (done) return;
       const bad = [];
